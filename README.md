@@ -19,3 +19,26 @@ Generate Java code from architecture models that were created using the Palladio
     * right-click in the Package Explorer - Import - Git - Projects from Git - Clone URI
     * make sure you check the box "Clone submodules" in the wizard
     * as you do not need to import the feature projects you can either set the scope of the wizard to the folder "bundles" in the "Working Tree" or you deselect these projects from the list (but importing the feature projects too will not do any harm)
+
+### Run new Eclipse with Confidentiality Specification and Code Generation Support
+* Run Palladio with the possibility to specifcy confidentiality to generate Java code with JML proof obligations for KeY
+  * run a new "Eclipse Application" that is started from the Eclipse in which you checked out all plug-in projects as specified above
+  * this can be done e.g. by creating a new debug configuration for an "Eclipse Application" with default settings).
+    * Run - Debug Configurations - Eclipse Configuration - right click - New
+* Create or modify a new or existing Palladio model in the workspace of the new Eclipse
+  * e.g. import an existing project ("Import - Existing Projects into Workspace")
+  * e.g. clone and import an example from the [Examples Repository](https://github.com/KASTEL-SCBS/Examples4SCBS)
+  * e.g. right-click - New - Other - Palladio Modeling - New Palladio Project
+
+### Create Architecture Model and Confidentiality Specification in Eclipse
+* To model the component repository, system assembly, resource environment, and allocation you can use the wizard and graphical or tree-based editors of Palladio
+  * e.g. using "New - Palladio Modeling - PCM ... Diagram"
+* To add a confidentiality specification to the Palladio models you have to use the tree-based editor
+  * open the tree-based editor by opening, for example, a .repository file with a double-click or right-click "Open with - Repository Model Editor"
+  * right-click on the root element of a Palladio model (i.e. a "Repository", "System", "Resource Environment", or "Allocation" element)
+  * Select "MDSD Profiles - Apply/Unapply Profiles" and add "Profile PCMConfidentialityProfile" in the dialog
+  * Select the model element to which a confidentiality specification shall be added, right-click "MDSD Profiles - Apply/Unapply Stereotypes" and add the appropriate stereotype
+  
+### Generate Java Code to be completed and verified
+* Select a repository model
+* Right-click "KASTEL Code Analysis - Create Java Code for KeY"
