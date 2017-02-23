@@ -13,8 +13,9 @@ Generate Java code from architecture models that were created using the Palladio
   * Select at least **all "Palladio Bench Core Features"** and the **"MDSD Profiles"** feature of the "Palladio Supporting Features" category 
 
 ### Clone Repository and Import Projects
-* Clone [this repository](https://github.com/KASTEL-SCBS/PCM2Java4Key) **and its submodules** and import all Eclipse plug-in projects (aka bundles) in it into your Eclipse workspace
+* Temporary workaround: Clone the [Vitruv repository](https://github.com/vitruv-tools/Vitruv) and import only the ["tools.vitruv.framework.util" project](https://github.com/vitruv-tools/Vitruv/tree/master/bundles/framework/tools.vitruv.framework.util) into your workspace
+* Clone the [PCM2Java4KeY repository](https://github.com/KASTEL-SCBS/PCM2Java4Key) **and its submodules** and import all Eclipse plug-in projects (aka bundles) in it into your workspace
   * both can be done at once in Eclipse
-    * right-click in the Package Explorer - Import - Git - Projects from Git
+    * right-click in the Package Explorer - Import - Git - Projects from Git - Clone URI
     * make sure you check the box "Clone submodules" in the wizard
     * as you do not need to import the feature projects you can either set the scope of the wizard to the folder "bundles" in the "Working Tree" or you deselect these projects from the list (but importing the feature projects too will not do any harm)
