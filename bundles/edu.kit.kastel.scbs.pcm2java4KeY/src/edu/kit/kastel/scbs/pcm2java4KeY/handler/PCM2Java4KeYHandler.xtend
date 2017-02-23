@@ -1,9 +1,9 @@
 package edu.kit.kastel.scbs.pcm2java4KeY.handler
 
-import edu.kit.ipd.sdq.commons.ecore2txt.handler.AbstractEcoreIFile2TxtHandler
+import edu.kit.ipd.sdq.mdsd.ecore2txt.handler.AbstractEcoreIFile2TxtHandler
 import org.eclipse.core.commands.ExecutionEvent
 import org.eclipse.core.commands.ExecutionException
-import edu.kit.ipd.sdq.commons.ecore2txt.util.Ecore2TxtUtil
+import edu.kit.ipd.sdq.mdsd.ecore2txt.util.Ecore2TxtUtil
 import edu.kit.kastel.scbs.pcm2java4KeY.generator.PCM2Java4KeYGeneratorModule
 import edu.kit.kastel.scbs.pcm2java4KeY.generator.PCM2Java4KeYGenerator
 import org.eclipse.core.resources.IFile
