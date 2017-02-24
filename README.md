@@ -7,6 +7,7 @@ See also [PCM2Prolog](https://github.com/KASTEL-SCBS/PCM2Prolog) for analysing t
 
 ## Development
 ### Prepare Development Eclipse
+If you already have set up an Eclipse for [PCM2Prolog](https://github.com/KASTEL-SCBS/PCM2JProlog), then you can directly reuse and skip the following preparation, but we recommend to create a new empty workspace for PCM2Java4KeY.
 * Download and run a clean [**Neon2** Release of the **Eclipse** IDE for Java and **DSL Developers*](https://www.eclipse.org/downloads/packages/eclipse-ide-java-and-dsl-developers/neon2). Do not use another Eclipse Package, i.e. also not the one for Java developers.
 * Install Eclipse **OCL 6.0.1** using the Eclipse Marketplace
   * Help - Eclipse Marketplace ... - Search for "OCL"
