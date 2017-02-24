@@ -35,7 +35,9 @@ See also [PCM2Prolog](https://github.com/KASTEL-SCBS/PCM2Prolog) for analysing t
 ### Create Architecture Model and Confidentiality Specification in Eclipse
 * To model the component repository, system assembly, resource environment, and allocation you can use the wizard and graphical or tree-based editors of Palladio
   * e.g. using "New - Palladio Modeling - PCM ... Diagram"
-* To add a confidentiality specification to the Palladio models you have to use the tree-based editor
+* To create a confidentiality specification model you can use the wizard and tree-based editor
+  * New - Other - Example EMF Model Creation Wizards - Confidentiality Model (keep "Specification" as "Model Object")
+* To use the confidentiality specification in Palladio models you have to use the tree-based editor
   * open the tree-based editor by opening, for example, a .repository file with a double-click or right-click "Open with - Repository Model Editor"
   * right-click on the root element of a Palladio model (i.e. a "Repository", "System", "Resource Environment", or "Allocation" element)
   * Select "MDSD Profiles - Apply/Unapply Profiles" and add "Profile PCMConfidentialityProfile" in the dialog
