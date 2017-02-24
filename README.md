@@ -3,6 +3,8 @@ Generate Java code to verify Palladio models using KeY
 
 Generate Java code from architecture models that were created using the Palladio Component Model (PCM) with proof obligations for verifying the confidentiality of data flows in the Java code after manual completion. 
 
+See also [PCM2Prolog](https://github.com/KASTEL-SCBS/PCM2) for analysing the confidentiality of data flows in architecture models using a superset of the confidentiality specification for verification.
+
 ## Development
 ### Prepare Development Eclipse
 * Download and run a clean [**Neon2** Release of the **Eclipse** IDE for Java and **DSL Developers*](https://www.eclipse.org/downloads/packages/eclipse-ide-java-and-dsl-developers/neon2). Do not use another Eclipse Package, i.e. also not the one for Java developers.
