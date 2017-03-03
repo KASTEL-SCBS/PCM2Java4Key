@@ -15,6 +15,8 @@ If you already have set up an Eclipse for [PCM2Prolog](https://github.com/KASTEL
 * Install **Palladio 4.0** from the [Palladio Simulator nightly builds site](https://sdqweb.ipd.kit.edu/eclipse/palladiosimulator/nightly/)
   * Help - Install New Software...- Add...
   * Select at least **all "Palladio Bench Core Features"** and the **"MDSD Profiles"** feature of the "Palladio Supporting Features" category 
+* Install EMF Profiles from the [update site](http://www.modelversioning.org/emf-profiles-updatesite/)
+  * Help - Install New Software... - Add...
 
 ### Clone Repository and Import Projects
 * Temporary workaround: Clone the [Vitruv repository](https://github.com/vitruv-tools/Vitruv) and import only the ["tools.vitruv.framework.util" project](https://github.com/vitruv-tools/Vitruv/tree/master/bundles/framework/tools.vitruv.framework.util) into your workspace
