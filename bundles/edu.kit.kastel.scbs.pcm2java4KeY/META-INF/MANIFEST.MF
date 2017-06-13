@@ -5,24 +5,15 @@ Bundle-SymbolicName: edu.kit.kastel.scbs.pcm2java4KeY;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KASTEL
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: com.google.guava,
- org.eclipse.xtext.xbase.lib,
- org.eclipse.xtend.lib,
- org.eclipse.xtend.lib.macro,
+Require-Bundle: org.eclipse.xtend.lib,
  org.eclipse.xtext.generator,
- org.eclipse.xtext,
  org.eclipse.emf.mwe2.launch,
  org.palladiosimulator.pcm,
- tools.vitruv.framework.util,
  org.eclipse.ui,
- org.eclipse.core.resources,
- org.eclipse.emf.ecore,
  org.eclipse.xtext.builder,
  edu.kit.ipd.sdq.mdsd.ecore2txt,
- org.eclipse.core.runtime,
- org.eclipse.core.commands,
- org.eclipse.jface;visibility:=reexport,
- org.eclipse.ui.workbench,
- com.google.inject,
+ edu.kit.kastel.scbs.confidentialitymm,
+ org.modelversioning.emfprofile,
+ edu.kit.ipd.sdq.commons.util.pcm,
  tools.vitruv.framework.util,
  edu.kit.ipd.sdq.mdsd.pcm2java

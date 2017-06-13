@@ -9,12 +9,22 @@
      </handler>
   </extension>-->
    <extension
-         point="org.eclipse.ui.commands">
-      <command
-            defaultHandler="edu.kit.kastel.scbs.pcm2java4KeY.handler.PCM2Java4KeYHandler"
+		 point="org.eclipse.ui.commands">
+      	 <command
+      	 	defaultHandler="edu.kit.kastel.scbs.pcm2java4KeY.handler.PCM2Java4KeYHandler"
             id="edu.kit.kastel.scbs.pcm2java4KeY.commands.createjava4KeY"
             name="Create Java Code for KeY">
-      </command>
+            <commandParameter
+               id="edu.kit.kastel.scbs.pcm2java4KeY.publicFieldsParameter"
+               name="publicFields"
+               optional="true">
+         	</commandParameter>
+         	<commandParameter
+               id="edu.kit.kastel.scbs.pcm2java4KeY.replaceStringsWithCharArraysParameter"
+               name="replaceStringsWithCharArrays"
+               optional="true">
+         	</commandParameter>
+      	 </command>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -33,6 +43,14 @@
                   label="Create Java Code for KeY"
                   style="push"
                   tooltip="Create Java Code for Verification with KeY">
+                  <parameter
+                     name="edu.kit.kastel.scbs.pcm2java4KeY.publicFieldsParameter"
+                     value="true">
+               	  </parameter>
+               	  <parameter
+                     name="edu.kit.kastel.scbs.pcm2java4KeY.replaceStringsWithCharArraysParameter"
+                     value="true">
+               	  </parameter>
             </command>
             <visibleWhen
                   checkEnabled="false">
