@@ -8,7 +8,7 @@ import org.palladiosimulator.pcm.repository.OperationSignature
 import static edu.kit.ipd.sdq.mdsd.pcm2java.generator.PCM2JavaGeneratorConstants.*
 import static edu.kit.ipd.sdq.mdsd.pcm2java.generator.PCM2JavaGeneratorHeadAndImports.*
 
-import static extension edu.kit.ipd.sdq.commons.util.org.palladiosimulator.pcm.repository.OperationInterfaceUtil.*
+import static extension edu.kit.kastel.scbs.pcm2java4KeY.util.StereotypeUtil.*
 
 final class PCM2Java4KeYGeneratorClassifier extends PCM2JavaGeneratorClassifier {
 					
