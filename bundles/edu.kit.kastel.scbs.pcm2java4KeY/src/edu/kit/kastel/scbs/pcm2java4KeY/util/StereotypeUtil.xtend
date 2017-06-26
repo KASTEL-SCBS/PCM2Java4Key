@@ -2,8 +2,10 @@ package edu.kit.kastel.scbs.pcm2java4KeY.util
 
 import edu.kit.kastel.scbs.confidentiality.repository.ParametersAndDataPair
 import java.util.ArrayList
+import org.modelversioning.emfprofileapplication.StereotypeApplication
 import org.palladiosimulator.pcm.repository.OperationInterface
 import org.palladiosimulator.pcm.repository.OperationSignature
+
 import static extension edu.kit.ipd.sdq.commons.util.org.palladiosimulator.mdsdprofiles.api.StereotypeAPIUtil.*
 
 class StereotypeUtil {
@@ -35,6 +37,13 @@ class StereotypeUtil {
 	
 	static def Iterable<ParametersAndDataPair> getParametersAndDataPairs(OperationSignature operationSignature) {
 		operationSignature.getTaggedValues("InformationFlow", "parametersAndDataPairs", ParametersAndDataPair)
+	}
+	
+	/*
+	 * Only stereotype applications that are applied to either an operation interface or an operation signature are supported.
+	 */
+	static def Iterable<ParametersAndDataPair> getParametersAndDataPairs(Iterable<StereotypeApplication> applications) {
+		applications.getTaggedValues("parametersAndDataPairs", ParametersAndDataPair)
 	}
 	
 }
