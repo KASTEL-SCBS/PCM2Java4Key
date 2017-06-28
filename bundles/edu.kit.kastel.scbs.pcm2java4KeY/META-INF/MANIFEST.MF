@@ -14,6 +14,6 @@ Require-Bundle: org.eclipse.xtend.lib,
  edu.kit.ipd.sdq.mdsd.ecore2txt,
  edu.kit.kastel.scbs.confidentialitymm,
  org.modelversioning.emfprofile,
- tools.vitruv.framework.util,
+ edu.kit.ipd.sdq.commons.util.java,
  edu.kit.ipd.sdq.commons.util.mdsdprofiles,
  edu.kit.ipd.sdq.mdsd.pcm2java
