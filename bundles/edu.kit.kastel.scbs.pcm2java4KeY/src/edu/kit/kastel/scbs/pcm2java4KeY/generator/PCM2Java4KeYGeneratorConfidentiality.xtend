@@ -17,9 +17,8 @@ final class PCM2Java4KeYGeneratorConfidentiality {
 	
 	private static final String DATA_SETS_CLASS_NAME = "DataSets"
 	
-	private static final String DATA_SETS = '''package «PACKAGE»;
-
-public enum «DATA_SETS_CLASS_NAME» {
+	private static final String DATA_SETS = '''package Â«PACKAGEÂ»;
+public enum Â«DATA_SETS_CLASS_NAMEÂ» {
 EXAMPLE // TODO: verify data sets.
 	
 	public final String id;
@@ -36,9 +35,8 @@ EXAMPLE // TODO: verify data sets.
 	
 	private static final String DATA_SET_MAPS_CLASS_NAME = "DataSetMaps"
 
-	private static final String DATA_SET_MAPS = '''package «PACKAGE»;
-
-public enum «DATA_SET_MAPS_CLASS_NAME» {
+	private static final String DATA_SET_MAPS = '''package Â«PACKAGEÂ»;
+public enum Â«DATA_SET_MAPS_CLASS_NAMEÂ» {
 EXAMPLE // TODO: verify data set maps
 	
 	private final String id;
@@ -55,9 +53,8 @@ EXAMPLE // TODO: verify data set maps
 
 	private static final String DATA_SET_MAP_ENRTIES_CLASS_NAME = "DataSetMapEntries"
 
-	private static final String DATA_SET_MAP_ENTRIES = '''package «PACKAGE»;
-
-public enum «DATA_SET_MAP_ENRTIES_CLASS_NAME» {
+	private static final String DATA_SET_MAP_ENTRIES = '''package Â«PACKAGEÂ»;
+public enum Â«DATA_SET_MAP_ENRTIES_CLASS_NAMEÂ» {
 EXAMPLE // TODO: verify data set map entries
 	
 	public final String id;
@@ -76,9 +73,8 @@ EXAMPLE // TODO: verify data set map entries
 
 	private static final String PARAMETERS_AND_DATA_PAIRS_CLASS_NAME = "ParametersAndDataPairs"
 
-	private static final String PARAMETERS_AND_DATA_PAIRS = '''package «PACKAGE»;
-
-public enum «PARAMETERS_AND_DATA_PAIRS_CLASS_NAME» {
+	private static final String PARAMETERS_AND_DATA_PAIRS = '''package Â«PACKAGEÂ»;
+public enum Â«PARAMETERS_AND_DATA_PAIRS_CLASS_NAMEÂ» {
 EXAMPLE // TODO: verify parameters and data pairs
 	
 	public final String[] parameterSources;
@@ -97,16 +93,14 @@ EXAMPLE // TODO: verify parameters and data pairs
 
 	private static final String INFORMATION_FLOW_CLASS_NAME = "InformationFlow"
 
-	private static final String INFORMATION_FLOW = '''package «PACKAGE»;
-
+	private static final String INFORMATION_FLOW = '''package Â«PACKAGEÂ»;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface «INFORMATION_FLOW_CLASS_NAME» {
+public @interface Â«INFORMATION_FLOW_CLASS_NAMEÂ» {
 	ParametersAndDataPairs[] parametersAndDataPairs();
 }
 '''
@@ -182,57 +176,57 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 		}
 	}
 	
-	private static def String generateUserDataSetsString(Iterable<DataSet> userDataSets)'''«
+	private static def String generateUserDataSetsString(Iterable<DataSet> userDataSets)'''Â«
 		FOR dataSet : userDataSets
-		SEPARATOR newLine »    «
-		»«dataSet.name.ConvertToEnumValueName»("«dataSet.id»", "«dataSet.name»");«
+		SEPARATOR newLine Â»    Â«
+		Â»Â«dataSet.name.ConvertToEnumValueNameÂ»("Â«dataSet.idÂ»", "Â«dataSet.nameÂ»");Â«
 		ENDFOR
-	»''' 
+	Â»''' 
 	
-	private static def String generateUserDataSetMapsString(Iterable<DataSetMap> userDataSetMaps)'''«
+	private static def String generateUserDataSetMapsString(Iterable<DataSetMap> userDataSetMaps)'''Â«
 		FOR dataSetMap : userDataSetMaps
-		SEPARATOR newLine »    «
-		»«dataSetMap.name.ConvertToEnumValueName»("«dataSetMap.id»", "«dataSetMap.name»");»«
-		ENDFOR»
+		SEPARATOR newLine Â»    Â«
+		Â»Â«dataSetMap.name.ConvertToEnumValueNameÂ»("Â«dataSetMap.idÂ»", "Â«dataSetMap.nameÂ»");Â»Â«
+		ENDFORÂ»
 	''' 
 	
-	private static def String generateUserDataSetMapEntriesString(Iterable<DataSetMapEntry> userDataSetMapEntries)'''«
+	private static def String generateUserDataSetMapEntriesString(Iterable<DataSetMapEntry> userDataSetMapEntries)'''Â«
 		FOR dataSetMapEntry : userDataSetMapEntries
-		SEPARATOR newLine »    «
-		»«dataSetMapEntry.name.ConvertToEnumValueName»("«dataSetMapEntry.id»", DataSetMaps.«dataSetMapEntry.map.name.ConvertToEnumValueName», "«dataSetMapEntry.name»");»«
-		ENDFOR»
+		SEPARATOR newLine Â»    Â«
+		Â»Â«dataSetMapEntry.name.ConvertToEnumValueNameÂ»("Â«dataSetMapEntry.idÂ»", DataSetMaps.Â«dataSetMapEntry.map.name.ConvertToEnumValueNameÂ», "Â«dataSetMapEntry.nameÂ»");Â»Â«
+		ENDFORÂ»
 	''' 
 	
-	private static def String generateUserParametersAndDataPairsString(Iterable<ParametersAndDataPair> userParametersAndDataPairs)'''«
+	private static def String generateUserParametersAndDataPairsString(Iterable<ParametersAndDataPair> userParametersAndDataPairs)'''Â«
 		FOR parametersAndDataPair : userParametersAndDataPairs
-		SEPARATOR newLine »    «
-		»«parametersAndDataPair.name.ConvertToEnumValueName»("«parametersAndDataPair.parameterSources»", «parametersAndDataPair.dataTargets.filter(DataSet).generateDataSetArrayConstructor», «parametersAndDataPair.dataTargets.filter(DataSetMapEntry).generateDataSetMapEntryArrayConstructor»);»«
-	ENDFOR»''' 
+		SEPARATOR newLine Â»    Â«
+		Â»Â«parametersAndDataPair.name.ConvertToEnumValueNameÂ»("Â«parametersAndDataPair.parameterSourcesÂ»", Â«parametersAndDataPair.dataTargets.filter(DataSet).generateDataSetArrayConstructorÂ», Â«parametersAndDataPair.dataTargets.filter(DataSetMapEntry).generateDataSetMapEntryArrayConstructorÂ»);Â»Â«
+	ENDFORÂ»''' 
 	
 	private static def String generateDataSetArrayConstructor(Iterable<DataSet> dataSets) {
 		if (dataSets.size > 0) {
-			return '''«
+			return '''Â«
 				FOR dataSet : dataSets
 				BEFORE 'new DataSet[] {'
 				SEPARATOR ', '
 				AFTER '}'
-					»DataSets.«dataSet.name.ConvertToEnumValueName»«
+					Â»DataSets.Â«dataSet.name.ConvertToEnumValueNameÂ»Â«
 				ENDFOR
-			»'''
+			Â»'''
 		} 
 		return "null"
 	}
 	
 	private static def String generateDataSetMapEntryArrayConstructor(Iterable<DataSetMapEntry> dataSetMapEntries) {
 		if (dataSetMapEntries.size > 0) {
-			return '''«
+			return '''Â«
 				FOR dataSetMapEntry : dataSetMapEntries
 				BEFORE 'new DataSetMapEntry[] {'
 				SEPARATOR ', '
 				AFTER '}'
-					»DataSetMapEntries.«dataSetMapEntry.name.ConvertToEnumValueName»«
+					Â»DataSetMapEntries.Â«dataSetMapEntry.name.ConvertToEnumValueNameÂ»Â«
 				ENDFOR
-			»'''
+			Â»'''
 		} 
 		return "null"
 	}

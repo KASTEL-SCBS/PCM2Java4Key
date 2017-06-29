@@ -14,28 +14,28 @@ final class PCM2Java4KeYGeneratorClassifier extends PCM2JavaGeneratorClassifier 
 		generatorHeadAndImports = new PCM2Java4KeYGeneratorHeadAndImports
 	}			
 					
-	override String generateImportsAndHead() '''«
+	override String generateImportsAndHead() '''Â«
 		generatorHeadAndImports.generateImportsAndInterfaceHead(iface).replaceFirst("public interface", generateInterfaceAnnotations + "public interface")
-	»'''
+	Â»'''
 	
-	override generateMethodDeclaration(OperationSignature operationSignature) '''«
-		generateAnnotations(operationSignature.parametersAndDataPairs)»«
+	override generateMethodDeclaration(OperationSignature operationSignature) '''Â«
+		generateAnnotations(operationSignature.parametersAndDataPairs)Â»Â«
 		generateMethodDeclarationWithoutSemicolon(operationSignature)
-	»'''
+	Â»'''
 
-	private def String generateAnnotations(Iterable<ParametersAndDataPair> parametersAndDataPairs) '''«
+	private def String generateAnnotations(Iterable<ParametersAndDataPair> parametersAndDataPairs) '''Â«
 		FOR pair : parametersAndDataPairs
 			SEPARATOR newLine
 			AFTER newLine
-			»«generateAnnotation(pair)»«
-	ENDFOR»'''
+			Â»Â«generateAnnotation(pair)Â»Â«
+	ENDFORÂ»'''
 	
-	private def String generateInterfaceAnnotations() '''«
+	private def String generateInterfaceAnnotations() '''Â«
 			FOR pair : iface.parametersAndDataPairs
 				SEPARATOR newLine
 				AFTER newLine
-				»«generateAnnotation(pair)»«
-		ENDFOR»'''
+				Â»Â«generateAnnotation(pair)Â»Â«
+		ENDFORÂ»'''
 	
 	private def String generateAnnotation(ParametersAndDataPair parametersAndDataPair) {
 		return "@InformationFlow(ParametersAndDataPairs." + parametersAndDataPair.name +") // TODO: verify annotation"
