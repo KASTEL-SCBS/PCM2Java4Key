@@ -20,7 +20,6 @@ If you already have set up an Eclipse for [PCM2Prolog](https://github.com/KASTEL
   * (This step is necessary because the feature "MDSD Profiles" of Palladio only depends on those features of EMF Profiles that are necessary to use existing and pre-installed profiles but not the features that are needed to create, modify and use new profiles.)
 
 ### Clone Repository and Import Projects
-* Temporary workaround: Clone the [Vitruv repository](https://github.com/vitruv-tools/Vitruv) and import only the ["tools.vitruv.framework.util" project](https://github.com/vitruv-tools/Vitruv/tree/master/bundles/framework/tools.vitruv.framework.util) into your workspace
 * Clone the [PCM2Java4KeY repository](https://github.com/KASTEL-SCBS/PCM2Java4Key) **and its submodules** and import all Eclipse plug-in projects (aka bundles) in it into your workspace
   * both can be done at once in Eclipse
     * right-click in the Package Explorer - Import - Git - Projects from Git - Clone URI
