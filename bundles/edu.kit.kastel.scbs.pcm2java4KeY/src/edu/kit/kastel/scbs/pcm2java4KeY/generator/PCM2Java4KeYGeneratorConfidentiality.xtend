@@ -148,7 +148,7 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 		if (userDataSets.size > 0) {
 			dataSets.replaceFirst("EXAMPLE", userDataSets.generateUserDataSetsString)
 		} else {
-			return dataSets.replaceFirst("EXAMPLE", DATA_SETS_EXAMPLE)
+			return '/*' + dataSets.replaceFirst("EXAMPLE", DATA_SETS_EXAMPLE) + '*/'
 		}
 	}
 	
@@ -156,7 +156,7 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 		if (userDataSetMaps.size > 0) {
 			dataSetMaps.replaceFirst("EXAMPLE", userDataSetMaps.generateUserDataSetMapsString)
 		} else {
-			return dataSetMaps.replaceFirst("EXAMPLE", DATA_SET_MAPS_EXAMPLE)
+			return '/*' + dataSetMaps.replaceFirst("EXAMPLE", DATA_SET_MAPS_EXAMPLE) + '*/'
 		}
 	}
 	
@@ -164,7 +164,7 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 		if (userDataSetMapEntries.size > 0) {
 			dataSetMapEntries.replaceFirst("EXAMPLE", userDataSetMapEntries.generateUserDataSetMapEntriesString)
 		} else {
-			return dataSetMapEntries.replaceFirst("EXAMPLE", DATA_SET_MAP_ENTRIES_EXAMPLE)
+			return '/*' +  dataSetMapEntries.replaceFirst("EXAMPLE", DATA_SET_MAP_ENTRIES_EXAMPLE) + '*/'
 		}
 	}
 	
@@ -172,7 +172,7 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 		if (userParametersAndDataPairs.size > 0) {
 			parametersAndDataPairs.replaceFirst("EXAMPLE", userParametersAndDataPairs.generateUserParametersAndDataPairsString)
 		} else {
-			return parametersAndDataPairs.replaceFirst("EXAMPLE", PARAMETERS_AND_DATA_PAIRS_EXAMPLE)
+			return '/*' + parametersAndDataPairs.replaceFirst("EXAMPLE", PARAMETERS_AND_DATA_PAIRS_EXAMPLE) + '*/'
 		}
 	}
 	
@@ -200,7 +200,7 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 	private static def String generateUserParametersAndDataPairsString(Iterable<ParametersAndDataPair> userParametersAndDataPairs)'''«
 		FOR parametersAndDataPair : userParametersAndDataPairs
 		SEPARATOR newLine »    «
-		»«parametersAndDataPair.name.ConvertToEnumValueName»("«parametersAndDataPair.parameterSources»", «parametersAndDataPair.dataTargets.filter(DataSet).generateDataSetArrayConstructor», «parametersAndDataPair.dataTargets.filter(DataSetMapEntry).generateDataSetMapEntryArrayConstructor»);»«
+		»«parametersAndDataPair.name.ConvertToEnumValueName»(new String[] {«parametersAndDataPair.parameterSources»}, «parametersAndDataPair.dataTargets.filter(DataSet).generateDataSetArrayConstructor», «parametersAndDataPair.dataTargets.filter(DataSetMapEntry).generateDataSetMapEntryArrayConstructor»);»«
 	ENDFOR»''' 
 	
 	private static def String generateDataSetArrayConstructor(Iterable<DataSet> dataSets) {

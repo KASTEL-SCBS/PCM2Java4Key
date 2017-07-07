@@ -24,21 +24,19 @@ final class PCM2Java4KeYGeneratorClassifier extends PCM2JavaGeneratorClassifier 
 	»'''
 
 	private def String generateAnnotations(Iterable<ParametersAndDataPair> parametersAndDataPairs) '''«
-		FOR pair : parametersAndDataPairs
-			SEPARATOR newLine
-			AFTER newLine
-			»«generateAnnotation(pair)»«
-	ENDFOR»'''
+		»@InformationFlow(«generateParametersAndDataPairArray(parametersAndDataPairs)») // TODO: verify annotation"»
+	'''
 	
 	private def String generateInterfaceAnnotations() '''«
-			FOR pair : iface.parametersAndDataPairs
-				SEPARATOR newLine
-				AFTER newLine
-				»«generateAnnotation(pair)»«
-		ENDFOR»'''
+			generateAnnotations(iface.parametersAndDataPairs)
+	»'''
 	
-	private def String generateAnnotation(ParametersAndDataPair parametersAndDataPair) {
-		return "@InformationFlow(ParametersAndDataPairs." + parametersAndDataPair.name +") // TODO: verify annotation"
-	}
+	private def String generateParametersAndDataPairArray(Iterable<ParametersAndDataPair> parametersAndDataPairs) '''«
+		FOR pair : parametersAndDataPairs // "@InformationFlow(ParametersAndDataPairs." + parametersAndDataPair.name +") // TODO: verify annotation"
+		BEFORE '{'
+		SEPARATOR ', '
+		AFTER '}'
+			»ParametersAndDataPairs.«pair.name»«
+    	ENDFOR»'''
 		
 }		
