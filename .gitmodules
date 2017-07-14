@@ -1,6 +1,3 @@
 [submodule "bundles/pcm2java"]
 	path = bundles/pcm2java
 	url = https://github.com/kit-sdq/PCM2Java
-[submodule "bundles/confidentiality4cbse"]
-	path = bundles/confidentiality4cbse
-	url = https://github.com/KASTEL-SCBS/Confidentiality4CBSE
