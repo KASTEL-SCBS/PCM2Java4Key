@@ -10,8 +10,8 @@
    <copyright url="http://kastel.kit.edu">
       copyright: KASTEL / KIT
    </copyright>
-   <license url="http://www.example.com/license">
-      [TODO Enter License Description here.]
+   <license url="%licenseURL">
+      %license
    </license>
    <requires>
       <import feature="edu.kit.ipd.sdq.mdsd.pcm2java.feature" version="1.0.0" match="greaterOrEqual"/>
