@@ -3,12 +3,12 @@
       id="edu.kit.kastel.scbs.pcm2java4KeY.feature"
       label="pcm2java4KeY"
       version="1.0.0.qualifier"
-      provider-name="SDQ">
-   <description url="http://www.example.com/description">
+      provider-name="KASTEL">
+   <description url="https://github.com/KASTEL-SCBS/PCM2Java4Key">
       Generate Java code to verify Palladio models using KeY
    </description>
-   <copyright url="http://www.example.com/copyright">
-      [TODO Enter Copyright Description here.]
+   <copyright url="http://kastel.kit.edu">
+      copyright: KASTEL / KIT
    </copyright>
    <license url="http://www.example.com/license">
       [TODO Enter License Description here.]
