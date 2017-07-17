@@ -36,6 +36,11 @@
       <layout>p2</layout>
       <url>https://kit-sdq.github.io/updatesite/nightly/commons</url>
     </repository>
+    <repository>
+	    <id>ecore2txt</id>
+	    <layout>p2</layout>
+	    <url>https://kit-sdq.github.io/updatesite/nightly/ecore2txt</url>
+    </repository>
   </repositories>
   <build>
     <plugins>
