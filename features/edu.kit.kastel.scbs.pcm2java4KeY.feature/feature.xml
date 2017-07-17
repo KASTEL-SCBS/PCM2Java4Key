@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="edu.kit.kastel.scbs.pcm2java4KeY.feature"
+      label="pcm2java4KeY"
+      version="1.0.0.qualifier"
+      provider-name="SDQ">
+   <description url="http://www.example.com/description">
+      Generate Java code to verify Palladio models using KeY
+   </description>
+   <copyright url="http://www.example.com/copyright">
+      [TODO Enter Copyright Description here.]
+   </copyright>
+   <license url="http://www.example.com/license">
+      [TODO Enter License Description here.]
+   </license>
+   <requires>
+      <import feature="edu.kit.ipd.sdq.mdsd.pcm2java.feature" version="1.0.0" match="greaterOrEqual"/>
+      <import feature="edu.kit.kastel.scbs.confidentiality.feature" version="1.0.0" match="greaterOrEqual"/>
+   </requires>
+   <plugin
+         id="edu.kit.kastel.scbs.pcm2java4KeY"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+</feature>
