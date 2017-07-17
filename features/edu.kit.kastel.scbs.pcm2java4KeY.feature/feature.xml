@@ -10,8 +10,8 @@
    <copyright url="http://kastel.kit.edu">
       copyright: KASTEL / KIT
    </copyright>
-   <license url="%licenseURL">
-      %license
+   <license url="https://www.eclipse.org/legal/epl-v10.html">
+      EPL
    </license>
    <requires>
       <import feature="edu.kit.ipd.sdq.mdsd.pcm2java.feature" version="1.0.0" match="greaterOrEqual"/>
