@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JavaAnnotations2JML
+Bundle-SymbolicName: edu.kit.kastel.scbs.javaAnnotations2JML
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KASTEL
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
