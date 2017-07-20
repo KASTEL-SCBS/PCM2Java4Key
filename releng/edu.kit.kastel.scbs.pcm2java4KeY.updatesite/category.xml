@@ -3,7 +3,7 @@
    <feature url="features/edu.kit.kastel.scbs.pcm2java4KeY.feature_1.0.0.qualifier.jar" id="edu.kit.kastel.scbs.pcm2java4KeY.feature" version="1.0.0.qualifier">
       <category name="pcm2java4KeY"/>
    </feature>
-   <category-def name="pcm2java4KeY" label="pcm2java4KeY">
+   <category-def name="pcm2java4KeY" label="PCM2Java4KeY">
       <description>
 	Generate Java code to verify Palladio models using KeY
       </description>

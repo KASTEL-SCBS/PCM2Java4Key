@@ -14,8 +14,12 @@
       EPL
    </license>
    <requires>
-      <import feature="edu.kit.ipd.sdq.mdsd.pcm2java.feature" version="1.0.0" match="greaterOrEqual"/>
-      <import feature="edu.kit.kastel.scbs.confidentiality.feature" version="1.0.0" match="greaterOrEqual"/>
+      <import feature="org.eclipse.xtend.source"/>
+      <import feature="edu.kit.ipd.sdq.commons.util.java.feature.source" version="1.0.0" match="greaterOrEqual"/>
+      <import feature="edu.kit.ipd.sdq.commons.util.mdsdprofiles.feature.source" version="1.0.0" match="greaterOrEqual"/>
+      <import feature="edu.kit.ipd.sdq.mdsd.ecore2txt.feature.source" version="1.0.0" match="greaterOrEqual"/>
+      <import feature="edu.kit.ipd.sdq.mdsd.pcm2java.feature.source" version="1.0.0" match="greaterOrEqual"/>
+      <import feature="edu.kit.kastel.scbs.confidentiality.feature.source" version="1.0.0" match="greaterOrEqual"/>
    </requires>
    <plugin
          id="edu.kit.kastel.scbs.pcm2java4KeY"
