@@ -1,8 +1,10 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -11,8 +13,10 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import org.eclipse.jface.text.BadLocationException;
@@ -40,8 +44,9 @@ public final class JdtAstJmlUtil {
         ASTRewrite rewrite = ASTRewrite.create(cu.getAST());
 
         // get elements to change
-        AbstractTypeDeclaration typeDeclaration = findAbstractTypeDeclarationFromIType(cu.types(), type);
-        List<MethodDeclaration> td = typeDeclaration.bodyDeclarations();
+        AbstractTypeDeclaration atd = findAbstractTypeDeclarationFromIType(cu.types(), type);
+        TypeDeclaration typeDeclaration = (TypeDeclaration) atd;
+        List<MethodDeclaration> td = Arrays.asList(typeDeclaration.getMethods());
         MethodDeclaration methodDecl = findMethodDeclarationFromIMethod(td, method);
 
         // changes
@@ -101,6 +106,30 @@ public final class JdtAstJmlUtil {
             IType je = (IType) tb.getJavaElement();
             if (je.equals(type)) {
                 return atd;
+            }
+        }
+        return null; // TODO
+    }
+
+    public static IType getITypeOfIField(IType parent, IField field) throws JavaModelException {
+        // TODO broken
+        AbstractTypeDeclaration atd = JdtAstJmlUtil.findAbstractTypeDeclarationFromIType(
+                setupParserAndGetCompilationUnit(field.getCompilationUnit()).types(), parent);
+        if (atd instanceof TypeDeclaration) {
+            TypeDeclaration td = (TypeDeclaration) atd;
+            FieldDeclaration fd = getCorrespondingFieldDeclaration(td, field);
+            ITypeBinding tb = fd.getType().resolveBinding();
+            return (IType) tb.getJavaElement();
+        }
+        return null;
+    }
+
+    public static FieldDeclaration getCorrespondingFieldDeclaration(TypeDeclaration td, IField field)
+            throws JavaModelException {
+        for (FieldDeclaration fd : td.getFields()) {
+            // TODO broken
+            if (fd.getType().toString().equals(field.getElementName().toString())) {
+                return fd;
             }
         }
         return null; // TODO

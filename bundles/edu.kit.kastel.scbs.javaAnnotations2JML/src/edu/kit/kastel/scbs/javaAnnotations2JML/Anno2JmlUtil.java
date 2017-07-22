@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IMethod;
@@ -49,6 +50,12 @@ public final class Anno2JmlUtil {
             }
         }
         return mvp;
+    }
+
+    public static IType getITypeFromIField(final IField field) throws JavaModelException {
+        // TODO
+        String name = field.getTypeSignature();
+        return null;
     }
 
     public static String getDataSet(final IMethod method) throws JavaModelException {
@@ -125,10 +132,19 @@ public final class Anno2JmlUtil {
         return false;
     }
 
-    public static boolean hasInformationFlowAnnotation(IMethod method) throws JavaModelException {
+    public static boolean hasInformationFlowAnnotation(final IType type) throws JavaModelException {
+        for (IMethod method : type.getMethods()) {
+            if (hasInformationFlowAnnotation(method)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasInformationFlowAnnotation(final IMethod method) throws JavaModelException {
         IAnnotation[] annotations = method.getAnnotations();
 
-        if (annotations != null && annotations.length > 0) {
+        if (annotations != null) {
             for (int i = 0; i < annotations.length; i++) {
                 if (annotations[i].getElementName().equals(INFORMATION_FLOW_PROPERTY)) {
                     return true;

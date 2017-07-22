@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 
@@ -50,7 +51,12 @@ public class ProjectParser {
     /**
      * interfaces with information flow properties
      */
-    private List<TopLevelType> tltWithIFAnnotation;
+    private List<TopLevelType> javaInterfacesWithIFAnnotation;
+
+    /**
+     * TODO
+     */
+    private List<TopLevelType> javaTopLevelTypesWithIFAnnotation;
 
     // TODO first create working copy and make only persistent if successful
     public ProjectParser(final IProject project) {
@@ -105,17 +111,23 @@ public class ProjectParser {
 
     private void setTopLevelTypes() throws JavaModelException {
         // TODO JavaModelException
-        tltWithIFAnnotation = new LinkedList<>();
+        javaInterfacesWithIFAnnotation = new LinkedList<>();
         javaInterfaces = new LinkedList<>();
         javaTopLevelTypes = new LinkedList<>();
+        javaTopLevelTypesWithIFAnnotation = new LinkedList<>();
         for (ICompilationUnit unit : sourceFiles) {
             List<TopLevelType> tltList = TopLevelType.create(unit);
             javaTopLevelTypes.addAll(tltList);
             for (TopLevelType tlt : tltList) {
-                if (tlt.getIType().isInterface()) {
-                    javaInterfaces.add(tlt);
-                    if (tlt.hasInformationFlowAnnotation()) {
-                        tltWithIFAnnotation.add(tlt);
+                if (tlt.hasInformationFlowAnnotation()) {
+                    javaTopLevelTypesWithIFAnnotation.add(tlt);
+                    if (tlt.getIType().isInterface()) {
+                        javaInterfaces.add(tlt);
+                        javaInterfacesWithIFAnnotation.add(tlt);
+                    }
+                } else {
+                    if (tlt.getIType().isInterface()) {
+                        javaInterfaces.add(tlt);
                     }
                 }
             }
@@ -124,8 +136,28 @@ public class ProjectParser {
 
     private void transformAllAnnotationsToJml() throws JavaModelException {
         // TODO JavaModelException
-        for (TopLevelType topLevelType : tltWithIFAnnotation) {
-            topLevelType.transformAnnotationsToJml();
+        for (TopLevelType topLevelType : javaInterfacesWithIFAnnotation) {
+            List<TopLevelType> requiredTopLevelTypes = getRequiredTopLevelTypes(topLevelType);
+            List<TopLevelType> providedTopLevelTypes = getProvidedTopLevelTypes(topLevelType);
+            topLevelType.transformAnnotationsToJml(requiredTopLevelTypes, providedTopLevelTypes);
         }
+    }
+
+    private List<TopLevelType> getRequiredTopLevelTypes(final TopLevelType topLevelType) throws JavaModelException {
+        List<TopLevelType> fieldTypes = TopLevelType.create(topLevelType.getAllIFieldITypes());
+        List<TopLevelType> fieldTypesWithIFProperty = new LinkedList<>();
+        for (TopLevelType fieldTopLevelType : fieldTypes) {
+            if (javaTopLevelTypesWithIFAnnotation.contains(fieldTopLevelType)) {
+                // if its an top level type and has information flow annotations
+                // then it is required.
+                fieldTypesWithIFProperty.add(fieldTopLevelType);
+            }
+        }
+        return fieldTypesWithIFProperty;
+    }
+
+    private List<TopLevelType> getProvidedTopLevelTypes(final TopLevelType topLevelType) throws JavaModelException {
+        List<IType> implementedInterfaces = topLevelType.getSuperTypeInterfacesWithIFProperty();
+        return TopLevelType.create(implementedInterfaces);
     }
 }

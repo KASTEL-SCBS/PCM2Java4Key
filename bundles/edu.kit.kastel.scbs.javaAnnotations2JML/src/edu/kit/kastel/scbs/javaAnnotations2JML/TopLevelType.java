@@ -1,5 +1,6 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -8,7 +9,11 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 /**
  * Snapshot of an IType from an ICompilationUnit.
@@ -62,7 +67,9 @@ public class TopLevelType {
         astCompilationUnit = Optional.of(JdtAstJmlUtil.setupParserAndGetCompilationUnit(javaCompilationUnit));
     }
 
-    public void transformAnnotationsToJml() throws JavaModelException {
+    public void transformAnnotationsToJml(List<TopLevelType> requiredTopLevelTypes,
+            List<TopLevelType> providedTopLevelTypes) throws JavaModelException {
+        // TODO WIP
         for (IMethod method : javaType.getMethods()) {
             if (Anno2JmlUtil.hasInformationFlowAnnotation(method)) {
                 String jmlComment = JMLCommentsGenerator.toJML(method).toString();
@@ -80,6 +87,38 @@ public class TopLevelType {
         return false;
     }
 
+    public List<IType> getSuperTypeInterfaces() throws JavaModelException {
+        return Arrays.asList(javaType.newSupertypeHierarchy(null).getAllSuperInterfaces(javaType));
+    }
+
+    public List<IType> getSuperTypeInterfacesWithIFProperty() throws JavaModelException {
+        List<IType> interfacesWithIFProperty = new LinkedList<>();
+        List<IType> interfaces = getSuperTypeInterfaces();
+        for (IType type : interfaces) {
+            if (Anno2JmlUtil.hasInformationFlowAnnotation(type)) {
+                interfacesWithIFProperty.add(type);
+            }
+        }
+        return interfacesWithIFProperty;
+    }
+
+    // TODO not all types at the moment
+    public List<IType> getAllIFieldITypes() throws JavaModelException {
+        List<IType> allTypes = new LinkedList<>();
+        AbstractTypeDeclaration atd = JdtAstJmlUtil
+                .findAbstractTypeDeclarationFromIType(getCorrespondingAstCompilationUnit().types(), javaType);
+        if (atd instanceof TypeDeclaration) {
+            TypeDeclaration td = (TypeDeclaration) atd;
+            for (FieldDeclaration fd : td.getFields()) {
+                ITypeBinding tb = fd.getType().resolveBinding();
+                if (tb.isTopLevel()) {
+                    allTypes.add((IType) tb.getJavaElement());
+                }
+            }
+        }
+        return allTypes;
+    }
+
     public static List<TopLevelType> create(ICompilationUnit unit) throws JavaModelException {
         // TODO IndexOutOfBoundsException
         // TODO JavaModelException
@@ -89,5 +128,28 @@ public class TopLevelType {
             tltList.add(tlt);
         }
         return tltList;
+    }
+
+    public static List<TopLevelType> create(List<IType> types) throws JavaModelException {
+        // TODO IndexOutOfBoundsException
+        // TODO JavaModelException
+        List<TopLevelType> tltList = new LinkedList<>();
+        for (IType type : types) {
+            TopLevelType tlt = new TopLevelType(type);
+            tltList.add(tlt);
+        }
+        return tltList;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj instanceof TopLevelType) {
+            TopLevelType other = (TopLevelType) obj;
+            return this.javaType.equals(other.getIType());
+        } else {
+            return false;
+        }
     }
 }
