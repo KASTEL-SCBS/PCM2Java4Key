@@ -11,7 +11,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 
@@ -30,6 +29,13 @@ public class ProjectParser {
      * This project gets changed.
      */
     private IProject project;
+
+    /**
+     * TODO
+     */
+    private IJavaProject javaProject;
+
+    private ConfidentialitySpecificationParser csp;
 
     /**
      * List of {@code org.eclipse.jdt.core.ICompilationUnit}
@@ -85,8 +91,11 @@ public class ProjectParser {
     public void parse() {
         parseJavaProject();
         try {
+            ConfidentialitySpecificationParser csp = new ConfidentialitySpecificationParser(javaProject);
+            csp.parse();
+            List<DataSet> dataSets = csp.getDataSets();
             setTopLevelTypes();
-            transformAllAnnotationsToJml();
+            transformAllAnnotationsToJml(dataSets);
         } catch (JavaModelException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -96,8 +105,10 @@ public class ProjectParser {
     private void parseJavaProject() {
         try {
             if (project.hasNature(JavaCore.NATURE_ID)) {
+                // TODO WIP
                 final IJavaProject javaProject = JavaCore.create(project);
                 assert javaProject.exists() : "IJavaProject does not exist.";
+                this.javaProject = javaProject;
                 sourceFiles = Anno2JmlUtil.getSourceFiles(javaProject);
             } else {
                 // TODO
@@ -134,30 +145,11 @@ public class ProjectParser {
         }
     }
 
-    private void transformAllAnnotationsToJml() throws JavaModelException {
+    private void transformAllAnnotationsToJml(List<DataSet> dataSets) throws JavaModelException {
         // TODO JavaModelException
-        for (TopLevelType topLevelType : javaInterfacesWithIFAnnotation) {
-            List<TopLevelType> requiredTopLevelTypes = getRequiredTopLevelTypes(topLevelType);
-            List<TopLevelType> providedTopLevelTypes = getProvidedTopLevelTypes(topLevelType);
-            topLevelType.transformAnnotationsToJml(requiredTopLevelTypes, providedTopLevelTypes);
+        for (TopLevelType topLevelType : javaTopLevelTypes) {
+            topLevelType.transformAnnotationsToJml(dataSets);
+            // TODO WIP
         }
-    }
-
-    private List<TopLevelType> getRequiredTopLevelTypes(final TopLevelType topLevelType) throws JavaModelException {
-        List<TopLevelType> fieldTypes = TopLevelType.create(topLevelType.getAllIFieldITypes());
-        List<TopLevelType> fieldTypesWithIFProperty = new LinkedList<>();
-        for (TopLevelType fieldTopLevelType : fieldTypes) {
-            if (javaTopLevelTypesWithIFAnnotation.contains(fieldTopLevelType)) {
-                // if its an top level type and has information flow annotations
-                // then it is required.
-                fieldTypesWithIFProperty.add(fieldTopLevelType);
-            }
-        }
-        return fieldTypesWithIFProperty;
-    }
-
-    private List<TopLevelType> getProvidedTopLevelTypes(final TopLevelType topLevelType) throws JavaModelException {
-        List<IType> implementedInterfaces = topLevelType.getSuperTypeInterfacesWithIFProperty();
-        return TopLevelType.create(implementedInterfaces);
     }
 }

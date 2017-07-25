@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IMethod;
@@ -52,23 +51,6 @@ public final class Anno2JmlUtil {
         return mvp;
     }
 
-    public static IType getITypeFromIField(final IField field) throws JavaModelException {
-        // TODO
-        String name = field.getTypeSignature();
-        return null;
-    }
-
-    public static String getDataSet(final IMethod method) throws JavaModelException {
-        IMemberValuePair[] mvp = getIMemberValuePairs(method);
-        for (IMemberValuePair pair : mvp) {
-            if (pair.getMemberName().equals("dataSets")) {
-                // return ((DataSets) pair.getValue()).get; TODO
-                return "deliveryData";
-            }
-        }
-        return null; // TODO
-    }
-
     public static List<ICompilationUnit> getSourceFiles(final IJavaProject javaProject) {
         List<ICompilationUnit> sourceFiles = new LinkedList<>();
         IPackageFragment[] fragments = null;
@@ -102,36 +84,6 @@ public final class Anno2JmlUtil {
         return methods;
     }
 
-    @Deprecated
-    public static List<ICompilationUnit> getInterfaces(final List<ICompilationUnit> sourceFiles)
-            throws JavaModelException {
-        List<ICompilationUnit> interfaceFiles = new LinkedList<>();
-
-        for (ICompilationUnit unit : sourceFiles) {
-            for (IType type : unit.getTypes()) {
-                if (type.isInterface()) {
-                    interfaceFiles.add(unit);
-                }
-            }
-        }
-        return interfaceFiles;
-    }
-
-    @Deprecated
-    public static boolean hasInformationFlowAnnotation(final ICompilationUnit unit) throws JavaModelException {
-        return hasInformationFlowAnnotation(getMethods(unit));
-    }
-
-    @Deprecated
-    public static boolean hasInformationFlowAnnotation(final List<IMethod> methods) throws JavaModelException {
-        for (IMethod method : methods) {
-            if (hasInformationFlowAnnotation(method)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static boolean hasInformationFlowAnnotation(final IType type) throws JavaModelException {
         for (IMethod method : type.getMethods()) {
             if (hasInformationFlowAnnotation(method)) {
@@ -152,35 +104,5 @@ public final class Anno2JmlUtil {
             }
         }
         return false;
-    }
-
-    @Deprecated
-    public static List<IMethod> getInformationFlowAnnotationMethods(final List<IMethod> methods)
-            throws JavaModelException {
-        List<IMethod> relevantMethods = new LinkedList<>();
-        for (IMethod method : methods) {
-            if (hasInformationFlowAnnotation(method)) {
-                relevantMethods.add(method);
-            }
-        }
-        return relevantMethods;
-    }
-
-    @Deprecated
-    public static List<IMethod> getInformationFlowAnnotationMethods(final ICompilationUnit unit)
-            throws JavaModelException {
-        return getInformationFlowAnnotationMethods(getMethods(unit));
-    }
-
-    @Deprecated
-    public static List<ICompilationUnit> getRelevantInteraces(final List<ICompilationUnit> interfaceFiles)
-            throws JavaModelException {
-        List<ICompilationUnit> newFiles = new LinkedList<>();
-        for (ICompilationUnit unit : interfaceFiles) {
-            if (hasInformationFlowAnnotation(unit)) {
-                newFiles.add(unit);
-            }
-        }
-        return newFiles;
     }
 }
