@@ -8,7 +8,7 @@ See also [PCM2Prolog](https://github.com/KASTEL-SCBS/PCM2Prolog) for analysing t
 ## Installation
 * Even if you already have an Eclipse you should always download a new Eclipse for PCM2Java4KeY (in order not to mix up versions).
 * Download and run a clean [**Oxygen** Release of the **Eclipse** IDE for Java and **DSL Developers*](https://www.eclipse.org/downloads/packages/eclipse-ide-java-and-dsl-developers/oxygenr). Do not use another Eclipse Package, i.e. also not the one for Java developers.
-* Install the PCM2Java4KeY plug-ins from the [nightly update site](https://kastel-scbs.github.io/updatesite/nightly/pcm2java4key)
+* Install the PCM2Java4KeY plug-ins from the [nightly update site](https://sdqbuild.ipd.kit.edu/nexus/content/repositories/kastel-scbs)
   * Help - Install New Software... - Add... (paste the URL from above, it only works in Eclipse)
 
 ## Usage
