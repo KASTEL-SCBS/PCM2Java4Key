@@ -19,27 +19,27 @@
     <repository>
       <id>Eclipse Oxygen</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/releases/oxygen</url>
+      <url>http://sdqbuild.ipd.kit.edu/nexus/content/groups/eclipse-oxygen-complete</url>
     </repository>
     <repository>
       <id>PCM2Java</id>
       <layout>p2</layout>
-      <url>https://kit-sdq.github.io/updatesite/nightly/pcm2java</url>
+      <url>https://sdqbuild.ipd.kit.edu/nexus/content/repositories/kit-sdq-nightly/pcm2java</url>
     </repository>
     <repository>
       <id>Confidentiality4CBSE</id>
       <layout>p2</layout>
-      <url>https://kastel-scbs.github.io/updatesite/nightly/confidentiality</url>
+      <url>https://sdqbuild.ipd.kit.edu/nexus/content/repositories/kastel-scbs/confidentiality</url>
     </repository>
     <repository>
       <id>SDQ Commons</id>
       <layout>p2</layout>
-      <url>https://kit-sdq.github.io/updatesite/nightly/commons</url>
+      <url>https://sdqbuild.ipd.kit.edu/nexus/content/repositories/kit-sdq-nightly/commons</url>
     </repository>
     <repository>
 	    <id>ecore2txt</id>
 	    <layout>p2</layout>
-	    <url>https://kit-sdq.github.io/updatesite/nightly/ecore2txt</url>
+	    <url>https://sdqbuild.ipd.kit.edu/nexus/content/repositories/kit-sdq-nightly/ecore2txt</url>
     </repository>
   </repositories>
   <build>
