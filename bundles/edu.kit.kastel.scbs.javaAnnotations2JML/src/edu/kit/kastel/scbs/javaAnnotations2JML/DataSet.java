@@ -10,7 +10,7 @@ public class DataSet {
 
     private String name;
 
-    private DataSet(final String name) {
+    public DataSet(final String name) {
         this.name = name;
     }
 
@@ -23,5 +23,22 @@ public class DataSet {
         // TODO empty arguments
         // assert second argument is name and a StringLiteral
         return new DataSet(arguments.get(1).toString());
+    }
+
+    @Override
+    public String toString() {
+        return this.getName();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj instanceof DataSet) {
+            DataSet other = (DataSet) obj;
+            return this.name.equals(other.getName());
+        } else {
+            return false;
+        }
     }
 }

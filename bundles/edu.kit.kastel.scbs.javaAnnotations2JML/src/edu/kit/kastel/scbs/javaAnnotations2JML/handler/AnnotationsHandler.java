@@ -10,7 +10,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.ProjectParser;
+import edu.kit.kastel.scbs.javaAnnotations2JML.JavaAnnotations2JML;
 
 /**
  * Handler for the 'Create JML-Comments for Confidentiality Verification' (createJML) event.
@@ -39,7 +39,7 @@ public class AnnotationsHandler extends AbstractHandler implements IHandler {
             }
         }
         assert project.exists() : "Project does not exist.";
-        new ProjectParser(project).parse();
+        JavaAnnotations2JML.getSingleton().execute(project);
         return null;
     }
 }

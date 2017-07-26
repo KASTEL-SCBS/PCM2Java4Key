@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML;
+package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +13,9 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 
+import edu.kit.kastel.scbs.javaAnnotations2JML.DataSet;
+import edu.kit.kastel.scbs.javaAnnotations2JML.JdtAstJmlUtil;
+
 /**
  * WIP Parser for the confidentiality repository package.
  * 
@@ -21,11 +24,9 @@ import org.eclipse.jdt.core.dom.EnumDeclaration;
  * @author Nils Wilka
  * @version 0.1
  */
-public class ConfidentialitySpecificationParser {
+public class ConfidentialityRepositoryParser extends JavaAnnotations2JMLParser<IJavaProject, List<DataSet>> {
 
     private static final String CONFIDENTIALITY_REPOSITORY = "confidentialityRepository";
-
-    private IJavaProject javaProject;
 
     private IPackageFragment confidentialityPackage;
 
@@ -35,22 +36,28 @@ public class ConfidentialitySpecificationParser {
 
     private IType javaTypeParametersAndDataPairs;
 
-    public ConfidentialitySpecificationParser(final IJavaProject javaProject) {
+    public ConfidentialityRepositoryParser(IJavaProject source) {
+        super(source);
         // assert java project has confidentiality repository package
         // assert confidentiality repository package has DataSets.java, InformationFlow.java and
         // ParametersAndDataPairs.java
         // TODO check assertions
-        this.javaProject = javaProject;
-
     }
 
-    public void parse() throws JavaModelException {
-        getConfidentialityPackage();
-        initializeJavaTypes();
+    public List<DataSet> parse() {
+        try {
+            getConfidentialityPackage();
+            initializeJavaTypes();
+            setResult(getDataSets());
+        } catch (JavaModelException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return getResult();
     }
 
     private void getConfidentialityPackage() throws JavaModelException {
-        IPackageFragment[] fragments = javaProject.getPackageFragments();
+        IPackageFragment[] fragments = getSource().getPackageFragments();
         assert fragments != null && fragments.length > 0;
 
         for (IPackageFragment fragment : fragments) {
@@ -81,7 +88,7 @@ public class ConfidentialitySpecificationParser {
         return null; // TODO throw exception
     }
 
-    public List<DataSet> getDataSets() throws JavaModelException {
+    private List<DataSet> getDataSets() throws JavaModelException {
         List<DataSet> dataSets = new LinkedList<>();
 
         CompilationUnit cu = JdtAstJmlUtil.setupParserAndGetCompilationUnit(javaTypeDataSets.getCompilationUnit());

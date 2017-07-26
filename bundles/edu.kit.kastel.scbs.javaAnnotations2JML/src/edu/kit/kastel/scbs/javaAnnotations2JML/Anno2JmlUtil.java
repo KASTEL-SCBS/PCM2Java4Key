@@ -6,10 +6,8 @@ import java.util.List;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 
@@ -51,29 +49,6 @@ public final class Anno2JmlUtil {
         return mvp;
     }
 
-    public static List<ICompilationUnit> getSourceFiles(final IJavaProject javaProject) {
-        List<ICompilationUnit> sourceFiles = new LinkedList<>();
-        IPackageFragment[] fragments = null;
-
-        try {
-            fragments = javaProject.getPackageFragments();
-        } catch (JavaModelException e) {
-            System.out.println(e.getJavaModelStatus().getMessage());
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        for (IPackageFragment fragment : fragments) {
-            try {
-                sourceFiles.addAll(Arrays.asList(fragment.getCompilationUnits()));
-            } catch (JavaModelException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        return sourceFiles;
-    }
-
     public static List<IMethod> getMethods(final ICompilationUnit unit) throws JavaModelException {
         List<IType> types = Arrays.asList(unit.getTypes());
         List<IMethod> methods = new LinkedList<>();
@@ -104,5 +79,23 @@ public final class Anno2JmlUtil {
             }
         }
         return false;
+    }
+
+    public static IMemberValuePair[] getIFAnnotationArguments(final IMethod method) throws JavaModelException {
+        IMemberValuePair[] mvp;
+        IAnnotation[] annotations = method.getAnnotations();
+
+        if (annotations != null) {
+            for (IAnnotation annotation : annotations) {
+                if (annotation.getElementName().equals(INFORMATION_FLOW_PROPERTY)) {
+                    mvp = annotation.getMemberValuePairs();
+                    if (mvp != null && mvp.length > 0) { // TODO
+                        // assert only one IF property
+                        return mvp;
+                    }
+                }
+            }
+        }
+        return new IMemberValuePair[0];
     }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -80,15 +81,60 @@ public class TopLevelType {
             for (DataSet dataSet : datSets) {
                 JmlComment comment = new JmlComment(dataSet);
 
-            }
+                for (TopLevelType.Field field : requiredTopLevelTypeFields) {
+                    TopLevelType fieldType = field.getTopLevelType();
+                    HashMap<IMethod, String> method2ParameterSourcesMap = fieldType
+                            .getMethodParameterSourcesPairs(dataSet);
+                    for (IMethod method : method2ParameterSourcesMap.keySet()) {
+                        String role = field.getName();
+                        String service = method.getElementName();
+                        String parameterSources = method2ParameterSourcesMap.get(method);
+                        comment.addDeterminesLine(role, service, parameterSources);
+                    }
+                }
 
-            HashMap<TopLevelType, List<String>> tlt2DataSetMap = new HashMap<>();
+                for (TopLevelType type : providedTopLevelTypes) {
+                    HashMap<IMethod, String> method2ParameterSourcesMap = type.getMethodParameterSourcesPairs(dataSet);
+                    for (IMethod method : method2ParameterSourcesMap.keySet()) {
+                        String role = "this";
+                        String service = method.getElementName();
+                        String parameterSources = method2ParameterSourcesMap.get(method);
+                        comment.addDeterminesLine(role, service, parameterSources);
+                    }
+                }
 
-            for (TopLevelType.Field field : requiredTopLevelTypeFields) {
-                TopLevelType implementedInterface = field.getTopLevelType();
-                // TODO WIP
+                JdtAstJmlUtil.addStringToAbstractType(javaType, comment.toString());
             }
         }
+    }
+
+    // TODO rename
+    public HashMap<IMethod, String> getMethodParameterSourcesPairs(DataSet dataSet) throws JavaModelException {
+        HashMap<IMethod, String> method2ParameterSourcesMap = new HashMap<>();
+
+        for (IMethod method : javaType.getMethods()) {
+            String parameterSources = getMethodParameterSourcesPair(dataSet, method);
+            method2ParameterSourcesMap.put(method, parameterSources);
+        }
+        return method2ParameterSourcesMap;
+    }
+
+    // TODO rename
+    public String getMethodParameterSourcesPair(DataSet dataSet, IMethod method) throws JavaModelException {
+        String parameterSources = "";
+
+        IMemberValuePair[] pair = Anno2JmlUtil.getIFAnnotationArguments(method);
+        if (pair != null && pair.length > 0) {
+            String dataSetName = pair[1].getValue().toString(); // TODO does not work
+            DataSet currentDataSet = new DataSet(dataSetName);
+            if (currentDataSet.equals(dataSet)) {
+                // this annotation has relevant information
+                parameterSources = pair[0].getValue().toString(); // TODO does not work
+                // TODO parse parameterSources
+                // TODO add parameters
+            }
+        } // else nothing specified
+        return parameterSources;
     }
 
     public boolean hasInformationFlowAnnotation() throws JavaModelException {

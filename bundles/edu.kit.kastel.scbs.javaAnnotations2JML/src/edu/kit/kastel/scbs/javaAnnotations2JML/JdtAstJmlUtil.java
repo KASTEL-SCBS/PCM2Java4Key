@@ -56,8 +56,7 @@ public final class JdtAstJmlUtil {
     }
 
     /* comment to abstract type declaration (in compilation unit) */
-    public static void addStringToAbstractType(final IType type, final IMethod method, final String text)
-            throws JavaModelException {
+    public static void addStringToAbstractType(final IType type, final String text) throws JavaModelException {
         CompilationUnit cu = setupParserAndGetCompilationUnit(type.getCompilationUnit());
 
         // Create rewrite for modifying the AST

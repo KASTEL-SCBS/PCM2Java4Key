@@ -34,9 +34,15 @@ class JmlComment {
 	def public List<String> getDeterminesList() {
 		return determinesList;
 	}
-
-	def public void addDeterminesLine(String line) {
-		determinesList.add(line);
+	
+	def public void addDeterminesLine(String service, String parameterSources) {
+		var result = "\\this" + "." + service + "(" + parameterSources + ")";
+		determinesList.add(result);
+	}
+	
+	def public void addDeterminesLine(String role, String service, String parameterSources) {
+		var result = role + "." + service + "(" + parameterSources + ")";
+		determinesList.add(result);
 	}
 
 	def public void setDeterminesList(List<String> list) {
@@ -47,15 +53,21 @@ class JmlComment {
 		return byList
 	}
 
-	def public void addByLine(String line) {
-		determinesList.add(line);
+	def public void addByLine(String service, String parameterSources) {
+		var result = "\\this" + "." + service + "(" + parameterSources + ")";
+		byList.add(result);
+	}
+
+	def public void addByLine(String role, String service, String parameterSources) {
+		var result = role + "." + service + "(" + parameterSources + ")";
+		byList.add(result);
 	}
 
 	def public void setByList(List<String> list) {
 		this.byList = byList
 	}
 
-	def public String getString(List<String> list) {
+	def private String getString(List<String> list) {
 		if (list.empty) {
 			return "\\nothing"
 		} else {
@@ -64,17 +76,17 @@ class JmlComment {
 			if (list.size > 2) {
 				result += ",\n"
 				for (var i = 1; i < list.length - 1; i++) {
-					result += line(list.get(i)) + ",\n"
+					result += newLine(list.get(i)) + ",\n"
 				}
-				result += line(list.last)
+				result += newLine(list.last)
 			} else if (list.size > 1) {
-				result += ",\n" + line(list.last)
+				result += ",\n" + newLine(list.last)
 			}
 			return result;
 		}
 	}
 
-	def private line(String content) {
+	def private newLine(String content) {
 		'''//@     «content»'''
 	}
 
