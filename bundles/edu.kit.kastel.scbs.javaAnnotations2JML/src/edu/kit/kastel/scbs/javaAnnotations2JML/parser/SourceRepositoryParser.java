@@ -13,8 +13,6 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.TopLevelType;
 
 public class SourceRepositoryParser extends JavaAnnotations2JMLParser<IJavaProject, List<TopLevelType>> {
 
-    private static final String SOURCE_REPOSITORY = "confidentialityRepository";
-
     public SourceRepositoryParser(IJavaProject source) {
         super(source);
     }

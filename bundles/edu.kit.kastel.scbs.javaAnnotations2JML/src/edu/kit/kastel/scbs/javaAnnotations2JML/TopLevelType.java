@@ -72,69 +72,45 @@ public class TopLevelType {
         astCompilationUnit = Optional.of(JdtAstJmlUtil.setupParserAndGetCompilationUnit(javaCompilationUnit));
     }
 
-    public void transformAnnotationsToJml(List<DataSet> datSets) throws JavaModelException {
-        List<TopLevelType.Field> requiredTopLevelTypeFields = getRequiredTopLevelTypeFields();
-        List<TopLevelType> providedTopLevelTypes = getProvidedTopLevelTypes();
-
-        if (!requiredTopLevelTypeFields.isEmpty() || !providedTopLevelTypes.isEmpty()) {
-            // TODO WIP
-            for (DataSet dataSet : datSets) {
-                JmlComment comment = new JmlComment(dataSet);
-
-                for (TopLevelType.Field field : requiredTopLevelTypeFields) {
-                    TopLevelType fieldType = field.getTopLevelType();
-                    HashMap<IMethod, String> method2ParameterSourcesMap = fieldType
-                            .getMethodParameterSourcesPairs(dataSet);
-                    for (IMethod method : method2ParameterSourcesMap.keySet()) {
-                        String role = field.getName();
-                        String service = method.getElementName();
-                        String parameterSources = method2ParameterSourcesMap.get(method);
-                        comment.addDeterminesLine(role, service, parameterSources);
-                    }
-                }
-
-                for (TopLevelType type : providedTopLevelTypes) {
-                    HashMap<IMethod, String> method2ParameterSourcesMap = type.getMethodParameterSourcesPairs(dataSet);
-                    for (IMethod method : method2ParameterSourcesMap.keySet()) {
-                        String role = "this";
-                        String service = method.getElementName();
-                        String parameterSources = method2ParameterSourcesMap.get(method);
-                        comment.addDeterminesLine(role, service, parameterSources);
-                    }
-                }
-
-                JdtAstJmlUtil.addStringToAbstractType(javaType, comment.toString());
-            }
-        }
-    }
-
     // TODO rename
     public HashMap<IMethod, String> getMethodParameterSourcesPairs(DataSet dataSet) throws JavaModelException {
         HashMap<IMethod, String> method2ParameterSourcesMap = new HashMap<>();
 
         for (IMethod method : javaType.getMethods()) {
-            String parameterSources = getMethodParameterSourcesPair(dataSet, method);
-            method2ParameterSourcesMap.put(method, parameterSources);
+            Optional<String> parameterSources = getMethodParameterSourcesPair(dataSet, method);
+            if (parameterSources.isPresent()) {
+                // method has information for data set
+                method2ParameterSourcesMap.put(method, parameterSources.get());
+            }
         }
         return method2ParameterSourcesMap;
     }
 
     // TODO rename
-    public String getMethodParameterSourcesPair(DataSet dataSet, IMethod method) throws JavaModelException {
+    public Optional<String> getMethodParameterSourcesPair(DataSet dataSet, IMethod method) throws JavaModelException {
+        Optional<String> resultParameterSources = Optional.empty();
         String parameterSources = "";
+        String dataSetField = "";
 
-        IMemberValuePair[] pair = Anno2JmlUtil.getIFAnnotationArguments(method);
-        if (pair != null && pair.length > 0) {
-            String dataSetName = pair[1].getValue().toString(); // TODO does not work
-            DataSet currentDataSet = new DataSet(dataSetName);
-            if (currentDataSet.equals(dataSet)) {
-                // this annotation has relevant information
-                parameterSources = pair[0].getValue().toString(); // TODO does not work
-                // TODO parse parameterSources
-                // TODO add parameters
+        for (IMemberValuePair pair : Anno2JmlUtil.getIFAnnotationArguments(method)) {
+            String memberName = pair.getMemberName();
+            if (memberName.equals("parameterSources")) {
+                Object[] o = (Object[]) pair.getValue();
+                parameterSources = (String) o[0];
+
+            } else if (memberName.equals("dataSets")) {
+                Object[] o = (Object[]) pair.getValue();
+                dataSetField = (String) o[0];
             }
-        } // else nothing specified
-        return parameterSources;
+            // TODO else
+        }
+        if (dataSet.getId().equals(dataSetField)) {
+            // this annotation has relevant information
+            resultParameterSources = Optional.of(parameterSources);
+            // TODO parse parameterSources
+            // TODO add parameters
+        }
+        return resultParameterSources;
     }
 
     public boolean hasInformationFlowAnnotation() throws JavaModelException {
@@ -146,7 +122,7 @@ public class TopLevelType {
         return false;
     }
 
-    private List<TopLevelType.Field> getRequiredTopLevelTypeFields() throws JavaModelException {
+    public List<TopLevelType.Field> getRequiredTopLevelTypeFields() throws JavaModelException {
         List<TopLevelType.Field> fieldTypes = getAllTopLevelTypeFields();
         List<TopLevelType.Field> fieldsWithIFProperty = new LinkedList<>();
         for (TopLevelType.Field field : fieldTypes) {
@@ -159,7 +135,7 @@ public class TopLevelType {
         return fieldsWithIFProperty;
     }
 
-    private List<TopLevelType> getProvidedTopLevelTypes() throws JavaModelException {
+    public List<TopLevelType> getProvidedTopLevelTypes() throws JavaModelException {
         List<IType> implementedInterfaces = getSuperTypeInterfacesWithIFProperty();
         return TopLevelType.create(implementedInterfaces);
     }

@@ -43,6 +43,7 @@ public class JavaAnnotations2JML {
         List<TopLevelType> topLevelTypes = sourceRepoParser.getResult();
         List<DataSet> dataSets = confRepoParser.getResult();
 
-        JMLCommentsGenerator generator = new JMLCommentsGenerator();
+        JMLCommentsGenerator generator = new JMLCommentsGenerator(dataSets, topLevelTypes);
+        generator.transformAllAnnotationsToJml();
     }
 }
