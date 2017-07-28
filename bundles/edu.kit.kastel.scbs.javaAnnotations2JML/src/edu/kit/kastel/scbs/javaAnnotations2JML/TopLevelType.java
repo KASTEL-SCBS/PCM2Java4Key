@@ -1,13 +1,11 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -72,47 +70,6 @@ public class TopLevelType {
         astCompilationUnit = Optional.of(JdtAstJmlUtil.setupParserAndGetCompilationUnit(javaCompilationUnit));
     }
 
-    // TODO rename
-    public HashMap<IMethod, String> getMethodParameterSourcesPairs(DataSet dataSet) throws JavaModelException {
-        HashMap<IMethod, String> method2ParameterSourcesMap = new HashMap<>();
-
-        for (IMethod method : javaType.getMethods()) {
-            Optional<String> parameterSources = getMethodParameterSourcesPair(dataSet, method);
-            if (parameterSources.isPresent()) {
-                // method has information for data set
-                method2ParameterSourcesMap.put(method, parameterSources.get());
-            }
-        }
-        return method2ParameterSourcesMap;
-    }
-
-    // TODO rename
-    public Optional<String> getMethodParameterSourcesPair(DataSet dataSet, IMethod method) throws JavaModelException {
-        Optional<String> resultParameterSources = Optional.empty();
-        String parameterSources = "";
-        String dataSetField = "";
-
-        for (IMemberValuePair pair : Anno2JmlUtil.getIFAnnotationArguments(method)) {
-            String memberName = pair.getMemberName();
-            if (memberName.equals("parameterSources")) {
-                Object[] o = (Object[]) pair.getValue();
-                parameterSources = (String) o[0];
-
-            } else if (memberName.equals("dataSets")) {
-                Object[] o = (Object[]) pair.getValue();
-                dataSetField = (String) o[0];
-            }
-            // TODO else
-        }
-        if (dataSet.getId().equals(dataSetField)) {
-            // this annotation has relevant information
-            resultParameterSources = Optional.of(parameterSources);
-            // TODO parse parameterSources
-            // TODO add parameters
-        }
-        return resultParameterSources;
-    }
-
     public boolean hasInformationFlowAnnotation() throws JavaModelException {
         for (IMethod method : javaType.getMethods()) {
             if (Anno2JmlUtil.hasInformationFlowAnnotation(method)) {
@@ -120,24 +77,6 @@ public class TopLevelType {
             }
         }
         return false;
-    }
-
-    public List<TopLevelType.Field> getRequiredTopLevelTypeFields() throws JavaModelException {
-        List<TopLevelType.Field> fieldTypes = getAllTopLevelTypeFields();
-        List<TopLevelType.Field> fieldsWithIFProperty = new LinkedList<>();
-        for (TopLevelType.Field field : fieldTypes) {
-            if (Anno2JmlUtil.hasInformationFlowAnnotation(field.getTopLevelType().getIType())) {
-                // if its an top level type and has information flow annotations
-                // then it is required.
-                fieldsWithIFProperty.add(field);
-            }
-        }
-        return fieldsWithIFProperty;
-    }
-
-    public List<TopLevelType> getProvidedTopLevelTypes() throws JavaModelException {
-        List<IType> implementedInterfaces = getSuperTypeInterfacesWithIFProperty();
-        return TopLevelType.create(implementedInterfaces);
     }
 
     public List<IType> getSuperTypeInterfaces() throws JavaModelException {

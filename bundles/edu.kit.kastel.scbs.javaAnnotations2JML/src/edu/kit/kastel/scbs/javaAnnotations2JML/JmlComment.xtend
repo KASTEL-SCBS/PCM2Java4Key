@@ -64,7 +64,7 @@ class JmlComment {
 	}
 
 	def public void setByList(List<String> list) {
-		this.byList = byList
+		this.byList = list
 	}
 
 	def private String getString(List<String> list) {

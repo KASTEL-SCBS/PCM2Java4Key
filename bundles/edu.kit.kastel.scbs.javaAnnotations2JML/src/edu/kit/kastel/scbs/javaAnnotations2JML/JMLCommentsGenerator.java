@@ -1,25 +1,27 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
+
+import edu.kit.kastel.scbs.javaAnnotations2JML.InformationFlowAnnotation.Argument;
 
 public class JMLCommentsGenerator {
 
     private List<DataSet> dataSets;
 
-    private List<TopLevelType> topLevelTypes;
+    private TopLevelTypeRelations tltRelations;
 
-    public JMLCommentsGenerator(List<DataSet> dataSets, List<TopLevelType> topLevelTypes) {
+    public JMLCommentsGenerator(List<DataSet> dataSets, TopLevelTypeRelations tltRelations) {
         this.dataSets = dataSets;
-        this.topLevelTypes = topLevelTypes;
+        this.tltRelations = tltRelations;
     }
 
     public void transformAllAnnotationsToJml() {
         // TODO JavaModelException
-        for (TopLevelType topLevelType : topLevelTypes) {
+        for (TopLevelType topLevelType : tltRelations.getTopLevelTypes()) {
             try {
                 transformAnnotationsToJml(topLevelType);
             } catch (JavaModelException e) {
@@ -30,37 +32,74 @@ public class JMLCommentsGenerator {
     }
 
     public void transformAnnotationsToJml(TopLevelType type) throws JavaModelException {
-        List<TopLevelType.Field> requiredTopLevelTypeFields = type.getRequiredTopLevelTypeFields();
-        List<TopLevelType> providedTopLevelTypes = type.getProvidedTopLevelTypes();
 
-        if (!requiredTopLevelTypeFields.isEmpty() || !providedTopLevelTypes.isEmpty()) {
-            // TODO WIP
+        if (tltRelations.hasAnyIFAnnotation(type)) {
+
             for (DataSet dataSet : dataSets) {
+                // generate one comment for each type and each data set
                 JmlComment comment = new JmlComment(dataSet);
 
-                for (TopLevelType.Field field : requiredTopLevelTypeFields) {
-                    TopLevelType fieldType = field.getTopLevelType();
-                    HashMap<IMethod, String> method2ParameterSourcesMap = fieldType
-                            .getMethodParameterSourcesPairs(dataSet);
-                    for (IMethod method : method2ParameterSourcesMap.keySet()) {
-                        String role = field.getName();
-                        String service = method.getElementName();
-                        String parameterSources = method2ParameterSourcesMap.get(method);
-                        comment.addDeterminesLine(role, service, parameterSources);
-                    }
+                if (tltRelations.hasProvidedTopLevelTypes(type)) {
+                    checkProvidedTopLevelTypes(type, dataSet, comment);
                 }
 
-                for (TopLevelType providedType : providedTopLevelTypes) {
-                    HashMap<IMethod, String> method2ParameterSourcesMap = providedType
-                            .getMethodParameterSourcesPairs(dataSet);
-                    for (IMethod method : method2ParameterSourcesMap.keySet()) {
-                        String service = method.getElementName();
-                        String parameterSources = method2ParameterSourcesMap.get(method);
+                if (tltRelations.hasRequiredTopLevelTypes(type)) {
+                    checkProvidedTopLevelTypes(type, dataSet, comment);
+                }
+
+                System.out.println(type.toString());
+                System.out.println(comment.toString());
+                System.out.println("-----------------\n");
+                JdtAstJmlUtil.addStringToAbstractType(type.getIType(), comment.toString());
+            }
+        }
+    }
+
+    private void checkProvidedTopLevelTypes(TopLevelType type, DataSet dataSet, JmlComment comment) {
+        for (TopLevelType providedType : tltRelations.getProvidedTopLevelTypes(type)) {
+
+            if (tltRelations.hasTypeSpecificationForDataSet(providedType, dataSet)) {
+                List<Pair<IMethod, InformationFlowAnnotation>> methodsWithAnnotations = tltRelations
+                        .getMethodWithIF(providedType);
+                for (Pair<IMethod, InformationFlowAnnotation> methodWithAnnotation : methodsWithAnnotations) {
+                    String service = methodWithAnnotation.getFirst().getElementName();
+                    List<Argument> nonResultArguments = methodWithAnnotation.getSecond().getNonResultArguments();
+                    String parameterSources = Argument.toString(nonResultArguments);
+                    if (!nonResultArguments.isEmpty()) {
                         comment.addByLine(service, parameterSources);
                     }
-                }
 
-                JdtAstJmlUtil.addStringToAbstractType(type.getIType(), comment.toString());
+                    Optional<Argument> result = methodWithAnnotation.getSecond().getResult();
+                    if (result.isPresent()) {
+                        comment.addDeterminesLine(service, result.get().toString());
+                    }
+                }
+            }
+        }
+    }
+
+    private void checkRequiredTopLevelTypes(TopLevelType type, DataSet dataSet, JmlComment comment) {
+        for (TopLevelType.Field field : tltRelations.getRequiredTopLevelTypeFields(type)) {
+            TopLevelType fieldType = field.getTopLevelType();
+
+            if (tltRelations.hasTypeSpecificationForDataSet(fieldType, dataSet)) {
+                // TODO rename
+                List<Pair<IMethod, InformationFlowAnnotation>> methodsWithAnnotations = tltRelations
+                        .getMethodWithIF(fieldType);
+                for (Pair<IMethod, InformationFlowAnnotation> methodWithAnnotation : methodsWithAnnotations) {
+                    String role = field.getName();
+                    String service = methodWithAnnotation.getFirst().getElementName();
+                    List<Argument> nonResultArguments = methodWithAnnotation.getSecond().getNonResultArguments();
+                    String parameterSources = Argument.toString(nonResultArguments);
+                    if (!nonResultArguments.isEmpty()) {
+                        comment.addDeterminesLine(role, service, parameterSources);
+                    }
+
+                    Optional<Argument> result = methodWithAnnotation.getSecond().getResult();
+                    if (result.isPresent()) {
+                        comment.addByLine(role, service, result.get().toString());
+                    }
+                }
             }
         }
     }

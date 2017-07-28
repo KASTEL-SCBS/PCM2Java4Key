@@ -7,8 +7,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaProject;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.parser.ConfidentialityRepositoryParser;
+import edu.kit.kastel.scbs.javaAnnotations2JML.parser.DataSet2AnnotationsParser;
 import edu.kit.kastel.scbs.javaAnnotations2JML.parser.JavaAnnotations2JMLParser;
 import edu.kit.kastel.scbs.javaAnnotations2JML.parser.ProjectParser;
+import edu.kit.kastel.scbs.javaAnnotations2JML.parser.RelatedTypesParser;
 import edu.kit.kastel.scbs.javaAnnotations2JML.parser.SourceRepositoryParser;
 
 public class JavaAnnotations2JML {
@@ -30,8 +32,10 @@ public class JavaAnnotations2JML {
     }
 
     public void execute(IProject project) {
+        /* first step: copy and get java project */
         IJavaProject javaProject = new ProjectParser(project).parse();
 
+        /* second step: parse java project for confidentiality package and java types */
         SourceRepositoryParser sourceRepoParser = new SourceRepositoryParser(javaProject);
         ConfidentialityRepositoryParser confRepoParser = new ConfidentialityRepositoryParser(javaProject);
 
@@ -43,7 +47,20 @@ public class JavaAnnotations2JML {
         List<TopLevelType> topLevelTypes = sourceRepoParser.getResult();
         List<DataSet> dataSets = confRepoParser.getResult();
 
-        JMLCommentsGenerator generator = new JMLCommentsGenerator(dataSets, topLevelTypes);
+        /* third step: for each type get required and provided types */
+        RelatedTypesParser rtp = new RelatedTypesParser(topLevelTypes);
+        TopLevelTypeRelations tltRelations = rtp.parse();
+
+        /*
+         * fourth step: for all required and provided types map each data set to its specification
+         * elements (methods with annotations) and which type has information about it
+         */
+        Pair<List<DataSet>, TopLevelTypeRelations> pair = new Pair<>(dataSets, tltRelations);
+        DataSet2AnnotationsParser annotationParser = new DataSet2AnnotationsParser(pair);
+        annotationParser.parse();
+
+        /* fifth step: generate jml comments for each type and each data set */
+        JMLCommentsGenerator generator = new JMLCommentsGenerator(dataSets, tltRelations);
         generator.transformAllAnnotationsToJml();
     }
 }
