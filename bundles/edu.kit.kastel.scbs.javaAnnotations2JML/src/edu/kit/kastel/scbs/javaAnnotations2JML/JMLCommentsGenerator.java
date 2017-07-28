@@ -1,7 +1,6 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
@@ -44,12 +43,8 @@ public class JMLCommentsGenerator {
                 }
 
                 if (tltRelations.hasRequiredTopLevelTypes(type)) {
-                    checkProvidedTopLevelTypes(type, dataSet, comment);
+                    checkRequiredTopLevelTypes(type, dataSet, comment);
                 }
-
-                System.out.println(type.toString());
-                System.out.println(comment.toString());
-                System.out.println("-----------------\n");
                 JdtAstJmlUtil.addStringToAbstractType(type.getIType(), comment.toString());
             }
         }
@@ -69,9 +64,9 @@ public class JMLCommentsGenerator {
                         comment.addByLine(service, parameterSources);
                     }
 
-                    Optional<Argument> result = methodWithAnnotation.getSecond().getResult();
-                    if (result.isPresent()) {
-                        comment.addDeterminesLine(service, result.get().toString());
+                    List<Argument> resultArguments = methodWithAnnotation.getSecond().getResultArguments();
+                    if (!resultArguments.isEmpty()) {
+                        comment.addDeterminesLine(service, Argument.toString(resultArguments));
                     }
                 }
             }
@@ -95,9 +90,9 @@ public class JMLCommentsGenerator {
                         comment.addDeterminesLine(role, service, parameterSources);
                     }
 
-                    Optional<Argument> result = methodWithAnnotation.getSecond().getResult();
-                    if (result.isPresent()) {
-                        comment.addByLine(role, service, result.get().toString());
+                    List<Argument> resultArguments = methodWithAnnotation.getSecond().getResultArguments();
+                    if (!resultArguments.isEmpty()) {
+                        comment.addByLine(role, service, Argument.toString(resultArguments));
                     }
                 }
             }

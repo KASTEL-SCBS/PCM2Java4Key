@@ -36,7 +36,7 @@ class JmlComment {
 	}
 	
 	def public void addDeterminesLine(String service, String parameterSources) {
-		var result = "\\this" + "." + service + "(" + parameterSources + ")";
+		var result = "this" + "." + service + "(" + parameterSources + ")";
 		determinesList.add(result);
 	}
 	
@@ -54,7 +54,7 @@ class JmlComment {
 	}
 
 	def public void addByLine(String service, String parameterSources) {
-		var result = "\\this" + "." + service + "(" + parameterSources + ")";
+		var result = "this" + "." + service + "(" + parameterSources + ")";
 		byList.add(result);
 	}
 

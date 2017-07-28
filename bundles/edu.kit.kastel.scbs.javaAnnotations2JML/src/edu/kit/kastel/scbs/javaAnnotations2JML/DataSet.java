@@ -33,12 +33,18 @@ public class DataSet {
         List<Expression> arguments = enumConstantDeclaration.arguments();
         // TODO empty arguments
         // assert second argument is name and a StringLiteral
-        return new DataSet(arguments.get(1).toString(), enumConstantDeclaration.getName().toString());
+        String id = arguments.get(1).toString();
+        String name = enumConstantDeclaration.getName().toString();
+        return new DataSet(removeQuotes(id), removeQuotes(name));
+    }
+
+    private static String removeQuotes(String string) {
+        return string.replace("\"", "");
     }
 
     @Override
     public String toString() {
-        return "DataSets." + getId() + "(" + getName() + ")";
+        return getId() + "(" + getName() + ")";
     }
 
     @Override
