@@ -5,22 +5,26 @@ import java.util.List;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.InformationFlowAnnotation.Argument;
+import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ConfidentialitySpecification;
+import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
+import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.InformationFlowAnnotation;
+import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParametersAndDataPair;
+import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParametersAndDataPair.ParameterSource;
 
 public class JMLCommentsGenerator {
 
-    private List<DataSet> dataSets;
+    private ConfidentialitySpecification specification;
 
-    private TopLevelTypeRelations tltRelations;
+    private TopLevelTypeMappings topLevelTypeMappings;
 
-    public JMLCommentsGenerator(List<DataSet> dataSets, TopLevelTypeRelations tltRelations) {
-        this.dataSets = dataSets;
-        this.tltRelations = tltRelations;
+    public JMLCommentsGenerator(ConfidentialitySpecification specification, TopLevelTypeMappings topLevelTypeMappings) {
+        this.specification = specification;
+        this.topLevelTypeMappings = topLevelTypeMappings;
     }
 
     public void transformAllAnnotationsToJml() {
         // TODO JavaModelException
-        for (TopLevelType topLevelType : tltRelations.getTopLevelTypes()) {
+        for (TopLevelType topLevelType : topLevelTypeMappings.getTopLevelTypes()) {
             try {
                 transformAnnotationsToJml(topLevelType);
             } catch (JavaModelException e) {
@@ -31,18 +35,17 @@ public class JMLCommentsGenerator {
     }
 
     public void transformAnnotationsToJml(TopLevelType type) throws JavaModelException {
-
-        if (tltRelations.hasAnyIFAnnotation(type)) {
-
-            for (DataSet dataSet : dataSets) {
+        // do not generate comments for classes without specification
+        if (topLevelTypeMappings.hasAnyIFAnnotation(type)) {
+            for (DataSet dataSet : specification.getDataSets()) {
                 // generate one comment for each type and each data set
                 JmlComment comment = new JmlComment(dataSet);
 
-                if (tltRelations.hasProvidedTopLevelTypes(type)) {
+                if (topLevelTypeMappings.hasProvidedTopLevelTypes(type)) {
                     checkProvidedTopLevelTypes(type, dataSet, comment);
                 }
 
-                if (tltRelations.hasRequiredTopLevelTypes(type)) {
+                if (topLevelTypeMappings.hasRequiredTopLevelTypes(type)) {
                     checkRequiredTopLevelTypes(type, dataSet, comment);
                 }
                 JdtAstJmlUtil.addStringToAbstractType(type.getIType(), comment.toString());
@@ -51,22 +54,25 @@ public class JMLCommentsGenerator {
     }
 
     private void checkProvidedTopLevelTypes(TopLevelType type, DataSet dataSet, JmlComment comment) {
-        for (TopLevelType providedType : tltRelations.getProvidedTopLevelTypes(type)) {
+        for (TopLevelType providedType : topLevelTypeMappings.getProvidedTopLevelTypes(type)) {
 
-            if (tltRelations.hasTypeSpecificationForDataSet(providedType, dataSet)) {
-                List<Pair<IMethod, InformationFlowAnnotation>> methodsWithAnnotations = tltRelations
+            if (topLevelTypeMappings.hasTypeSpecificationForDataSet(providedType, dataSet)) {
+                List<Pair<IMethod, InformationFlowAnnotation>> methodsWithAnnotations = topLevelTypeMappings
                         .getMethodWithIF(providedType);
-                for (Pair<IMethod, InformationFlowAnnotation> methodWithAnnotation : methodsWithAnnotations) {
-                    String service = methodWithAnnotation.getFirst().getElementName();
-                    List<Argument> nonResultArguments = methodWithAnnotation.getSecond().getNonResultArguments();
-                    String parameterSources = Argument.toString(nonResultArguments);
-                    if (!nonResultArguments.isEmpty()) {
-                        comment.addByLine(service, parameterSources);
+                for (Pair<IMethod, InformationFlowAnnotation> methodAnnotationPair : methodsWithAnnotations) {
+                    IMethod method = methodAnnotationPair.getFirst();
+                    InformationFlowAnnotation annotation = methodAnnotationPair.getSecond();
+
+                    String service = method.getElementName();
+                    List<ParameterSource> nonResultParameterSources = getNonResultParameterSources(annotation);
+                    if (!nonResultParameterSources.isEmpty()) {
+                        String parameterSourcesString = ParameterSource.toString(nonResultParameterSources);
+                        comment.addByLine(service, parameterSourcesString);
                     }
 
-                    List<Argument> resultArguments = methodWithAnnotation.getSecond().getResultArguments();
-                    if (!resultArguments.isEmpty()) {
-                        comment.addDeterminesLine(service, Argument.toString(resultArguments));
+                    List<ParameterSource> resultParameterSources = getResultParameterSources(annotation);
+                    if (!resultParameterSources.isEmpty()) {
+                        comment.addDeterminesLine(service, ParameterSource.toString(resultParameterSources));
                     }
                 }
             }
@@ -74,28 +80,39 @@ public class JMLCommentsGenerator {
     }
 
     private void checkRequiredTopLevelTypes(TopLevelType type, DataSet dataSet, JmlComment comment) {
-        for (TopLevelType.Field field : tltRelations.getRequiredTopLevelTypeFields(type)) {
+        for (TopLevelType.Field field : topLevelTypeMappings.getRequiredTopLevelTypeFields(type)) {
             TopLevelType fieldType = field.getTopLevelType();
 
-            if (tltRelations.hasTypeSpecificationForDataSet(fieldType, dataSet)) {
+            if (topLevelTypeMappings.hasTypeSpecificationForDataSet(fieldType, dataSet)) {
                 // TODO rename
-                List<Pair<IMethod, InformationFlowAnnotation>> methodsWithAnnotations = tltRelations
+                List<Pair<IMethod, InformationFlowAnnotation>> methodsWithAnnotations = topLevelTypeMappings
                         .getMethodWithIF(fieldType);
-                for (Pair<IMethod, InformationFlowAnnotation> methodWithAnnotation : methodsWithAnnotations) {
+                for (Pair<IMethod, InformationFlowAnnotation> methodAnnotationPair : methodsWithAnnotations) {
+                    IMethod method = methodAnnotationPair.getFirst();
+                    InformationFlowAnnotation annotation = methodAnnotationPair.getSecond();
+
                     String role = field.getName();
-                    String service = methodWithAnnotation.getFirst().getElementName();
-                    List<Argument> nonResultArguments = methodWithAnnotation.getSecond().getNonResultArguments();
-                    String parameterSources = Argument.toString(nonResultArguments);
-                    if (!nonResultArguments.isEmpty()) {
-                        comment.addDeterminesLine(role, service, parameterSources);
+                    String service = method.getElementName();
+                    List<ParameterSource> nonResultParameterSources = getNonResultParameterSources(annotation);
+                    if (!nonResultParameterSources.isEmpty()) {
+                        String parameterSourcesString = ParameterSource.toString(nonResultParameterSources);
+                        comment.addDeterminesLine(role, service, parameterSourcesString);
                     }
 
-                    List<Argument> resultArguments = methodWithAnnotation.getSecond().getResultArguments();
-                    if (!resultArguments.isEmpty()) {
-                        comment.addByLine(role, service, Argument.toString(resultArguments));
+                    List<ParameterSource> resultParameterSources = getResultParameterSources(annotation);
+                    if (!resultParameterSources.isEmpty()) {
+                        comment.addByLine(role, service, ParameterSource.toString(resultParameterSources));
                     }
                 }
             }
         }
+    }
+
+    private List<ParameterSource> getNonResultParameterSources(InformationFlowAnnotation annotation) {
+        return ParametersAndDataPair.getAllNonResultParameterSources(annotation.getParameterAndDataPairs());
+    }
+
+    private List<ParameterSource> getResultParameterSources(InformationFlowAnnotation annotation) {
+        return ParametersAndDataPair.getAllResultParameterSources(annotation.getParameterAndDataPairs());
     }
 }

@@ -9,7 +9,10 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.IMethod;
 
-public class TopLevelTypeRelations {
+import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
+import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.InformationFlowAnnotation;
+
+public class TopLevelTypeMappings {
 
     /* top level types of the project */
     private List<TopLevelType> topLevelTypes;
@@ -32,8 +35,7 @@ public class TopLevelTypeRelations {
 
     private Map<DataSet, Set<TopLevelType>> dataSet2TopLevelTypes;
 
-    public TopLevelTypeRelations(List<TopLevelType> topLevelTypes) {
-        // TODO sets not lists
+    public TopLevelTypeMappings(List<TopLevelType> topLevelTypes) {
         this.topLevelTypes = topLevelTypes;
         this.providedTypes = new HashSet<>();
         this.requiredTypes = new HashSet<>();
@@ -53,6 +55,13 @@ public class TopLevelTypeRelations {
 
     public Set<TopLevelType> getProvidedTopLevelTypes() {
         return providedTypes;
+    }
+
+    public Set<TopLevelType> unionOfProvidedAndRequiredTypes() {
+        Set<TopLevelType> merge = new HashSet<>();
+        merge.addAll(getProvidedTopLevelTypes());
+        merge.addAll(getRequiredTopLevelTypes());
+        return merge;
     }
 
     public boolean hasAnyIFAnnotation(TopLevelType topLevelType) {
@@ -85,7 +94,7 @@ public class TopLevelTypeRelations {
         return tlt2requiredTopLevelTypeFields.get(type);
     }
 
-    public void addProvidedTopLevelTypeFields(TopLevelType type, List<TopLevelType> toAdd) {
+    public void addProvidedTopLevelTypes(TopLevelType type, List<TopLevelType> toAdd) {
         providedTypes.addAll(toAdd);
         List<TopLevelType> list = new LinkedList<>();
 

@@ -2,6 +2,7 @@ package edu.kit.kastel.scbs.javaAnnotations2JML
 
 import java.util.List
 import java.util.LinkedList
+import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet
 
 class JmlComment {
 

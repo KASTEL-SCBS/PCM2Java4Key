@@ -15,10 +15,11 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.JavaAnnotations2JML;
 /**
  * Handler for the 'Create JML-Comments for Confidentiality Verification' (createJML) event.
  * 
- * Extracts the {@code IProject} from the {@code ISelection} and calls the {@code ProjectParser}.
+ * Extracts the {@code IProject} from the {@code ISelection} and calls
+ * {@code JavaAnnotations2JML#execute(IProject))}.
  * 
- * @author Nils
- * @version 0.1
+ * @author Nils Wilka
+ * @version 1.0, 28.07.2017
  */
 public class AnnotationsHandler extends AbstractHandler implements IHandler {
 
