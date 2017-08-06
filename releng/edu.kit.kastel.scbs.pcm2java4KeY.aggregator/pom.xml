@@ -13,6 +13,7 @@
   <modules>
     <module>../../features/edu.kit.kastel.scbs.pcm2java4KeY.feature</module>
     <module>../../bundles/edu.kit.kastel.scbs.pcm2java4KeY</module>
+    <module>../../bundles/edu.kit.kastel.scbs.javaAnnotations2JML</module>
     <!-- <module>../../tests/edu.kit.kastel.scbs.pcm2java4KeY.tests</module> -->
   </modules>
 </project>
