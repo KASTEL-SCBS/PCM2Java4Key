@@ -1,6 +1,5 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -80,26 +79,16 @@ public class MappingsParser extends
 
     private List<EnumConstant> getParametersAndDataPairsEnumConstants(IMethod method)
             throws JavaModelException, ParseException {
-        IMemberValuePair[] pairs = Anno2JmlUtil.getIFAnnotationArguments(method);
-
-        // TODO remove outer if
-        if (expectedMemberValuePairs(pairs)) {
-            List<Object> values = getParametersAndDataPairsValues(pairs);
-
-            if (values.isEmpty()) {
-                // TODO change to ignore this annotation?
-                throw new ParseException(
-                        "Insufficient amount of arguments in the information flow annotation of the method "
-                                + method.toString());
-            }
-            return values.stream().map(e -> new EnumConstant((String) e)).collect(Collectors.toList());
-
-        } else {
+        List<IMemberValuePair> pairs = Anno2JmlUtil.getIFAnnotationArguments(method);
+        List<Object> values = getParametersAndDataPairsValues(pairs);
+        if (values.isEmpty()) {
             // TODO change to ignore this annotation?
             throw new ParseException(
                     "Insufficient amount of arguments in the information flow annotation of the method "
                             + method.toString());
         }
+        // TODO check name of values first
+        return values.stream().map(e -> new EnumConstant((String) e)).collect(Collectors.toList());
     }
 
     /**
@@ -111,13 +100,8 @@ public class MappingsParser extends
      *            The {@code IMemberValuePair} to look at.
      * @return All values from the member 'parametersAndDataPairs' in a list of type Object.
      */
-    private List<Object> getParametersAndDataPairsValues(IMemberValuePair[] iMemberValuePairs) {
-        return Arrays.asList(iMemberValuePairs).stream().filter(e -> e.getMemberName().equals("parametersAndDataPairs"))
+    private List<Object> getParametersAndDataPairsValues(List<IMemberValuePair> iMemberValuePairs) {
+        return iMemberValuePairs.stream().filter(e -> e.getMemberName().equals("parametersAndDataPairs"))
                 .map(e -> ((Object[]) e.getValue())[0]).collect(Collectors.toList());
-    }
-
-    private boolean expectedMemberValuePairs(IMemberValuePair[] pairs) {
-        // more pairs are allowed
-        return pairs != null && pairs.length > 0;
     }
 }

@@ -78,11 +78,8 @@ public class TopLevelTypeMappings {
     }
 
     public void addRequiredTopLevelTypeFields(TopLevelType type, List<TopLevelType.Field> toAdd) {
-        for (TopLevelType.Field field : toAdd) {
-            requiredTypes.add(field.getTopLevelType());
-        }
+        toAdd.forEach(e -> requiredTypes.add(e.getTopLevelType()));
         List<TopLevelType.Field> list = new LinkedList<>();
-
         if (!tlt2requiredTopLevelTypeFields.containsKey(type)) {
             tlt2requiredTopLevelTypeFields.put(type, list);
         }
@@ -111,7 +108,6 @@ public class TopLevelTypeMappings {
 
     public void addMethodWithIFToTopLevelType(TopLevelType type, IMethod method, InformationFlowAnnotation annotation) {
         List<Pair<IMethod, InformationFlowAnnotation>> list = new LinkedList<>();
-
         if (!topLevelType2MethodWithIF.containsKey(type)) {
             topLevelType2MethodWithIF.put(type, list);
         }
@@ -125,7 +121,6 @@ public class TopLevelTypeMappings {
 
     public void addTopLevelTypeAsSpecificationForDataSet(DataSet dataSet, TopLevelType type) {
         Set<TopLevelType> set = new HashSet<>();
-
         if (!dataSet2TopLevelTypes.containsKey(dataSet)) {
             dataSet2TopLevelTypes.put(dataSet, set);
         }

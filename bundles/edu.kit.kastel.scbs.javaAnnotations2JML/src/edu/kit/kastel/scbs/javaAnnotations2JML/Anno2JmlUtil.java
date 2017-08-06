@@ -3,6 +3,8 @@ package edu.kit.kastel.scbs.javaAnnotations2JML;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -22,37 +24,9 @@ public final class Anno2JmlUtil {
         ////
     }
 
-    public static IMemberValuePair[][] getIMemberValuePairs(final ICompilationUnit unit) throws JavaModelException {
-        List<IMethod> methods = getMethods(unit);
-        IMemberValuePair[][] mvps = new IMemberValuePair[methods.size()][];
-
-        for (int i = 0; i < methods.size(); i++) {
-            mvps[i] = getIMemberValuePairs(methods.get(i));
-        }
-        return mvps;
-    }
-
-    public static IMemberValuePair[] getIMemberValuePairs(final IMethod method) throws JavaModelException {
-        IMemberValuePair[] mvp = null;
-        // TODO check again?
-        if (hasInformationFlowAnnotation(method)) {
-            IAnnotation[] annotations = method.getAnnotations();
-            if (annotations != null && annotations.length > 0) {
-                for (int i = 0; i < annotations.length; i++) {
-                    if (annotations[i].getElementName().equals(INFORMATION_FLOW_PROPERTY)) {
-                        mvp = annotations[i].getMemberValuePairs();
-                        break;
-                    }
-                }
-            }
-        }
-        return mvp;
-    }
-
     public static List<IMethod> getMethods(final ICompilationUnit unit) throws JavaModelException {
         List<IType> types = Arrays.asList(unit.getTypes());
         List<IMethod> methods = new LinkedList<>();
-
         for (IType type : types) {
             methods.addAll(Arrays.asList(type.getMethods()));
         }
@@ -69,33 +43,23 @@ public final class Anno2JmlUtil {
     }
 
     public static boolean hasInformationFlowAnnotation(final IMethod method) throws JavaModelException {
-        IAnnotation[] annotations = method.getAnnotations();
-
-        if (annotations != null) {
-            for (int i = 0; i < annotations.length; i++) {
-                if (annotations[i].getElementName().equals(INFORMATION_FLOW_PROPERTY)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        List<IAnnotation> annotations = Arrays.asList(method.getAnnotations());
+        Optional<IAnnotation> annotation = annotations.stream()
+                .filter(e -> e.getElementName().equals(INFORMATION_FLOW_PROPERTY)).findAny();
+        return annotation.isPresent();
     }
 
-    public static IMemberValuePair[] getIFAnnotationArguments(final IMethod method) throws JavaModelException {
-        IMemberValuePair[] mvp;
-        IAnnotation[] annotations = method.getAnnotations();
+    public static List<IMemberValuePair> getIFAnnotationArguments(final IMethod method) throws JavaModelException {
+        List<IAnnotation> annotations = Arrays.asList(method.getAnnotations());
+        // get all information flow annotations
+        List<IAnnotation> informationFlowAnnotations = annotations.stream()
+                .filter(e -> e.getElementName().equals(INFORMATION_FLOW_PROPERTY)).collect(Collectors.toList());
 
-        if (annotations != null) {
-            for (IAnnotation annotation : annotations) {
-                if (annotation.getElementName().equals(INFORMATION_FLOW_PROPERTY)) {
-                    mvp = annotation.getMemberValuePairs();
-                    if (mvp != null && mvp.length > 0) { // TODO
-                        // assert only one IF property
-                        return mvp;
-                    }
-                }
-            }
+        // get all member values pairs of all information flow annotations
+        List<IMemberValuePair> memberValuePairs = new LinkedList<>();
+        for (IAnnotation annotation : informationFlowAnnotations) {
+            memberValuePairs.addAll(Arrays.asList(annotation.getMemberValuePairs()));
         }
-        return new IMemberValuePair[0];
+        return memberValuePairs;
     }
 }

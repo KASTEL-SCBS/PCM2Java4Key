@@ -23,8 +23,8 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.JdtAstJmlUtil;
 import edu.kit.kastel.scbs.javaAnnotations2JML.ParseException;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ConfidentialitySpecification;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
+import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParameterSource;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParametersAndDataPair;
-import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParametersAndDataPair.ParameterSource;
 
 /**
  * Parser for the confidentiality repository package.
@@ -138,7 +138,7 @@ public class ConfidentialityRepositoryParser
         return parametersAndDataPairs;
     }
 
-    private List<ParametersAndDataPair.ParameterSource> parseParameterSources(List<String> arguments) {
+    private List<ParameterSource> parseParameterSources(List<String> arguments) {
         return arguments.stream().map(ParameterSource::new).collect(Collectors.toList());
     }
 

@@ -57,6 +57,13 @@ public class DataSet {
         return getEnumConstantFullName() + "(\"" + getName() + "\")";
     }
 
+    /**
+     * String representation of a list with data sets.
+     * 
+     * @param dataSets
+     *            The list of data sets to get the string representation for.
+     * @return A string representation of a list with data sets.
+     */
     public static String toString(List<DataSet> dataSets) {
         StringBuilder sb = new StringBuilder(dataSets.get(0).toString());
         for (int i = 1; i < dataSets.size(); i++) {

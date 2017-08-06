@@ -8,6 +8,12 @@ import java.util.stream.Collectors;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.EnumConstant;
 
+/**
+ * Represents a parameters and data pair of the confidentiality specification.
+ * 
+ * @author Nils Wilka
+ * @version 1.0, 06.08.2017
+ */
 public class ParametersAndDataPair {
 
     private EnumConstant enumConstant;
@@ -60,10 +66,11 @@ public class ParametersAndDataPair {
     @Override
     public String toString() {
         // TODO
-        return "( dataSets = '" + dataSet + "', parameterSources = '" + ParameterSource.toString(parameterSources)
+        return "(dataSets = '" + dataSet + "', parameterSources = '" + ParameterSource.toString(parameterSources)
                 + "')";
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -73,6 +80,11 @@ public class ParametersAndDataPair {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     public static Set<DataSet> unionOfDataSets(List<ParametersAndDataPair> pairs) {
@@ -91,44 +103,5 @@ public class ParametersAndDataPair {
         List<ParameterSource> resultArguments = new LinkedList<>();
         pairs.forEach(e -> resultArguments.addAll(e.getResultParameterSources()));
         return resultArguments;
-    }
-
-    public static class ParameterSource {
-
-        private static final String RESULT_PREFIX = "result";
-
-        private String name;
-
-        public ParameterSource(String name) {
-            this.name = name;
-        }
-
-        private boolean isResult() {
-            return name.startsWith(RESULT_PREFIX);
-        }
-
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            } else if (obj instanceof ParameterSource) {
-                ParameterSource other = (ParameterSource) obj;
-                return this.name.equals(other.name);
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return this.name;
-        }
-
-        public static String toString(List<ParameterSource> paramterSources) {
-            StringBuilder sb = new StringBuilder(paramterSources.get(0).toString());
-            for (int i = 1; i < paramterSources.size(); i++) {
-                sb.append(", ").append(paramterSources.get(i));
-            }
-            return sb.toString();
-        }
     }
 }

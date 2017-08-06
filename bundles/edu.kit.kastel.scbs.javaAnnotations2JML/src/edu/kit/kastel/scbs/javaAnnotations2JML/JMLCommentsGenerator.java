@@ -8,8 +8,8 @@ import org.eclipse.jdt.core.JavaModelException;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ConfidentialitySpecification;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.InformationFlowAnnotation;
+import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParameterSource;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParametersAndDataPair;
-import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParametersAndDataPair.ParameterSource;
 
 public class JMLCommentsGenerator {
 

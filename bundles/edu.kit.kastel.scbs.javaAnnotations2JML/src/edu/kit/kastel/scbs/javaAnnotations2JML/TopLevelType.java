@@ -32,23 +32,17 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
  */
 public class TopLevelType {
 
-    private Optional<CompilationUnit> astCompilationUnit = Optional.empty();
+    private Optional<CompilationUnit> astCompilationUnit;
 
     private ICompilationUnit javaCompilationUnit;
 
     private IType javaType;
 
-    public TopLevelType(IType type) throws JavaModelException {
-        // TODO IndexOutOfBoundsException
-        javaCompilationUnit = type.getCompilationUnit();
+    public TopLevelType(IType type) {
+        assert type.getCompilationUnit() != null : "Given type " + type + " not declared in a compilation unit.";
         javaType = type;
-    }
-
-    public TopLevelType(ICompilationUnit unit, int index) throws JavaModelException {
-        // TODO IndexOutOfBoundsException
-        // TODO JavaModelException
-        javaCompilationUnit = unit;
-        javaType = javaCompilationUnit.getTypes()[index];
+        javaCompilationUnit = type.getCompilationUnit();
+        astCompilationUnit = Optional.empty();
     }
 
     public IType getIType() {
@@ -60,14 +54,13 @@ public class TopLevelType {
     }
 
     public CompilationUnit getCorrespondingAstCompilationUnit() {
-        if (!astCompilationUnit.isPresent()) {
-            setupParserAndCompilationUnit();
-        }
-        return astCompilationUnit.get();
+        return astCompilationUnit.orElse(setupParserAndCompilationUnit());
     }
 
-    private void setupParserAndCompilationUnit() {
-        astCompilationUnit = Optional.of(JdtAstJmlUtil.setupParserAndGetCompilationUnit(javaCompilationUnit));
+    private CompilationUnit setupParserAndCompilationUnit() {
+        CompilationUnit cu = JdtAstJmlUtil.setupParserAndGetCompilationUnit(javaCompilationUnit);
+        astCompilationUnit = Optional.of(cu);
+        return cu;
     }
 
     public boolean hasInformationFlowAnnotation() throws JavaModelException {
@@ -94,46 +87,35 @@ public class TopLevelType {
         return interfacesWithIFProperty;
     }
 
+    // the java doc of CompilationUnit#types() specifies the type 'AbstractTypeDeclaration'
+    @SuppressWarnings("unchecked")
     public List<TopLevelType.Field> getAllTopLevelTypeFields() throws JavaModelException {
-        List<TopLevelType.Field> allTypes = new LinkedList<>();
         AbstractTypeDeclaration atd = JdtAstJmlUtil
                 .findAbstractTypeDeclarationFromIType(getCorrespondingAstCompilationUnit().types(), javaType);
+
+        List<TopLevelType.Field> allTypes = new LinkedList<>();
         if (atd instanceof TypeDeclaration) {
             TypeDeclaration td = (TypeDeclaration) atd;
-            for (FieldDeclaration fd : td.getFields()) {
-                if (TopLevelType.Field.isTopLevelTypeField(fd)) {
-                    allTypes.add(TopLevelType.Field.create(this, fd));
-                }
-            }
+            Arrays.asList(td.getFields()).stream().filter(e -> TopLevelType.Field.isTopLevelTypeField(e))
+                    .forEach(e -> allTypes.add(TopLevelType.Field.create(this, e)));
         }
-        // TODO else
-        return allTypes;
+        return allTypes; // empty list if not a type declaration
     }
 
     public static List<TopLevelType> create(ICompilationUnit unit) throws JavaModelException {
-        // TODO IndexOutOfBoundsException
-        // TODO JavaModelException
+        return create(Arrays.asList(unit.getTypes()));
+    }
+
+    public static List<TopLevelType> create(List<IType> types) throws JavaModelException {
         List<TopLevelType> tltList = new LinkedList<>();
-        for (IType type : unit.getTypes()) {
-            TopLevelType tlt = new TopLevelType(type);
-            tltList.add(tlt);
+        for (IType type : types) {
+            tltList.add(create(type));
         }
         return tltList;
     }
 
     public static TopLevelType create(IType type) throws JavaModelException {
         return new TopLevelType(type);
-    }
-
-    public static List<TopLevelType> create(List<IType> types) throws JavaModelException {
-        // TODO IndexOutOfBoundsException
-        // TODO JavaModelException
-        List<TopLevelType> tltList = new LinkedList<>();
-        for (IType type : types) {
-            TopLevelType tlt = new TopLevelType(type);
-            tltList.add(tlt);
-        }
-        return tltList;
     }
 
     @Override
@@ -146,6 +128,11 @@ public class TopLevelType {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return javaType.hashCode();
     }
 
     @Override
@@ -171,7 +158,7 @@ public class TopLevelType {
 
         private String name;
 
-        private Field(final TopLevelType parent, final String name, final TopLevelType type) throws JavaModelException {
+        private Field(final TopLevelType parent, final String name, final TopLevelType type) {
             this.parent = parent;
             this.name = name;
             this.type = type;
@@ -190,12 +177,10 @@ public class TopLevelType {
         }
 
         public static boolean isTopLevelTypeField(FieldDeclaration fieldDeclaration) {
-            ITypeBinding tb = fieldDeclaration.getType().resolveBinding();
-            return tb.isTopLevel();
+            return fieldDeclaration.getType().resolveBinding().isTopLevel();
         }
 
-        public static Field create(final TopLevelType parent, FieldDeclaration fieldDeclaration)
-                throws JavaModelException {
+        public static Field create(final TopLevelType parent, FieldDeclaration fieldDeclaration) {
             ITypeBinding tb = fieldDeclaration.getType().resolveBinding();
             if (tb.isTopLevel()) {
                 VariableDeclarationFragment vdf = (VariableDeclarationFragment) fieldDeclaration.fragments().get(0);
@@ -210,16 +195,7 @@ public class TopLevelType {
         public static List<Field> create(final TopLevelType parent, List<FieldDeclaration> fdList)
                 throws JavaModelException {
             List<Field> fields = new LinkedList<>();
-            for (FieldDeclaration fieldDeclaration : fdList) {
-                ITypeBinding tb = fieldDeclaration.getType().resolveBinding();
-                if (tb.isTopLevel()) {
-                    VariableDeclarationFragment vdf = (VariableDeclarationFragment) fieldDeclaration.fragments().get(0);
-                    IType type = (IType) tb.getJavaElement();
-                    fields.add(new Field(parent, vdf.toString(), new TopLevelType(type)));
-                } else {
-                    // TODO
-                }
-            }
+            fdList.forEach(e -> fields.add(create(parent, e)));
             return fields;
         }
 
