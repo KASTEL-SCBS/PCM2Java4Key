@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
@@ -106,15 +107,11 @@ public class TopLevelType {
         return create(Arrays.asList(unit.getTypes()));
     }
 
-    public static List<TopLevelType> create(List<IType> types) throws JavaModelException {
-        List<TopLevelType> tltList = new LinkedList<>();
-        for (IType type : types) {
-            tltList.add(create(type));
-        }
-        return tltList;
+    public static List<TopLevelType> create(List<IType> types) {
+        return types.stream().map(e -> create(e)).collect(Collectors.toList());
     }
 
-    public static TopLevelType create(IType type) throws JavaModelException {
+    public static TopLevelType create(IType type) {
         return new TopLevelType(type);
     }
 

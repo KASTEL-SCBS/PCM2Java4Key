@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.core.IMethod;
@@ -88,7 +89,8 @@ public class TopLevelTypeMappings {
     }
 
     public List<TopLevelType.Field> getRequiredTopLevelTypeFields(TopLevelType type) {
-        return tlt2requiredTopLevelTypeFields.get(type);
+        Optional<List<TopLevelType.Field>> optional = Optional.ofNullable(tlt2requiredTopLevelTypeFields.get(type));
+        return optional.orElse(new LinkedList<TopLevelType.Field>());
     }
 
     public void addProvidedTopLevelTypes(TopLevelType type, List<TopLevelType> toAdd) {
@@ -103,7 +105,8 @@ public class TopLevelTypeMappings {
     }
 
     public List<TopLevelType> getProvidedTopLevelTypes(TopLevelType type) {
-        return tlt2providedTopLevelTypes.get(type);
+        Optional<List<TopLevelType>> optional = Optional.ofNullable(tlt2providedTopLevelTypes.get(type));
+        return optional.orElse(new LinkedList<TopLevelType>());
     }
 
     public void addMethodWithIFToTopLevelType(TopLevelType type, IMethod method, InformationFlowAnnotation annotation) {

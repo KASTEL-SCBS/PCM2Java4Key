@@ -1,7 +1,6 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,20 +17,20 @@ public class ParametersAndDataPair {
 
     private EnumConstant enumConstant;
 
-    private List<DataSet> dataSet;
+    private List<DataSet> dataSets;
 
     private List<ParameterSource> parameterSources;
 
-    public ParametersAndDataPair(String simpleName, List<ParameterSource> parameterSources, List<DataSet> dataSet) {
+    public ParametersAndDataPair(String simpleName, List<ParameterSource> parameterSources, List<DataSet> dataSets) {
         this.enumConstant = new EnumConstant("ParametersAndDataPair", simpleName);
-        this.dataSet = dataSet;
+        this.dataSets = dataSets;
         this.parameterSources = parameterSources;
     }
 
     public ParametersAndDataPair(EnumConstant enumConstant, List<ParameterSource> parameterSources,
-            List<DataSet> dataSet) {
+            List<DataSet> dataSets) {
         this.enumConstant = enumConstant;
-        this.dataSet = dataSet;
+        this.dataSets = dataSets;
         this.parameterSources = parameterSources;
     }
 
@@ -48,7 +47,7 @@ public class ParametersAndDataPair {
     }
 
     public List<DataSet> getDataSets() {
-        return dataSet;
+        return dataSets;
     }
 
     public List<ParameterSource> getParameterSources() {
@@ -63,11 +62,16 @@ public class ParametersAndDataPair {
         return parameterSources.stream().filter(e -> !e.isResult()).collect(Collectors.toList());
     }
 
+    public static Set<DataSet> unionOfDataSets(List<ParametersAndDataPair> pairs) {
+        Set<DataSet> dataSets = new HashSet<>();
+        pairs.forEach(e -> dataSets.addAll(e.getDataSets()));
+        return dataSets;
+    }
+
     @Override
     public String toString() {
-        // TODO
-        return "(dataSets = '" + dataSet + "', parameterSources = '" + ParameterSource.toString(parameterSources)
-                + "')";
+        return "ParametersAndDataPair(dataSets = '" + DataSet.toString(dataSets) + "', parameterSources = '"
+                + ParameterSource.toString(parameterSources) + "')";
     }
 
     @Override
@@ -85,23 +89,5 @@ public class ParametersAndDataPair {
     @Override
     public int hashCode() {
         return super.hashCode();
-    }
-
-    public static Set<DataSet> unionOfDataSets(List<ParametersAndDataPair> pairs) {
-        Set<DataSet> dataSets = new HashSet<>();
-        pairs.forEach(e -> dataSets.addAll(e.getDataSets()));
-        return dataSets;
-    }
-
-    public static List<ParameterSource> getAllNonResultParameterSources(List<ParametersAndDataPair> pairs) {
-        List<ParameterSource> nonResultArguments = new LinkedList<>();
-        pairs.forEach(e -> nonResultArguments.addAll(e.getNonResultParameterSources()));
-        return nonResultArguments;
-    }
-
-    public static List<ParameterSource> getAllResultParameterSources(List<ParametersAndDataPair> pairs) {
-        List<ParameterSource> resultArguments = new LinkedList<>();
-        pairs.forEach(e -> resultArguments.addAll(e.getResultParameterSources()));
-        return resultArguments;
     }
 }

@@ -1,5 +1,6 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,6 +8,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaProject;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ConfidentialitySpecification;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.JMLCommentsGenerator;
 import edu.kit.kastel.scbs.javaAnnotations2JML.parser.ConfidentialityRepositoryParser;
 import edu.kit.kastel.scbs.javaAnnotations2JML.parser.JavaAnnotations2JMLParser;
 import edu.kit.kastel.scbs.javaAnnotations2JML.parser.MappingsParser;
@@ -119,6 +121,11 @@ public final class JavaAnnotations2JML {
 
         /* fifth step: generate jml comments for each type and each data set */
         JMLCommentsGenerator generator = new JMLCommentsGenerator(specification, topLevelTypeMappings);
-        generator.transformAllAnnotationsToJml();
+        try {
+            generator.transformAllAnnotationsToJml();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

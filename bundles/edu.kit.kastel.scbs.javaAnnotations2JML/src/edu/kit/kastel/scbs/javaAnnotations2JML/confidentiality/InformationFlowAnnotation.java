@@ -52,6 +52,12 @@ public class InformationFlowAnnotation {
         return parametersAndDataPairs;
     }
 
+    public List<ParameterSource> getParameterSources() {
+        List<ParameterSource> params = new LinkedList<>();
+        parametersAndDataPairs.forEach(e -> params.addAll(e.getParameterSources()));
+        return params;
+    }
+
     @Override
     public String toString() {
         return "InformationFlow(parameterAndDataPairs = " + parametersAndDataPairs.toString() + ")";

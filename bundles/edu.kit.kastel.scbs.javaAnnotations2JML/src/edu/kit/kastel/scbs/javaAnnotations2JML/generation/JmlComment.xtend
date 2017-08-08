@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML
+package edu.kit.kastel.scbs.javaAnnotations2JML.generation
 
 import java.util.List
 import java.util.LinkedList
