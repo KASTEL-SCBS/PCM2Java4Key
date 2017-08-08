@@ -6,12 +6,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.Anno2JmlUtil;
-import edu.kit.kastel.scbs.javaAnnotations2JML.EnumConstant;
 import edu.kit.kastel.scbs.javaAnnotations2JML.Pair;
 import edu.kit.kastel.scbs.javaAnnotations2JML.ParseException;
 import edu.kit.kastel.scbs.javaAnnotations2JML.TopLevelType;
@@ -47,7 +45,8 @@ public class MappingsParser extends
 
             for (IMethod method : methods) {
                 if (Anno2JmlUtil.hasInformationFlowAnnotation(method)) {
-                    InformationFlowAnnotation annotation = parseInformationFlowAnnotation(method);
+                    InformationFlowAnnotation annotation = parseInformationFlowAnnotation(getSource().getFirst(),
+                            method);
                     // add mapping type -> (method, annotation)
                     tltMappings.addMethodWithIFToTopLevelType(type, method, annotation);
                     Set<DataSet> dataSets = ParametersAndDataPair
@@ -59,49 +58,32 @@ public class MappingsParser extends
         }
     }
 
-    private InformationFlowAnnotation parseInformationFlowAnnotation(IMethod method)
-            throws JavaModelException, ParseException {
-        List<EnumConstant> pairEnumConstants = getParametersAndDataPairsEnumConstants(method);
-        ConfidentialitySpecification specification = getSource().getFirst();
-        List<Optional<ParametersAndDataPair>> pairCorrespondences = pairEnumConstants.stream()
-                .map(e -> specification.getParametersAndDataPairFromEnumConstantName(e.getFullName()))
-                .collect(Collectors.toList());
+    public InformationFlowAnnotation parseInformationFlowAnnotation(ConfidentialitySpecification specification,
+            IMethod method) throws ParseException {
+        List<Optional<ParametersAndDataPair>> pairCorrespondences;
+        pairCorrespondences = parseAnnotationAndGetCorrespondingPairs(specification, method);
+        List<ParametersAndDataPair> parametersAndDataPairs = retrieveCorrespondencesOrThrowException(method,
+                pairCorrespondences);
+        return new InformationFlowAnnotation(parametersAndDataPairs);
+    }
 
+    private List<ParametersAndDataPair> retrieveCorrespondencesOrThrowException(IMethod method,
+            List<Optional<ParametersAndDataPair>> pairCorrespondences) throws ParseException {
         List<ParametersAndDataPair> parametersAndDataPairs = new LinkedList<>();
-
         for (Optional<ParametersAndDataPair> optional : pairCorrespondences) {
             ParametersAndDataPair pair = optional.orElseThrow(() -> new ParseException(
                     "Unexpected parameters and data pair in the annotation of the method " + method.getElementName()));
             parametersAndDataPairs.add(pair);
         }
-        return new InformationFlowAnnotation(parametersAndDataPairs);
+        return parametersAndDataPairs;
     }
 
-    private List<EnumConstant> getParametersAndDataPairsEnumConstants(IMethod method)
-            throws JavaModelException, ParseException {
-        List<IMemberValuePair> pairs = Anno2JmlUtil.getIFAnnotationArguments(method);
-        List<Object> values = getParametersAndDataPairsValues(pairs);
-        if (values.isEmpty()) {
-            // TODO change to ignore this annotation?
-            throw new ParseException(
-                    "Insufficient amount of arguments in the information flow annotation of the method "
-                            + method.toString());
-        }
-        // TODO check name of values first
-        return values.stream().map(e -> new EnumConstant((String) e)).collect(Collectors.toList());
-    }
-
-    /**
-     * Scans an {@code IMemberValuePair} and searches for the member of the name
-     * 'parametersAndDataPairs'. Then collects all values via {@code IMemberValuePair#getValue()} in
-     * a List of type Object.
-     * 
-     * @param iMemberValuePairs
-     *            The {@code IMemberValuePair} to look at.
-     * @return All values from the member 'parametersAndDataPairs' in a list of type Object.
-     */
-    private List<Object> getParametersAndDataPairsValues(List<IMemberValuePair> iMemberValuePairs) {
-        return iMemberValuePairs.stream().filter(e -> e.getMemberName().equals("parametersAndDataPairs"))
-                .map(e -> ((Object[]) e.getValue())[0]).collect(Collectors.toList());
+    private List<Optional<ParametersAndDataPair>> parseAnnotationAndGetCorrespondingPairs(
+            ConfidentialitySpecification specification, IMethod method) throws ParseException {
+        InformationFlowAnnotationArguments arguments = new InformationFlowAnnotationParser(method).parse();
+        List<Optional<ParametersAndDataPair>> pairCorrespondences = arguments.getParametersAndDataPairEnumConstants()
+                .stream().map(e -> specification.getParametersAndDataPairFromEnumConstantName(e.getFullName()))
+                .collect(Collectors.toList());
+        return pairCorrespondences;
     }
 }
