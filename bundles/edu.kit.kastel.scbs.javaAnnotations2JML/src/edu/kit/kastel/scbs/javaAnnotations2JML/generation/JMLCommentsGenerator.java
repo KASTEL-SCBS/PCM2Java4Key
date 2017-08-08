@@ -1,6 +1,7 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.generation;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,48 +40,53 @@ public class JMLCommentsGenerator {
 
     public void transformAnnotationsToJml(TopLevelType type) throws JavaModelException {
         // do not generate comments for classes without specification
+        // TODO remove outer if
         if (topLevelTypeMappings.hasAnyIFAnnotation(type)) {
+            // TODO mappings.getDataSets(type) - iterate over those
             for (DataSet dataSet : specification.getDataSets()) {
                 // generate one comment for each type and each data set
                 JmlComment comment = new JmlComment(dataSet);
+                // create provided and required types and their services
+                List<AbstractTopLevelType> abstractTypes = new LinkedList<>();
+                abstractTypes.addAll(scanProvidedTopLevelTypes(type));
+                abstractTypes.addAll(scanRequiredTopLevelTypes(type));
                 // no iteration over empty provided / required lists
-                scanProvidedTopLevelTypes(type, dataSet, comment);
-                scanRequiredTopLevelTypes(type, dataSet, comment);
+                addAllServicesForDataSetToJmlComment(abstractTypes, dataSet, comment);
                 // if the type has any IF annotation, it will get a jml comment
                 JdtAstJmlUtil.addStringToAbstractType(type.getIType(), comment.toString());
             }
         }
     }
 
-    private void scanProvidedTopLevelTypes(TopLevelType type, DataSet dataSet, JmlComment comment) {
+    private List<AbstractTopLevelType> scanProvidedTopLevelTypes(TopLevelType type) {
+        List<AbstractTopLevelType> providedTypes = new LinkedList<>();
         for (TopLevelType providedType : topLevelTypeMappings.getProvidedTopLevelTypes(type)) {
-            if (topLevelTypeMappings.hasTypeSpecificationForDataSet(providedType, dataSet)) {
-                List<Pair<IMethod, InformationFlowAnnotation>> methodsWithAnnotations = topLevelTypeMappings
-                        .getMethodWithIF(providedType);
-                for (Pair<IMethod, InformationFlowAnnotation> methodAnnotationPair : methodsWithAnnotations) {
-                    String name = methodAnnotationPair.getFirst().getElementName();
-                    InformationFlowAnnotation annotation = methodAnnotationPair.getSecond();
-                    AbstractService service = new ProvidedService(name, annotation.getParameterSources());
-                    service.addServiceToJmlComment(comment);
-                }
-            }
+            AbstractTopLevelType abstractType = new ProvidedTopLevelType(providedType);
+            addServices(providedType, abstractType);
+            providedTypes.add(abstractType);
+        }
+        return providedTypes;
+    }
+
+    private List<AbstractTopLevelType> scanRequiredTopLevelTypes(TopLevelType type) {
+        List<AbstractTopLevelType> requiredTypes = new LinkedList<>();
+        for (TopLevelType.Field field : topLevelTypeMappings.getRequiredTopLevelTypeFields(type)) {
+            AbstractTopLevelType abstractType = new RequiredTopLevelType(field.getName(), type);
+            addServices(field.getTopLevelType(), abstractType);
+            requiredTypes.add(abstractType);
+        }
+        return requiredTypes;
+    }
+
+    private void addServices(TopLevelType serviceType, AbstractTopLevelType abstractType) {
+        for (Pair<IMethod, InformationFlowAnnotation> pair : topLevelTypeMappings.getMethodWithIF(serviceType)) {
+            abstractType.addService(pair.getFirst(), pair.getSecond());
         }
     }
 
-    private void scanRequiredTopLevelTypes(TopLevelType type, DataSet dataSet, JmlComment comment) {
-        for (TopLevelType.Field field : topLevelTypeMappings.getRequiredTopLevelTypeFields(type)) {
-            TopLevelType fieldType = field.getTopLevelType();
-            String role = field.getName();
-            if (topLevelTypeMappings.hasTypeSpecificationForDataSet(fieldType, dataSet)) {
-                List<Pair<IMethod, InformationFlowAnnotation>> methodsWithAnnotations = topLevelTypeMappings
-                        .getMethodWithIF(fieldType);
-                for (Pair<IMethod, InformationFlowAnnotation> methodAnnotationPair : methodsWithAnnotations) {
-                    String name = methodAnnotationPair.getFirst().getElementName();
-                    InformationFlowAnnotation annotation = methodAnnotationPair.getSecond();
-                    AbstractService service = new RequiredService(role, name, annotation.getParameterSources());
-                    service.addServiceToJmlComment(comment);
-                }
-            }
+    private void addAllServicesForDataSetToJmlComment(List<AbstractTopLevelType> types, DataSet dataSet, JmlComment comment) {
+        for (AbstractTopLevelType type : types) {
+            type.addServicesForDataSetToJmlComment(dataSet, comment);
         }
     }
 }
