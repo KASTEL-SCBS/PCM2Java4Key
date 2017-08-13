@@ -4,8 +4,8 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.TopLevelType;
 
 public class RequiredServiceType extends AbstractServiceType {
 
-    public RequiredServiceType(String role, TopLevelType type) {
-        super(role, type);
+    public RequiredServiceType(String role, TopLevelType type, TopLevelType parent) {
+        super(role, type, parent);
     }
 
     @Override

@@ -3,50 +3,52 @@ package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.Anno2JmlUtil;
-import edu.kit.kastel.scbs.javaAnnotations2JML.Pair;
+import edu.kit.kastel.scbs.javaAnnotations2JML.MethodAcceptor;
 import edu.kit.kastel.scbs.javaAnnotations2JML.ParseException;
+import edu.kit.kastel.scbs.javaAnnotations2JML.SourceMethodProvider;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ConfidentialitySpecification;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.InformationFlowAnnotation;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParametersAndDataPair;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.ServiceProvider;
 
-public class ServicesParser extends
-        JavaAnnotations2JMLParser<Pair<ConfidentialitySpecification, Set<ServiceProvider>>, Set<ServiceProvider>> {
+public class MethodParser {
 
-    public ServicesParser(Pair<ConfidentialitySpecification, Set<ServiceProvider>> source) {
-        super(source);
+    ConfidentialitySpecification specification;
+
+    MethodAcceptor methodAcceptor;
+
+    SourceMethodProvider sourceProvider;
+
+    public MethodParser(ConfidentialitySpecification specification, MethodAcceptor methodAcceptor,
+            SourceMethodProvider sourceMethodProvider) {
+        this.specification = specification;
+        this.methodAcceptor = methodAcceptor;
+        this.sourceProvider = sourceMethodProvider;
     }
 
-    @Override
-    protected Set<ServiceProvider> parseSource() throws ParseException {
+    public void parse() throws ParseException {
         try {
-            for (ServiceProvider serviceProvider : getSource().getSecond()) {
-                // each service provider parses all methods of its (source) top level type
-                parseMethodsAndAnnotations(serviceProvider);
-            }
+            parseMethodsAndAnnotations(sourceProvider, methodAcceptor);
         } catch (JavaModelException jme) {
             Optional<String> message = Optional.ofNullable(jme.getMessage());
             throw new ParseException("Java Model Exception occurred: " + message.orElse("(no error message)"), jme);
         }
-        return getSource().getSecond();
     }
 
-    private void parseMethodsAndAnnotations(ServiceProvider serviceProvider) throws JavaModelException, ParseException {
-        IMethod[] methods = serviceProvider.getTopLevelType().getIType().getMethods();
+    private void parseMethodsAndAnnotations(SourceMethodProvider source, MethodAcceptor acceptor)
+            throws JavaModelException, ParseException {
+        List<IMethod> methods = source.getSourceMethods();
         for (IMethod method : methods) {
             // only look at methods with information flow annotation
             if (Anno2JmlUtil.hasInformationFlowAnnotation(method)) {
-                InformationFlowAnnotation annotation = parseInformationFlowAnnotation(getSource().getFirst(), method);
+                InformationFlowAnnotation annotation = parseInformationFlowAnnotation(specification, method);
                 // service created from method and annotation
-                // and available in top level types via service types via service providers
-                serviceProvider.addService(method, annotation);
+                acceptor.addMethod(method, annotation);
             }
         }
     }

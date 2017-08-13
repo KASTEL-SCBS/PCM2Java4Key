@@ -6,8 +6,8 @@ public class ProvidedServiceType extends AbstractServiceType {
 
     private static final String SELF_REFERENCE = "this";
 
-    public ProvidedServiceType(TopLevelType type) {
-        super(SELF_REFERENCE, type);
+    public ProvidedServiceType(TopLevelType type, TopLevelType parent) {
+        super(SELF_REFERENCE, type, parent);
     }
 
     @Override

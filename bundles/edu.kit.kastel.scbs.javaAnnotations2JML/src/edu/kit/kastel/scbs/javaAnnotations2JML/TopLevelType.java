@@ -1,11 +1,11 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -36,7 +37,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.generation.AbstractServiceType;
  * @author Nils Wilka
  * @version 0.1
  */
-public class TopLevelType implements MethodProvider {
+public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMethodProvider {
 
     private Optional<CompilationUnit> astCompilationUnit;
 
@@ -50,8 +51,6 @@ public class TopLevelType implements MethodProvider {
 
     private List<AbstractServiceType> serviceTypes;
 
-    private Set<DataSet> dataSets;
-
     private Map<IMethod, InformationFlowAnnotation> methods;
 
     public TopLevelType(IType type) {
@@ -63,7 +62,6 @@ public class TopLevelType implements MethodProvider {
         superInterfaces = new LinkedList<>();
         fields = new LinkedList<>();
         serviceTypes = new LinkedList<>();
-        dataSets = new HashSet<>();
         methods = new HashMap<>();
     }
 
@@ -78,8 +76,6 @@ public class TopLevelType implements MethodProvider {
 
     public void addServiceType(AbstractServiceType serviceType) {
         this.serviceTypes.add(serviceType);
-        // TODO service provider does not yet have services
-        serviceType.getServiceProvider().getDataSets().forEach(e -> addDataSet(e));
     }
 
     public String getName() {
@@ -123,16 +119,12 @@ public class TopLevelType implements MethodProvider {
     }
 
     public Set<DataSet> getDataSets() {
+        Set<DataSet> dataSets = new HashSet<>();
+        serviceTypes.forEach(e -> dataSets.addAll(e.getDataSets()));
         return dataSets;
     }
 
-    public void addDataSet(DataSet dataSet) {
-        // type -> data set
-        this.dataSets.add(dataSet);
-        // data set -> type
-        dataSet.addTopLevelType(this);
-    }
-
+    @Override
     public void addMethod(IMethod method, InformationFlowAnnotation annotation) {
         methods.put(method, annotation);
     }
@@ -143,8 +135,20 @@ public class TopLevelType implements MethodProvider {
     }
 
     @Override
+    public List<IMethod> getSourceMethods() throws JavaModelException {
+        return Arrays.asList(this.getIType().getMethods());
+    }
+
+    @Override
     public boolean equals(Object obj) {
-        return Objects.equals(javaType, obj);
+        if (this == obj) {
+            return true;
+        } else if (obj instanceof TopLevelType) {
+            TopLevelType other = (TopLevelType) obj;
+            return this.javaType.getElementName().equals(other.javaType.getElementName());
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -179,7 +183,7 @@ public class TopLevelType implements MethodProvider {
 
         private String name;
 
-        private Field(final TopLevelType parent, final String name, final TopLevelType type) {
+        public Field(final TopLevelType parent, final String name, final TopLevelType type) {
             this.parent = parent;
             this.name = name;
             this.type = type;
