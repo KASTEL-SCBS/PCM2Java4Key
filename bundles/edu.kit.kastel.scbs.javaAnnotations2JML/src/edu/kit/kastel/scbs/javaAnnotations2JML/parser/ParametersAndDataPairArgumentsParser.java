@@ -21,7 +21,7 @@ public class ParametersAndDataPairArgumentsParser
     }
 
     @Override
-    public List<ParametersAndDataPairArguments> parse() throws ParseException {
+    protected List<ParametersAndDataPairArguments> parseSource() throws ParseException {
         List<ParametersAndDataPairArguments> parameterAndDataPairs = new LinkedList<>();
         for (EnumConstantDeclaration enumConstantDeclaration : getSource()) {
             try {
@@ -31,7 +31,6 @@ public class ParametersAndDataPairArgumentsParser
                 throw new ParseException("Java Model Exception occurred: " + message.orElse("(no error message)"), jme);
             }
         }
-        setResult(parameterAndDataPairs);
         return parameterAndDataPairs;
     }
 

@@ -10,10 +10,10 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.ParseException;
  * parameter specifies what kind of result this parser delivers.
  * 
  * The {@code parse(S)} method returns the result, which can also be accessed via the
- * {@code getResult()} method. Sub classes must set the result via {@code setResult()}.
+ * {@code getResult()} method.
  * 
  * @author Nils Wilka
- * @version 1.0, 28.07.2017
+ * @version 1.1, 12.08.2017
  *
  * @param <S>
  *            The kind of source this parser is working on or changing.
@@ -37,18 +37,31 @@ public abstract class JavaAnnotations2JMLParser<S, R> {
     }
 
     /**
-     * Defines the main routine to parse or change the given source and returns its result.
-     * 
-     * Has to be implemented by extending sub classes.
+     * Main method to parse or change the given source and returns its result according to this
+     * parser.
      * 
      * @return The result of this parser.
      * 
      * @throws ParseException
-     *             Thrown if there was a problem while parsing the source.
+     *             if there was a problem while parsing the source.
      * 
      * @see getResult()
      */
-    public abstract R parse() throws ParseException;
+    public R parse() throws ParseException {
+        this.result = parseSource();
+        return this.result;
+    }
+
+    /**
+     * Defines the main method to parse or change the given source and has to return its result.
+     * 
+     * Has to be implemented by extending sub classes.
+     * 
+     * @return The result of this parser.
+     * @throws ParseException
+     *             if there was a problem while parsing the source.
+     */
+    protected abstract R parseSource() throws ParseException;
 
     /**
      * Gets the source of this parser, which will be accessed, parsed or changed.
@@ -69,16 +82,5 @@ public abstract class JavaAnnotations2JMLParser<S, R> {
      */
     public R getResult() {
         return this.result;
-    }
-
-    /**
-     * Sets the result of this parser. Has to be called by extending sub classes in the
-     * {@code parse(S)} method.
-     * 
-     * @param result
-     *            The result of this parser.
-     */
-    protected void setResult(R result) {
-        this.result = result;
     }
 }

@@ -58,6 +58,7 @@ public class InformationFlowAnnotation {
         return params;
     }
 
+    // might have multiple the same data set more than once
     public List<DataSet> getDataSets() {
         List<DataSet> dataSets = new LinkedList<>();
         parametersAndDataPairs.forEach(e -> dataSets.addAll(e.getDataSets()));

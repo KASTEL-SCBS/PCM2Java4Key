@@ -1,21 +1,26 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+
+import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
+import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.InformationFlowAnnotation;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.AbstractServiceType;
 
 /**
  * Snapshot of an IType from an ICompilationUnit.
@@ -31,7 +36,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
  * @author Nils Wilka
  * @version 0.1
  */
-public class TopLevelType {
+public class TopLevelType implements MethodProvider {
 
     private Optional<CompilationUnit> astCompilationUnit;
 
@@ -39,11 +44,46 @@ public class TopLevelType {
 
     private IType javaType;
 
+    private List<TopLevelType> superInterfaces;
+
+    private List<TopLevelType.Field> fields;
+
+    private List<AbstractServiceType> serviceTypes;
+
+    private Set<DataSet> dataSets;
+
+    private Map<IMethod, InformationFlowAnnotation> methods;
+
     public TopLevelType(IType type) {
-        assert type.getCompilationUnit() != null : "Given type " + type + " not declared in a compilation unit.";
+        // assert type.getCompilationUnit() != null : "Given type " + type + " not declared in a
+        // compilation unit.";
         javaType = type;
         javaCompilationUnit = type.getCompilationUnit();
         astCompilationUnit = Optional.empty();
+        superInterfaces = new LinkedList<>();
+        fields = new LinkedList<>();
+        serviceTypes = new LinkedList<>();
+        dataSets = new HashSet<>();
+        methods = new HashMap<>();
+    }
+
+    public List<AbstractServiceType> getServiceTypes() {
+        Optional<List<AbstractServiceType>> optional = Optional.ofNullable(serviceTypes);
+        return optional.orElse(new LinkedList<>());
+    }
+
+    public void addServiceTypes(List<AbstractServiceType> serviceTypes) {
+        serviceTypes.forEach(e -> addServiceType(e));
+    }
+
+    public void addServiceType(AbstractServiceType serviceType) {
+        this.serviceTypes.add(serviceType);
+        // TODO service provider does not yet have services
+        serviceType.getServiceProvider().getDataSets().forEach(e -> addDataSet(e));
+    }
+
+    public String getName() {
+        return javaType.getElementName();
     }
 
     public IType getIType() {
@@ -64,67 +104,47 @@ public class TopLevelType {
         return cu;
     }
 
-    public boolean hasInformationFlowAnnotation() throws JavaModelException {
-        for (IMethod method : javaType.getMethods()) {
-            if (Anno2JmlUtil.hasInformationFlowAnnotation(method)) {
-                return true;
-            }
-        }
-        return false;
+    public List<TopLevelType> getSuperTypeInterfaces() {
+        Optional<List<TopLevelType>> optional = Optional.ofNullable(superInterfaces);
+        return optional.orElse(new LinkedList<>());
     }
 
-    public List<IType> getSuperTypeInterfaces() throws JavaModelException {
-        return Arrays.asList(javaType.newSupertypeHierarchy(null).getAllSuperInterfaces(javaType));
+    public void addSuperTypeInterface(TopLevelType superTypeInterface) {
+        superInterfaces.add(superTypeInterface);
     }
 
-    public List<IType> getSuperTypeInterfacesWithIFProperty() throws JavaModelException {
-        List<IType> interfacesWithIFProperty = new LinkedList<>();
-        List<IType> interfaces = getSuperTypeInterfaces();
-        for (IType type : interfaces) {
-            if (Anno2JmlUtil.hasInformationFlowAnnotation(type)) {
-                interfacesWithIFProperty.add(type);
-            }
-        }
-        return interfacesWithIFProperty;
+    public List<TopLevelType.Field> getFields() {
+        Optional<List<TopLevelType.Field>> optional = Optional.ofNullable(fields);
+        return optional.orElse(new LinkedList<>());
     }
 
-    // the java doc of CompilationUnit#types() specifies the type 'AbstractTypeDeclaration'
-    @SuppressWarnings("unchecked")
-    public List<TopLevelType.Field> getAllTopLevelTypeFields() throws JavaModelException {
-        AbstractTypeDeclaration atd = JdtAstJmlUtil
-                .findAbstractTypeDeclarationFromIType(getCorrespondingAstCompilationUnit().types(), javaType);
-
-        List<TopLevelType.Field> allTypes = new LinkedList<>();
-        if (atd instanceof TypeDeclaration) {
-            TypeDeclaration td = (TypeDeclaration) atd;
-            Arrays.asList(td.getFields()).stream().filter(e -> TopLevelType.Field.isTopLevelTypeField(e))
-                    .forEach(e -> allTypes.add(TopLevelType.Field.create(this, e)));
-        }
-        return allTypes; // empty list if not a type declaration
+    public void addField(TopLevelType.Field field) {
+        fields.add(field);
     }
 
-    public static List<TopLevelType> create(ICompilationUnit unit) throws JavaModelException {
-        return create(Arrays.asList(unit.getTypes()));
+    public Set<DataSet> getDataSets() {
+        return dataSets;
     }
 
-    public static List<TopLevelType> create(List<IType> types) {
-        return types.stream().map(e -> create(e)).collect(Collectors.toList());
+    public void addDataSet(DataSet dataSet) {
+        // type -> data set
+        this.dataSets.add(dataSet);
+        // data set -> type
+        dataSet.addTopLevelType(this);
     }
 
-    public static TopLevelType create(IType type) {
-        return new TopLevelType(type);
+    public void addMethod(IMethod method, InformationFlowAnnotation annotation) {
+        methods.put(method, annotation);
+    }
+
+    @Override
+    public Map<IMethod, InformationFlowAnnotation> getMethods() {
+        return methods;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        } else if (obj instanceof TopLevelType) {
-            TopLevelType other = (TopLevelType) obj;
-            return this.javaType.equals(other.getIType());
-        } else {
-            return false;
-        }
+        return Objects.equals(javaType, obj);
     }
 
     @Override
@@ -137,8 +157,12 @@ public class TopLevelType {
         return javaType.toString();
     }
 
-    public String getName() {
-        return javaType.getElementName();
+    public static List<TopLevelType> create(List<IType> types) {
+        return types.stream().map(e -> create(e)).collect(Collectors.toList());
+    }
+
+    public static TopLevelType create(IType type) {
+        return new TopLevelType(type);
     }
 
     /**
@@ -189,8 +213,7 @@ public class TopLevelType {
             }
         }
 
-        public static List<Field> create(final TopLevelType parent, List<FieldDeclaration> fdList)
-                throws JavaModelException {
+        public static List<Field> create(final TopLevelType parent, List<FieldDeclaration> fdList) {
             List<Field> fields = new LinkedList<>();
             fdList.forEach(e -> fields.add(create(parent, e)));
             return fields;

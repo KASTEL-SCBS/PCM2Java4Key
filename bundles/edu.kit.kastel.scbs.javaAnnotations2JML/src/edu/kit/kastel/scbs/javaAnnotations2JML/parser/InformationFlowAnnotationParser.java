@@ -34,7 +34,7 @@ public class InformationFlowAnnotationParser
     }
 
     @Override
-    public InformationFlowAnnotationArguments parse() throws ParseException {
+    protected InformationFlowAnnotationArguments parseSource() throws ParseException {
         List<EnumConstant> pairEnumConstants;
         try {
             pairEnumConstants = getParametersAndDataPairsEnumConstants(getSource());

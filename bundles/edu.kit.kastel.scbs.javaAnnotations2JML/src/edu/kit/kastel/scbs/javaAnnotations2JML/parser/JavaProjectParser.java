@@ -21,7 +21,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.TopLevelType;
  * @author Nils Wilka
  * @version 1.0, 04.08.2017
  */
-public class SourceRepositoryParser extends JavaAnnotations2JMLParser<IJavaProject, List<TopLevelType>> {
+public class JavaProjectParser extends JavaAnnotations2JMLParser<IJavaProject, List<TopLevelType>> {
 
     /**
      * Constructs a new parser with the given java project as source.
@@ -29,12 +29,12 @@ public class SourceRepositoryParser extends JavaAnnotations2JMLParser<IJavaProje
      * @param source
      *            The {@code IJavaProject} to scan.
      */
-    public SourceRepositoryParser(IJavaProject source) {
+    public JavaProjectParser(IJavaProject source) {
         super(source);
     }
 
     @Override
-    public List<TopLevelType> parse() throws ParseException {
+    protected List<TopLevelType> parseSource() throws ParseException {
         List<TopLevelType> topLevelTypes;
         try {
             List<ICompilationUnit> sourceFiles = getSourceFiles();
@@ -43,8 +43,7 @@ public class SourceRepositoryParser extends JavaAnnotations2JMLParser<IJavaProje
             Optional<String> message = Optional.ofNullable(jme.getMessage());
             throw new ParseException("Java Model Exception occurred: " + message.orElse("(no error message)"), jme);
         }
-        setResult(topLevelTypes);
-        return getResult();
+        return topLevelTypes;
     }
 
     /**
@@ -79,7 +78,7 @@ public class SourceRepositoryParser extends JavaAnnotations2JMLParser<IJavaProje
         List<TopLevelType> sourceRepositoryFiles = new LinkedList<>();
 
         for (ICompilationUnit unit : sourceFiles) {
-            List<TopLevelType> tltList = TopLevelType.create(unit);
+            List<TopLevelType> tltList = TopLevelType.create(Arrays.asList(unit.getTypes()));
             sourceRepositoryFiles.addAll(tltList);
         }
         return sourceRepositoryFiles;

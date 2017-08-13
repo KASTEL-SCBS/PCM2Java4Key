@@ -2,19 +2,24 @@ package edu.kit.kastel.scbs.javaAnnotations2JML;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaProject;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ConfidentialitySpecification;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.AbstractServiceType;
 import edu.kit.kastel.scbs.javaAnnotations2JML.generation.JMLCommentsGenerator;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.ServiceProvider;
 import edu.kit.kastel.scbs.javaAnnotations2JML.parser.ConfidentialityRepositoryParser;
 import edu.kit.kastel.scbs.javaAnnotations2JML.parser.JavaAnnotations2JMLParser;
-import edu.kit.kastel.scbs.javaAnnotations2JML.parser.MappingsParser;
+import edu.kit.kastel.scbs.javaAnnotations2JML.parser.JavaProjectParser;
 import edu.kit.kastel.scbs.javaAnnotations2JML.parser.ProjectParser;
-import edu.kit.kastel.scbs.javaAnnotations2JML.parser.ServiceParser;
-import edu.kit.kastel.scbs.javaAnnotations2JML.parser.SourceRepositoryParser;
+import edu.kit.kastel.scbs.javaAnnotations2JML.parser.ServiceTypeParser;
+import edu.kit.kastel.scbs.javaAnnotations2JML.parser.ServicesParser;
+import edu.kit.kastel.scbs.javaAnnotations2JML.parser.TopLevelTypesParser;
 
 /**
  * Main (singleton) class of this project.
@@ -79,7 +84,7 @@ public final class JavaAnnotations2JML {
         }
 
         /* second step: parse java project for confidentiality package and java types */
-        SourceRepositoryParser sourceRepoParser = new SourceRepositoryParser(javaProject);
+        JavaProjectParser sourceRepoParser = new JavaProjectParser(javaProject);
         ConfidentialityRepositoryParser confRepoParser = new ConfidentialityRepositoryParser(javaProject);
 
         JavaAnnotations2JMLParser<?, ?>[] parsers = { sourceRepoParser, confRepoParser };
@@ -95,32 +100,44 @@ public final class JavaAnnotations2JML {
         List<TopLevelType> topLevelTypes = sourceRepoParser.getResult();
         ConfidentialitySpecification specification = confRepoParser.getResult();
 
-        /* third step: for each type get required and provided types */
-        ServiceParser serviceParser = new ServiceParser(topLevelTypes);
-        TopLevelTypeMappings topLevelTypeMappings = null; // TODO
+        /*
+         * third step
+         */
+        TopLevelTypesParser topLevelTypesParser = new TopLevelTypesParser(topLevelTypes);
         try {
-            topLevelTypeMappings = serviceParser.parse();
+            topLevelTypesParser.parse();
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        /* fourth step: for each type get required and provided types */
+        ServiceTypeParser serviceTypeParser = new ServiceTypeParser(topLevelTypes);
+        Map<ServiceProvider, List<AbstractServiceType>> abstractServiceTypes = null; // TODO
+        try {
+            abstractServiceTypes = serviceTypeParser.parse();
         } catch (ParseException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
 
         /*
-         * fourth step: for all required and provided types map 1. each top level type to all its
+         * fifth step: for all required and provided types map 1. each top level type to all its
          * methods and information flow annotation pairs and 2. which data set is contained in which
          * top level types
          */
-        Pair<ConfidentialitySpecification, TopLevelTypeMappings> pair = new Pair<>(specification, topLevelTypeMappings);
-        MappingsParser mappingsParser = new MappingsParser(pair);
+        Set<ServiceProvider> set = abstractServiceTypes.keySet();
+        Pair<ConfidentialitySpecification, Set<ServiceProvider>> pair = new Pair<>(specification, set);
+        ServicesParser servicesParser = new ServicesParser(pair);
         try {
-            mappingsParser.parse();
+            servicesParser.parse();
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } // adds to topLevelTypeMappings
+        }
 
-        /* fifth step: generate jml comments for each type and each data set */
-        JMLCommentsGenerator generator = new JMLCommentsGenerator(specification, topLevelTypeMappings);
+        /* sixth step: generate jml comments for each type and each data set */
+        JMLCommentsGenerator generator = new JMLCommentsGenerator(topLevelTypes);
         try {
             generator.transformAllAnnotationsToJml();
         } catch (IOException e) {

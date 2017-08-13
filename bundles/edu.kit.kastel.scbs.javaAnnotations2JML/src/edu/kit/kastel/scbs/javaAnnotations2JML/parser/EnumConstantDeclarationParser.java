@@ -27,7 +27,7 @@ public abstract class EnumConstantDeclarationParser<R>
     }
 
     @Override
-    public abstract R parse() throws ParseException;
+    protected abstract R parseSource() throws ParseException;
 
     protected String removeQuotes(String string) {
         return string.replace("\"", "");

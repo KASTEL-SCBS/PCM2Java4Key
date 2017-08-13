@@ -59,7 +59,7 @@ public class ConfidentialityRepositoryParser
     }
 
     @Override
-    public ConfidentialitySpecification parse() throws ParseException {
+    protected ConfidentialitySpecification parseSource() throws ParseException {
         try {
             setConfidentialityPackage();
             setJavaTypes();
@@ -70,8 +70,7 @@ public class ConfidentialityRepositoryParser
             Optional<String> message = Optional.ofNullable(jme.getMessage());
             throw new ParseException("Java Model Exception occurred: " + message.orElse("(no error message)"), jme);
         }
-        setResult(specification);
-        return getResult();
+        return specification;
     }
 
     private void setConfidentialityPackage() throws JavaModelException, ParseException {

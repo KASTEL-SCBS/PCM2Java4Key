@@ -5,30 +5,17 @@ import java.util.stream.Collectors;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParameterSource;
 
-public abstract class AbstractService {
+public abstract class AbstractService extends Service {
 
     private String role;
 
-    private String name;
-
-    private List<ParameterSource> parameterSources;
-
     public AbstractService(String role, String name, List<ParameterSource> parameterSources) {
+        super(name, parameterSources);
         this.role = role;
-        this.name = name;
-        this.parameterSources = parameterSources;
     }
 
     public String getRole() {
         return role;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<ParameterSource> getParameterSources() {
-        return parameterSources;
     }
 
     public void addServiceToJmlComment(JmlComment comment) {
@@ -43,6 +30,6 @@ public abstract class AbstractService {
 
     @Override
     public String toString() {
-        return role + "." + name + "(" + ParameterSource.toString(parameterSources) + ")";
+        return role + "." + super.toString();
     }
 }

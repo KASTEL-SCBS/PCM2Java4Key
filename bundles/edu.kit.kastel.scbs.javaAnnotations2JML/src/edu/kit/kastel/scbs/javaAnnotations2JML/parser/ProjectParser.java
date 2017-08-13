@@ -46,11 +46,10 @@ public class ProjectParser extends JavaAnnotations2JMLParser<IProject, IJavaProj
     }
 
     @Override
-    public IJavaProject parse() throws ParseException {
+    public IJavaProject parseSource() throws ParseException {
         copyProjectOverwrite();
         assert project.exists() : "Project does not exist.";
-        setResult(convertToJavaProject());
-        return getResult();
+        return convertToJavaProject();
     }
 
     /**

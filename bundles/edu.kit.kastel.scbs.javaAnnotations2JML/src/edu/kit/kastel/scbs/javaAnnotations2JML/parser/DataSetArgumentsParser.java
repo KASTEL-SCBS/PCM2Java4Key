@@ -17,7 +17,7 @@ public class DataSetArgumentsParser extends EnumConstantDeclarationParser<List<D
     }
 
     @Override
-    public List<DataSetArguments> parse() throws ParseException {
+    protected List<DataSetArguments> parseSource() throws ParseException {
         List<DataSetArguments> dataSets = new LinkedList<>();
         for (EnumConstantDeclaration enumConstantDeclaration : getSource()) {
             try {
