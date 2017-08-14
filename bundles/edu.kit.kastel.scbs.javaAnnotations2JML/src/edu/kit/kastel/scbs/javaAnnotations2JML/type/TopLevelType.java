@@ -210,12 +210,12 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
     }
 
     /**
-     * Gets the related {@code DataSet}s for this {@code TopLevelType}. These data sets are not
-     * referenced in this top level type, but its super types.
+     * Gets the {@code DataSet}s from all {@code AbstractServiceType}s for this
+     * {@code TopLevelType}.
      * 
      * @return The related {@code DataSet}s for this {@code TopLevelType}.
      */
-    public Set<DataSet> getRelatedDataSets() {
+    public Set<DataSet> getServiceTypeDataSets() {
         Set<DataSet> dataSets = new HashSet<>();
         serviceTypes.forEach(e -> dataSets.addAll(e.getDataSets()));
         return dataSets;

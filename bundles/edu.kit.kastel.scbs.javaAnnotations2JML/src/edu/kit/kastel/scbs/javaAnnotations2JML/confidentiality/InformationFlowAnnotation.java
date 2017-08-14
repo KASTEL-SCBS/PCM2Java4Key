@@ -52,13 +52,24 @@ public class InformationFlowAnnotation {
         return parametersAndDataPairs;
     }
 
+    /**
+     * Gets all parameter sources from all parameters and data pairs of this annotation.
+     * 
+     * @return all parameter sources from all parameters and data pairs of this annotation.
+     */
     public List<ParameterSource> getParameterSources() {
         List<ParameterSource> params = new LinkedList<>();
         parametersAndDataPairs.forEach(e -> params.addAll(e.getParameterSources()));
         return params;
     }
 
-    // might have multiple the same data set more than once
+    /**
+     * Gets all data sets from all parameters and data pairs of this annotation.
+     * 
+     * Might have the same data set multiple times.
+     * 
+     * @return all data sets from all parameters and data pairs of this annotation.
+     */
     public List<DataSet> getDataSets() {
         List<DataSet> dataSets = new LinkedList<>();
         parametersAndDataPairs.forEach(e -> dataSets.addAll(e.getDataSets()));

@@ -144,7 +144,7 @@ public class ConfidentialityRepositoryParser
     private List<DataSet> getDataSetsByName(List<EnumConstant> dataSetEnumConstants) throws ParseException {
         List<DataSet> dataSets = new LinkedList<>();
         for (EnumConstant argument : dataSetEnumConstants) {
-            Optional<DataSet> optional = specification.getDataSetFromEnumConstantName(argument.getFullName());
+            Optional<DataSet> optional = specification.getDataSetFromEnumConstantName(argument.getEnumConstantFullName());
 
             DataSet dataSet = optional
                     .orElseThrow(() -> new ParseException("Unexpected data set with the name " + argument));

@@ -33,7 +33,7 @@ public class JMLCommentsGenerator {
 
     public void transformAnnotationsToJml(TopLevelType type) throws JavaModelException {
         // do not generate comments for classes without specification
-        for (DataSet dataSet : type.getRelatedDataSets()) {
+        for (DataSet dataSet : type.getServiceTypeDataSets()) {
             // generate one comment for each data set
             JmlComment comment = new JmlComment(dataSet);
             addAllServicesForDataSetToJmlComment(type.getServiceTypes(), dataSet, comment);

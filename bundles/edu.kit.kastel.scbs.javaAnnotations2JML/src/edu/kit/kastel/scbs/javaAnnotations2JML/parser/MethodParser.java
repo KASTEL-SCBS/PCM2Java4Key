@@ -80,7 +80,7 @@ public class MethodParser {
         InformationFlowAnnotationArguments arguments = new InformationFlowAnnotationParser(method).parse();
         // Optional's are empty if there was no fitting ParameterAndDataPair
         List<Optional<ParametersAndDataPair>> pairCorrespondences = arguments.getParametersAndDataPairEnumConstants()
-                .stream().map(e -> specification.getParametersAndDataPairFromEnumConstantName(e.getFullName()))
+                .stream().map(e -> specification.getParametersAndDataPairFromEnumConstantName(e.getEnumConstantFullName()))
                 .collect(Collectors.toList());
         return pairCorrespondences;
     }

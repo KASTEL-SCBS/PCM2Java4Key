@@ -6,83 +6,80 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.type.EnumConstant;
-
+/**
+ * Represents the confidentiality specification with the types from the project confidentiality
+ * package.
+ * 
+ * @author Nils Wilka
+ * @version 1.0, 14.08.2017
+ */
 public class ConfidentialitySpecification {
 
     private Set<DataSet> dataSets = new HashSet<>();
 
     private List<ParametersAndDataPair> parametersAndDataPairs = new LinkedList<>();
 
-    public boolean hasDataSet(DataSet dataSet) {
-        return dataSets.contains(dataSet);
-    }
-
-    public boolean hasDataSetWithEnumConstantName(String dataSetEnumConstantFullName) {
-        return getDataSets().stream().anyMatch(e -> e.getEnumConstantFullName().equals(dataSetEnumConstantFullName));
-    }
-
-    public boolean hasDataSetWithEnumConstantName(EnumConstant dataSetEnumConstant) {
-        return hasDataSetWithEnumConstantName(dataSetEnumConstant.getFullName());
-    }
-
-    public void addDataSet(DataSet dataSet) {
-        dataSets.add(dataSet);
-    }
-
-    public void addDataSet(final String id, final String name, final String enumConstantName) {
-        dataSets.add(new DataSet(id, name, enumConstantName));
-    }
-
+    /**
+     * Adds all given data sets to the specification.
+     * 
+     * @param dataSets
+     *            Data sets to be added to the specification.
+     */
     public void addAllDataSets(List<DataSet> dataSets) {
         this.dataSets.addAll(dataSets);
     }
 
+    /**
+     * Gets the data sets of the specification.
+     * 
+     * @return The data sets of the specification.
+     */
     public Set<DataSet> getDataSets() {
         return dataSets;
     }
 
-    public Optional<DataSet> getDataSetFromEnumConstantName(String dataSetEnumConstantFullName) {
-        return getDataSets().stream().filter(e -> e.getEnumConstantFullName().equals(dataSetEnumConstantFullName))
-                .findAny();
+    /**
+     * Gets the data set corresponding to the given enum constant full name.
+     * 
+     * Gets the data set with the equal enum constant full name to be more precise.
+     * 
+     * @param fullName
+     *            The enum constant full name to get the corresponding data set for.
+     * @return The data set with the equal enum constant full name.
+     */
+    public Optional<DataSet> getDataSetFromEnumConstantName(String fullName) {
+        return getDataSets().stream().filter(e -> e.equalsEnumConstantFullName(fullName)).findAny();
     }
 
-    public Optional<DataSet> getDataSetFromEnumConstantName(EnumConstant dataSetEnumConstant) {
-        return getDataSetFromEnumConstantName(dataSetEnumConstant.getFullName());
-    }
-
-    public boolean hasParameterAndDataPair(ParametersAndDataPair parametersAndDataPair) {
-        return parametersAndDataPairs.contains(parametersAndDataPair);
-    }
-
-    public boolean hasParametersAndDataPairWithEnumConstantName(String pairEnumConstantFullName) {
-        return getParameterAndDataPairs().stream()
-                .anyMatch(e -> e.getEnumConstantFullName().equals(pairEnumConstantFullName));
-    }
-
-    public boolean hasParametersAndDataPairWithEnumConstantName(EnumConstant pairEnumConstant) {
-        return hasParametersAndDataPairWithEnumConstantName(pairEnumConstant.getFullName());
-    }
-
-    public void addParameterAndDataPair(ParametersAndDataPair parametersAndDataPair) {
-        this.parametersAndDataPairs.add(parametersAndDataPair);
-    }
-
+    /**
+     * Adds all given parameters and data pairs to the specification.
+     * 
+     * @param parametersAndDataPairs
+     *            Parameters and data pairs to be added to the specification.
+     */
     public void addAllParameterAndDataPairs(List<ParametersAndDataPair> parametersAndDataPairs) {
         this.parametersAndDataPairs.addAll(parametersAndDataPairs);
     }
 
+    /**
+     * Gets the parameters and data pairs of the specification.
+     * 
+     * @return The parameters and data pairs of the specification.
+     */
     public List<ParametersAndDataPair> getParameterAndDataPairs() {
         return parametersAndDataPairs;
     }
 
-    public Optional<ParametersAndDataPair> getParametersAndDataPairFromEnumConstantName(
-            String parametersAndDataPairId) {
-        return getParameterAndDataPairs().stream()
-                .filter(e -> e.getEnumConstantFullName().equals(parametersAndDataPairId)).findAny();
-    }
-
-    public Optional<ParametersAndDataPair> getParametersAndDataPairFromEnumConstantName(EnumConstant pairEnumConstant) {
-        return getParametersAndDataPairFromEnumConstantName(pairEnumConstant.getFullName());
+    /**
+     * Gets the parameters and data pair corresponding to the given enum constant full name.
+     * 
+     * Gets the parameters and data pair with the equal enum constant full name to be more precise.
+     * 
+     * @param fullName
+     *            The enum constant full name to get the corresponding parameters and data pair for.
+     * @return The parameters and data pair with the equal enum constant full name.
+     */
+    public Optional<ParametersAndDataPair> getParametersAndDataPairFromEnumConstantName(String fullName) {
+        return getParameterAndDataPairs().stream().filter(e -> e.equalsEnumConstantFullName(fullName)).findAny();
     }
 }
