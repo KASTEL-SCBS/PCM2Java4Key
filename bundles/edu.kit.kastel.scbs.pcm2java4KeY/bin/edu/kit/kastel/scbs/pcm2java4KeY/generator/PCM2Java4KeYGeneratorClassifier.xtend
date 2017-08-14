@@ -1,56 +1,48 @@
 package edu.kit.kastel.scbs.pcm2java4KeY.generator
 
 import edu.kit.ipd.sdq.mdsd.pcm2java.generator.PCM2JavaGeneratorClassifier
-import edu.kit.kastel.scbs.confidentiality.NamedElement
 import edu.kit.kastel.scbs.confidentiality.repository.ParametersAndDataPair
 import org.palladiosimulator.pcm.repository.OperationSignature
 
-import static edu.kit.ipd.sdq.mdsd.pcm2java.generator.PCM2JavaGeneratorConstants.*
-import static edu.kit.ipd.sdq.mdsd.pcm2java.generator.PCM2JavaGeneratorHeadAndImports.*
-
 import static extension edu.kit.kastel.scbs.pcm2java4KeY.util.StereotypeUtil.*
+import static edu.kit.ipd.sdq.mdsd.pcm2java.generator.PCM2JavaGeneratorConstants.*
+
 
 final class PCM2Java4KeYGeneratorClassifier extends PCM2JavaGeneratorClassifier {
+	
+	new() {
+		generatorHeadAndImports = new PCM2Java4KeYGeneratorHeadAndImports
+	}			
 					
-	override String generateImportsAndHead() '''«
-		generateImportsAndInterfaceHead(iface).replaceFirst("public interface", generateInterfaceAnnotations + "public interface")
-	»'''
+	override String generateImportsAndHead() '''Â«
+		generatorHeadAndImports.generateImportsAndInterfaceHead(iface).replaceFirst("public interface", generateInterfaceAnnotations + "public interface")
+	Â»'''
 	
-	override generateMethodDeclaration(OperationSignature operationSignature) '''«
-		generateAnnotations(operationSignature.parametersAndDataPairs)»«
+	override generateMethodDeclaration(OperationSignature operationSignature) '''Â«
+		generateAnnotations(operationSignature.parametersAndDataPairs)Â»Â«
 		generateMethodDeclarationWithoutSemicolon(operationSignature)
-	»'''
+	Â»'''
 
-	private def String generateAnnotations(Iterable<ParametersAndDataPair> parametersAndDataPairs) '''«
-		FOR pair : parametersAndDataPairs
-			SEPARATOR newLine
-			AFTER newLine
-			»«generateAnnotation(pair)»«
-	ENDFOR»'''
-	
-	private def String generateInterfaceAnnotations() '''«
-			FOR pair : iface.parametersAndDataPairs
-				SEPARATOR newLine
-				AFTER newLine
-				»«generateAnnotation(pair)»«
-		ENDFOR»'''
-	
-	private def String generateAnnotation(ParametersAndDataPair parametersAndDataPair) {
-		val dataSetNames = '''
-		«FOR dataSet : parametersAndDataPair.dataTargets
-			BEFORE '"'
-			SEPARATOR '", "'
-			AFTER '"'»«
-			(dataSet as NamedElement).name
-		»«ENDFOR»'''
-		val parameterNames = '''«
-		FOR name : parametersAndDataPair.parameterSources
-			BEFORE '"'
-			SEPARATOR '", "'
-			AFTER '"'
-			»«name»«
-		ENDFOR»'''
-		return "@InformationFlow(dataTargets = {" + dataSetNames + "}, parameterSources =  {" + parameterNames + "})"
+	private def String generateAnnotations(Iterable<ParametersAndDataPair> parametersAndDataPairs) {
+		if (parametersAndDataPairs != null && parametersAndDataPairs.size > 0) {
+		return '''@InformationFlow(parametersAndDataPairs = Â«generateParametersAndDataPairArray(parametersAndDataPairs)Â») // TODO: verify annotationÂ«newLineÂ»'''
+		} else {
+			return ""
+		}
 	}
+	
+	private def String generateInterfaceAnnotations() '''Â«
+			generateAnnotations(iface.parametersAndDataPairs)
+	Â»'''
+	
+	
+	
+	private def String generateParametersAndDataPairArray(Iterable<ParametersAndDataPair> parametersAndDataPairs) '''Â«
+		FOR pair : parametersAndDataPairs // "@InformationFlow(ParametersAndDataPairs." + parametersAndDataPair.name +") // TODO: verify annotation"
+		BEFORE '{'
+		SEPARATOR ', '
+		AFTER '}'
+			Â»ParametersAndDataPairs.Â«pair.nameÂ»Â«
+    	ENDFORÂ»'''
 		
 }		

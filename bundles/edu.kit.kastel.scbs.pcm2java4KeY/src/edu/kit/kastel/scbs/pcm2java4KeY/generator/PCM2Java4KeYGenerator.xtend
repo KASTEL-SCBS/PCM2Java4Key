@@ -31,9 +31,11 @@ class PCM2Java4KeYGenerator extends PCM2JavaGenerator {
 		var processed = contents
 		if (userConfig.replaceStringsWithCharArrays) {
 			// TODO support many dimensional String arrays
-			processed = processed.replace(" String ", " char[] ").replace(" String[]" , "char[][]")
+			processed = processed.replace("	String ", "	char[] ").replace("	String[]" , " char[][]")
+			processed = processed.replace(" String ", " char[] ").replace(" String[]" , " char[][]")
 			processed = processed.replace(",String ", ",char[] ").replace(",String[]", ",char[][]")
 			processed = processed.replace("(String ", "(char[] ").replace("(String[]", "(char[][]")
+			processed = processed.replace("\"\"", "new char[0]")
 		}
 		return processed
 	}
