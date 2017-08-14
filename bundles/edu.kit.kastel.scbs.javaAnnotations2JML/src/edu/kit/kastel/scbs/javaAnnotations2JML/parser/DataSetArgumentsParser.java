@@ -8,7 +8,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.ParseException;
+import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
 
 public class DataSetArgumentsParser extends EnumConstantDeclarationParser<List<DataSetArguments>> {
 

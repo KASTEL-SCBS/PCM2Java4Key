@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generation;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,8 +7,8 @@ import java.util.Map;
 import org.eclipse.jdt.core.IMethod;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.InformationFlowAnnotation;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.AbstractServiceType;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.ServiceProvider;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.AbstractServiceType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.MethodProvider;
 
 public class ServiceCreator {
 

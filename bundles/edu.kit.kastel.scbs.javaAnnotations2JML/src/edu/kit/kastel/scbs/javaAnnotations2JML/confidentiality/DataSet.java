@@ -2,10 +2,9 @@ package edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.EnumConstant;
-import edu.kit.kastel.scbs.javaAnnotations2JML.TopLevelType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.EnumConstant;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
 
 /**
  * Represents a data set of the confidentiality specification. The id and the name correspond to the
@@ -54,15 +53,6 @@ public class DataSet {
 
     public String getEnumConstantFullName() {
         return enumConstant.getFullName();
-    }
-
-    public List<TopLevelType> getTopLevelType() {
-        Optional<List<TopLevelType>> optional = Optional.ofNullable(topLevelTypes);
-        return optional.orElse(new LinkedList<>());
-    }
-
-    public void addTopLevelType(TopLevelType type) {
-        topLevelTypes.add(type);
     }
 
     @Override

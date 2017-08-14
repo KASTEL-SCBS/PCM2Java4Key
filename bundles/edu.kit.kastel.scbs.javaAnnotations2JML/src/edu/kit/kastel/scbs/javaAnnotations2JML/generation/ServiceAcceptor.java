@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generation;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,9 +10,7 @@ import org.eclipse.jdt.core.IMethod;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.InformationFlowAnnotation;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.ConcreteServiceProvider;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.Service;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.ServiceProvider;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.Service;
 
 public class ServiceAcceptor {
 

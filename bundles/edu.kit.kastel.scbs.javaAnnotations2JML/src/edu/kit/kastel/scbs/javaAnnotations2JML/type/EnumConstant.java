@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML;
+package edu.kit.kastel.scbs.javaAnnotations2JML.type;
 
 /**
  * Represents an enum constant consisting of a enum type declaration name and the constant name.

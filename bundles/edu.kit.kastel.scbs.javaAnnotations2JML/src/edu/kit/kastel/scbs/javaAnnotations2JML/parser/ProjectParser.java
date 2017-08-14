@@ -12,7 +12,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.ParseException;
+import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
 
 /**
  * Copies the as source given {@code IProject} and converts it to a {@code IJavaProject}. Therefore

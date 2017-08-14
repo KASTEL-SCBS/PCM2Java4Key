@@ -6,12 +6,12 @@ import java.util.List;
 
 import org.eclipse.jdt.core.JavaModelException;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.Anno2JmlUtil;
-import edu.kit.kastel.scbs.javaAnnotations2JML.ParseException;
-import edu.kit.kastel.scbs.javaAnnotations2JML.TopLevelType;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.AbstractServiceType;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.ProvidedServiceType;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.RequiredServiceType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.AbstractServiceType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.ProvidedServiceType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.RequiredServiceType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.util.Anno2JmlUtil;
 
 /**
  * Used for scanning a given list of {@code TopLevelType}s and extracting their provided and

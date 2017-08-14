@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.EnumConstant;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.EnumConstant;
 
 /**
  * Represents a parameters and data pair of the confidentiality specification.

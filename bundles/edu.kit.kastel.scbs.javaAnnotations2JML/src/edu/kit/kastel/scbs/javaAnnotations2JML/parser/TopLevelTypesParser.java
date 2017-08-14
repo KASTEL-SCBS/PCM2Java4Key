@@ -12,9 +12,9 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.JdtAstJmlUtil;
-import edu.kit.kastel.scbs.javaAnnotations2JML.ParseException;
-import edu.kit.kastel.scbs.javaAnnotations2JML.TopLevelType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.util.JdtAstJmlUtil;
 
 /**
  * Parser for an {@code IJavaProject}. Scans all {@code ICompilationUnit}s,
@@ -42,8 +42,30 @@ public class TopLevelTypesParser extends JavaAnnotations2JMLParser<List<TopLevel
     @Override
     protected List<TopLevelType> parseSource() throws ParseException {
         allTopLevelTypes = new ArrayList<>(getSource());
+        parseFieldsAndSuperTypes(getSource());
+        List<TopLevelType> usedTypes = new LinkedList<>();
+        for (TopLevelType type : allTopLevelTypes) {
+            usedTypes.addAll(type.getSuperTypeInterfaces());
+            type.getFields().forEach(e -> usedTypes.add(e.getTopLevelType()));
+        }
+        parseMethods(usedTypes);
+        return allTopLevelTypes;
+    }
+
+    private void parseMethods(List<TopLevelType> topLevelTypes) throws ParseException {
         try {
-            for (TopLevelType type : getSource()) {
+            for (TopLevelType type : topLevelTypes) {
+                Arrays.asList(type.getIType().getMethods()).forEach(e -> type.addSourceMethod(e));
+            }
+        } catch (JavaModelException jme) {
+            Optional<String> message = Optional.ofNullable(jme.getMessage());
+            throw new ParseException("Java Model Exception occurred: " + message.orElse("(no error message)"), jme);
+        }
+    }
+
+    private void parseFieldsAndSuperTypes(List<TopLevelType> topLevelTypes) throws ParseException {
+        try {
+            for (TopLevelType type : topLevelTypes) {
                 parseSuperTypeInterfaces(type);
                 parseFields(type);
             }
@@ -51,7 +73,6 @@ public class TopLevelTypesParser extends JavaAnnotations2JMLParser<List<TopLevel
             Optional<String> message = Optional.ofNullable(jme.getMessage());
             throw new ParseException("Java Model Exception occurred: " + message.orElse("(no error message)"), jme);
         }
-        return allTopLevelTypes;
     }
 
     private void parseSuperTypeInterfaces(TopLevelType type) throws JavaModelException {

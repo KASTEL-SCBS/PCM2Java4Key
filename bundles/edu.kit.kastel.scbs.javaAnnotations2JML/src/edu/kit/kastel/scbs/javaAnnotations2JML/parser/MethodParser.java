@@ -8,13 +8,13 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.Anno2JmlUtil;
-import edu.kit.kastel.scbs.javaAnnotations2JML.MethodAcceptor;
-import edu.kit.kastel.scbs.javaAnnotations2JML.ParseException;
-import edu.kit.kastel.scbs.javaAnnotations2JML.SourceMethodProvider;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ConfidentialitySpecification;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.InformationFlowAnnotation;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParametersAndDataPair;
+import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.MethodAcceptor;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.SourceMethodProvider;
+import edu.kit.kastel.scbs.javaAnnotations2JML.util.Anno2JmlUtil;
 
 public class MethodParser {
 

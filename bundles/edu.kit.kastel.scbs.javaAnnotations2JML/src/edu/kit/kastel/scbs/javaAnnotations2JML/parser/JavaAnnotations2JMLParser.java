@@ -1,6 +1,6 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.ParseException;
+import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
 
 /**
  * Abstract class for all parsers in this project.

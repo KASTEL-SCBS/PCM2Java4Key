@@ -8,9 +8,9 @@ import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.Anno2JmlUtil;
-import edu.kit.kastel.scbs.javaAnnotations2JML.EnumConstant;
-import edu.kit.kastel.scbs.javaAnnotations2JML.ParseException;
+import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.EnumConstant;
+import edu.kit.kastel.scbs.javaAnnotations2JML.util.Anno2JmlUtil;
 
 /**
  * Used to parse a method and its information flow annotation. Then returns the

@@ -10,8 +10,8 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaModelException;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.ParseException;
-import edu.kit.kastel.scbs.javaAnnotations2JML.TopLevelType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
 
 /**
  * Parser for an {@code IJavaProject}. Scans all {@code ICompilationUnit}s,

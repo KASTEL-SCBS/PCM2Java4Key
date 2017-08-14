@@ -10,18 +10,18 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.JavaAnnotations2JML;
+import edu.kit.kastel.scbs.javaAnnotations2JML.command.JavaAnnotations2JML;
 
 /**
  * Handler for the 'Create JML-Comments for Confidentiality Verification' (createJML) event.
  * 
- * Extracts the {@code IProject} from the {@code ISelection} and calls
- * {@code JavaAnnotations2JML#execute(IProject))}.
+ * Extracts the {@code IProject} from the {@code ISelection} and calls {@code execute())} on a new
+ * {@code JavaAnnotations2JML(IProject)} command.
  * 
  * @author Nils Wilka
- * @version 1.0, 28.07.2017
+ * @version 1.1, 14.08.2017
  */
-public class AnnotationsHandler extends AbstractHandler implements IHandler {
+public class JavaAnnotations2JmlHandler extends AbstractHandler implements IHandler {
 
     @Override
     public Object execute(final ExecutionEvent event) throws ExecutionException {
@@ -40,7 +40,7 @@ public class AnnotationsHandler extends AbstractHandler implements IHandler {
             }
         }
         assert project.exists() : "Project does not exist.";
-        JavaAnnotations2JML.getSingleton().execute(project);
+        new JavaAnnotations2JML(project).execute();
         return null;
     }
 }

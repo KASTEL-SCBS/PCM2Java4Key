@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.generation;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generation.service;
 
 import java.util.List;
 

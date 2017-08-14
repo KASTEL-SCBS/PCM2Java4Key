@@ -1,8 +1,9 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.generation;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generation.service;
 
 import java.util.List;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParameterSource;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.JmlComment;
 
 public class ProvidedService extends AbstractService {
 

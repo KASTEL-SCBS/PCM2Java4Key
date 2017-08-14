@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.generation;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -9,11 +9,22 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.IMethod;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.MethodProvider;
-import edu.kit.kastel.scbs.javaAnnotations2JML.TopLevelType;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.InformationFlowAnnotation;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.JmlComment;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.ServiceProvider;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.AbstractService;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.Service;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.MethodProvider;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
 
+/**
+ * Service types include all super types and fields, which contain an information flow annotation
+ * and are either 'Required Types' or 'Provided Types'
+ * 
+ * @author Nils Wilka
+ * @version 1.0, 14.08.2017
+ */
 public abstract class AbstractServiceType implements MethodProvider, ServiceProvider {
 
     private String role;

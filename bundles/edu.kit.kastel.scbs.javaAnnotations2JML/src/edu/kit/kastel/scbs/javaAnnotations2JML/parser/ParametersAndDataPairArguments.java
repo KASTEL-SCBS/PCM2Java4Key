@@ -2,7 +2,7 @@ package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
 
 import java.util.List;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.EnumConstant;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.EnumConstant;
 
 public class ParametersAndDataPairArguments {
 

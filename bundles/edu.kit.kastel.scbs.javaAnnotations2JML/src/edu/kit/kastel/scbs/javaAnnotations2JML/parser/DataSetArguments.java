@@ -1,6 +1,6 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.EnumConstant;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.EnumConstant;
 
 public class DataSetArguments {
 

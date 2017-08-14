@@ -6,9 +6,10 @@ import java.util.Optional;
 
 import org.eclipse.jdt.core.JavaModelException;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.JdtAstJmlUtil;
-import edu.kit.kastel.scbs.javaAnnotations2JML.TopLevelType;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.AbstractServiceType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.util.JdtAstJmlUtil;
 
 public class JMLCommentsGenerator {
 
@@ -32,12 +33,17 @@ public class JMLCommentsGenerator {
 
     public void transformAnnotationsToJml(TopLevelType type) throws JavaModelException {
         // do not generate comments for classes without specification
-        for (DataSet dataSet : type.getDataSets()) {
+        for (DataSet dataSet : type.getRelatedDataSets()) {
             // generate one comment for each data set
             JmlComment comment = new JmlComment(dataSet);
             addAllServicesForDataSetToJmlComment(type.getServiceTypes(), dataSet, comment);
             // if the type has any IF annotation, it will get a jml comment
-            JdtAstJmlUtil.addStringToAbstractType(type.getIType(), comment.toString());
+            try {
+                JdtAstJmlUtil.addStringToAbstractType(type.getIType(), comment.toString());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 

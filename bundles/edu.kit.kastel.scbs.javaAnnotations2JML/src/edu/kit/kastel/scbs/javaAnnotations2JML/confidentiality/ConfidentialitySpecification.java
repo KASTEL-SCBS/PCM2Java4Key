@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.EnumConstant;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.EnumConstant;
 
 public class ConfidentialitySpecification {
 

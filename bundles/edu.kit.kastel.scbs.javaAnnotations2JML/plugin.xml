@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="edu.kit.kastel.scbs.javaAnnotations2JML.handler.AnnotationsHandler"
+            defaultHandler="edu.kit.kastel.scbs.javaAnnotations2JML.handler.JavaAnnotations2JmlHandler"
             id="edu.kit.kastel.scbs.javaAnnotations2JML.createJML"
             name="Create JML-Comments for Confidentiality Verification">
       </command>

@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML;
+package edu.kit.kastel.scbs.javaAnnotations2JML.exception;
 
 public class ParseException extends Exception {
 

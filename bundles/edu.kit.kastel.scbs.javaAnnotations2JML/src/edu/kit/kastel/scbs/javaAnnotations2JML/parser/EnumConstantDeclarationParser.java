@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.ParseException;
+import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
 
 public abstract class EnumConstantDeclarationParser<R>
         extends JavaAnnotations2JMLParser<List<EnumConstantDeclaration>, R> {

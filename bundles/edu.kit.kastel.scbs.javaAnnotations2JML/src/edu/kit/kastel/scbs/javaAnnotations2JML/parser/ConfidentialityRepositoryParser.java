@@ -18,13 +18,13 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.EnumConstant;
-import edu.kit.kastel.scbs.javaAnnotations2JML.JdtAstJmlUtil;
-import edu.kit.kastel.scbs.javaAnnotations2JML.ParseException;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ConfidentialitySpecification;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParameterSource;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParametersAndDataPair;
+import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.EnumConstant;
+import edu.kit.kastel.scbs.javaAnnotations2JML.util.JdtAstJmlUtil;
 
 /**
  * Parser for the confidentiality repository package.

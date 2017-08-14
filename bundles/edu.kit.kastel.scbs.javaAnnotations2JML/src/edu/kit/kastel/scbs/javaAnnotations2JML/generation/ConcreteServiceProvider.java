@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.Service;
 
 public class ConcreteServiceProvider implements ServiceProvider {
 
