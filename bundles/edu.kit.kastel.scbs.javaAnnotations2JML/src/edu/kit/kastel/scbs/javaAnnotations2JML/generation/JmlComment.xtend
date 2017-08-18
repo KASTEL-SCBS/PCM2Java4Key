@@ -8,6 +8,9 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet
  * Represents a jml comment for information flow properties in a java type.
  * 
  * The string representation is available via the {@code toString} method.
+ * 
+ * @author Nils Wilka
+ * @version 1.0, 18.08.2017
  */
 class JmlComment {
 

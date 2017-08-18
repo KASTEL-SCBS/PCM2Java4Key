@@ -91,8 +91,8 @@ public abstract class EnumConstantDeclarationParser<R>
      *             if the given string does not match an array string representation.
      */
     protected String trimArrayArgument(String arrayTypeString, String string) throws ParseException {
-        if (!Pattern.matches("new " + arrayTypeString + "[]{" + "." + "}", string)) {
-            throw new ParseException("Unexpected input as array: " + string);
+        if (!Pattern.matches("new " + arrayTypeString + "\\[\\]\\{" + ".+" + "\\}", string)) {
+            throw new ParseException("Unexpected input as array: '" + string + "'");
         }
         return string.substring(7 + arrayTypeString.length(), string.length() - 1);
     }

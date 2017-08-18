@@ -78,7 +78,7 @@ public final class JavaAnnotations2JML implements Command, IProjectProvider, IJa
         commands.add(new ParseTopLevelType(this));
         commands.add(new SetServiceTypes(this, this));
         commands.add(new SetMethods(this, this));
-        commands.add(new SetServices(this));
+        commands.add(new CreateServices(this));
         commands.add(new GenerateJmlComments(this));
     }
 
