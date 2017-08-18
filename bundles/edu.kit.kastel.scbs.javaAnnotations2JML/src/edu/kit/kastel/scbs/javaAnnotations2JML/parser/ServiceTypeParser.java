@@ -94,7 +94,7 @@ public class ServiceTypeParser extends JavaAnnotations2JMLParser<List<TopLevelTy
         List<RequiredServiceType> requiredTypes = new LinkedList<>();
         for (TopLevelType.Field field : type.getFields()) {
             if (Anno2JmlUtil.hasInformationFlowAnnotation(field.getTopLevelType().getIType())) {
-                requiredTypes.add(new RequiredServiceType(field.getName(), type, field.getTopLevelType()));
+                requiredTypes.add(new RequiredServiceType(field.getName(), field.getTopLevelType(), type));
             }
         }
         return requiredTypes;
@@ -115,7 +115,7 @@ public class ServiceTypeParser extends JavaAnnotations2JMLParser<List<TopLevelTy
         List<ProvidedServiceType> providedTypes = new LinkedList<>();
         for (TopLevelType serviceType : implementedInterfaces) {
             if (Anno2JmlUtil.hasInformationFlowAnnotation(serviceType.getIType())) {
-                providedTypes.add(new ProvidedServiceType(type, serviceType));
+                providedTypes.add(new ProvidedServiceType(serviceType, type));
             }
         }
         return providedTypes;
