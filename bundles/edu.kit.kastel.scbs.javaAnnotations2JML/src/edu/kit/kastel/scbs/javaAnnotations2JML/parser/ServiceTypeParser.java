@@ -1,8 +1,10 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.core.JavaModelException;
 
@@ -20,19 +22,23 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.util.Anno2JmlUtil;
  * 
  * Provided types are the implemented interfaces and required types are the types of fields.
  * 
+ * The given list of {@code TopLevelType}s should be a unique set and their types and fields should
+ * preserve that condition.
+ * 
  * @author Nils Wilka
  * @version 1.0, 04.08.2017
  */
 public class ServiceTypeParser extends JavaAnnotations2JMLParser<List<TopLevelType>, List<AbstractServiceType>> {
 
     /**
-     * Constructs a new parser with the given ist of {@code TopLevelType}s.
+     * Constructs a new parser with the given list of {@code TopLevelType}s.
      * 
      * @param source
      *            The list of {@code TopLevelType}s to scan.
      */
     public ServiceTypeParser(List<TopLevelType> source) {
         super(source);
+        assert new HashSet<>(source).size() == source.size() : "Not a unique set of TopLevelTypes";
     }
 
     @Override
@@ -48,14 +54,28 @@ public class ServiceTypeParser extends JavaAnnotations2JMLParser<List<TopLevelTy
         return allAbstractServicesTypes;
     }
 
+    /**
+     * Scans all fields and super types of the given {@code TopLevelType}. All types with an
+     * information flow annotation are seen as relevant and all remaining types are ignored.
+     * 
+     * {@code RequiredServiceType}s are created from fields and {@code ProvidedServiceType}s from
+     * the super types. Both are part of the resulting list of {@code AbstractServiceType}s.
+     * 
+     * @param type
+     *            The {@code TopLevelType} to get the fields and super types from.
+     * @return A list of{@code AbstractServiceType}s created from the given {@code TopLevelType}.
+     * @throws ParseException
+     *             if the parsing of the {@code IJavaProject} triggered and
+     *             {@code JavaModelException}.
+     */
     private List<AbstractServiceType> parseServiceTypes(final TopLevelType type) throws ParseException {
         List<AbstractServiceType> serviceTypes = new LinkedList<>();
         try {
             serviceTypes.addAll(getRequiredTopLevelTypeFields(type));
             serviceTypes.addAll(getProvidedTopLevelTypes(type));
-        } catch (JavaModelException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (JavaModelException jme) {
+            Optional<String> message = Optional.ofNullable(jme.getMessage());
+            throw new ParseException("Java Model Exception occurred: " + message.orElse("(no error message)"), jme);
         }
         return serviceTypes;
     }
@@ -70,8 +90,7 @@ public class ServiceTypeParser extends JavaAnnotations2JMLParser<List<TopLevelTy
      * @throws JavaModelException
      *             if the parsing of the {@code IJavaProject} triggers them.
      */
-    private List<RequiredServiceType> getRequiredTopLevelTypeFields(final TopLevelType type)
-            throws ParseException, JavaModelException {
+    private List<RequiredServiceType> getRequiredTopLevelTypeFields(final TopLevelType type) throws JavaModelException {
         List<RequiredServiceType> requiredTypes = new LinkedList<>();
         for (TopLevelType.Field field : type.getFields()) {
             if (Anno2JmlUtil.hasInformationFlowAnnotation(field.getTopLevelType().getIType())) {
@@ -90,8 +109,7 @@ public class ServiceTypeParser extends JavaAnnotations2JMLParser<List<TopLevelTy
      * @throws JavaModelException
      *             if the parsing of the {@code IJavaProject} triggers them.
      */
-    private List<ProvidedServiceType> getProvidedTopLevelTypes(final TopLevelType type)
-            throws ParseException, JavaModelException {
+    private List<ProvidedServiceType> getProvidedTopLevelTypes(final TopLevelType type) throws JavaModelException {
         List<TopLevelType> implementedInterfaces = type.getSuperTypeInterfaces();
 
         List<ProvidedServiceType> providedTypes = new LinkedList<>();

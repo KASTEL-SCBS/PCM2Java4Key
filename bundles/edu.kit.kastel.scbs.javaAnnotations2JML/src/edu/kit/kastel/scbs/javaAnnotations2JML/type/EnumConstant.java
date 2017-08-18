@@ -54,4 +54,27 @@ public class EnumConstant implements EnumConstantInterface {
     public String getEnumConstantFullName() {
         return constantType + "." + constantName;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj instanceof EnumConstant) {
+            EnumConstant other = (EnumConstant) obj;
+            // equal by full name
+            return this.getEnumConstantFullName().equals(other.getEnumConstantFullName());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return getEnumConstantFullName().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getEnumConstantFullName();
+    }
 }

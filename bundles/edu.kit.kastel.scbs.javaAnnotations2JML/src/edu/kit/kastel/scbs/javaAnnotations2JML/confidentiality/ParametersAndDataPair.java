@@ -54,6 +54,24 @@ public class ParametersAndDataPair implements EnumConstantInterface {
     }
 
     /**
+     * Gets the {@code DataSet}s.
+     * 
+     * @return The {@code DataSet}s.
+     */
+    public List<DataSet> getDataSets() {
+        return dataSets;
+    }
+
+    /**
+     * Gets the {@code ParameterSource}s.
+     * 
+     * @return The {@code ParameterSource}s.
+     */
+    public List<ParameterSource> getParameterSources() {
+        return parameterSources;
+    }
+
+    /**
      * Gets the enum constant representing the data set.
      * 
      * @return The enum constant representing the data set.
@@ -75,26 +93,6 @@ public class ParametersAndDataPair implements EnumConstantInterface {
     @Override
     public String getEnumConstantFullName() {
         return enumConstant.getEnumConstantFullName();
-    }
-
-    /**
-     * 
-     * Gets the {@code DataSet}s.
-     * 
-     * 
-     * @return The {@code DataSet}s.
-     */
-    public List<DataSet> getDataSets() {
-        return dataSets;
-    }
-
-    /**
-     * Gets the {@code ParameterSource}s.
-     * 
-     * @return The {@code ParameterSource}s.
-     */
-    public List<ParameterSource> getParameterSources() {
-        return parameterSources;
     }
 
     @Override

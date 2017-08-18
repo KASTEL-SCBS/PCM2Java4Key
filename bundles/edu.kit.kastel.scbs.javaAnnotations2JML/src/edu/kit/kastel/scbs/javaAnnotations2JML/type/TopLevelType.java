@@ -1,6 +1,5 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.type;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -13,7 +12,6 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -237,8 +235,8 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
     }
 
     @Override
-    public List<IMethod> getSourceMethods() throws JavaModelException {
-        return Arrays.asList(this.getIType().getMethods());
+    public List<IMethod> getSourceMethods() {
+        return this.sourceMethods;
     }
 
     @Override

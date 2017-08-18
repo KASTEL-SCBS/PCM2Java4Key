@@ -13,7 +13,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.type.EnumConstant;
 import edu.kit.kastel.scbs.javaAnnotations2JML.util.Anno2JmlUtil;
 
 /**
- * Used to parse a method and its information flow annotation. Then returns the
+ * Used to parse the information flow annotation of a given method. Then returns the
  * {@code InformationFlowAnnotationArguments} to be used in the context of a
  * {@code ConfidentialitySpecification} to create {@code InformationFlowAnnotation}s.
  * 
@@ -24,7 +24,7 @@ public class InformationFlowAnnotationParser
         extends JavaAnnotations2JMLParser<IMethod, InformationFlowAnnotationArguments> {
 
     /**
-     * Constructs a new parser with the given method as source.
+     * Creates a new parser with the given method as source.
      * 
      * @param source
      *            The {@code IMethod} to scan.
