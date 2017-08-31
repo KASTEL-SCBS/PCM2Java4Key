@@ -10,6 +10,8 @@ import org.modelversioning.emfprofileapplication.StereotypeApplication
 
 import static edu.kit.ipd.sdq.mdsd.pcm2java.generator.PCM2JavaGeneratorConstants.*
 import static extension edu.kit.kastel.scbs.pcm2java4KeY.util.StereotypeUtil.*
+import edu.kit.kastel.scbs.confidentiality.data.ParameterizedDataSetMapEntry
+import edu.kit.kastel.scbs.confidentiality.data.SpecificationParameter
 
 final class PCM2Java4KeYGeneratorConfidentiality {
 	
@@ -24,7 +26,7 @@ EXAMPLE // TODO: verify data sets.
 	public final String id;
 	public final String name;
 	
-	DataSets(String id, String name) {
+	 private «DATA_SETS_CLASS_NAME»(String id, String name) {
 		this.id = id;
 	    this.name = name;
 	}
@@ -42,7 +44,7 @@ EXAMPLE // TODO: verify data set maps
 	private final String id;
 	private final String name;
 	
-	DataSetMaps(String id, String name) {
+	private 	«DATA_SET_MAPS_CLASS_NAME»(String id, String name) {
 		this.id = id;
 		this.name = name;
 	}
@@ -51,25 +53,63 @@ EXAMPLE // TODO: verify data set maps
 
 	private static final String DATA_SET_MAPS_EXAMPLE = '''    EXAMPLE("DSM1", "data set map 1");'''
 
-	private static final String DATA_SET_MAP_ENRTIES_CLASS_NAME = "DataSetMapEntries"
+	private static final String DATA_SET_MAP_ENTRIES_CLASS_NAME = "DataSetMapEntries"
 
 	private static final String DATA_SET_MAP_ENTRIES = '''package «PACKAGE»;
-public enum «DATA_SET_MAP_ENRTIES_CLASS_NAME» {
+public enum «DATA_SET_MAP_ENTRIES_CLASS_NAME» {
 EXAMPLE // TODO: verify data set map entries
 	
 	public final String id;
-	public final DataSetMaps dataSetMap;
 	public final String name;
+	public final DataSetMaps map;
 	
-	private DataSetMapEntries(String id, DataSetMaps dataSetMap, String name) {
+	private «DATA_SET_MAP_ENTRIES_CLASS_NAME»(String id, String name, DataSetMaps map) {
 		this.id = id;
-		this.dataSetMap = dataSetMap;
 		this.name = name;
+		this.map = map;
 	}
 }
 '''
+	
+	private static final String DATA_SET_MAP_ENTRIES_EXAMPLE = '''    EXAMPLE_A("DSM1_E1", "EXAMPLE[A]", null /* DataSetMaps.EXAMPLE */);'''
+	
+	private static final String SPECIFICATION_PARAMETERS_CLASS_NAME = "SpecificationParameters"
+	
+	private static final String SPECIFICATION_PARAMETERS = '''package «PACKAGE»;
+	public enum «SPECIFICATION_PARAMETERS_CLASS_NAME» {
+EXAMPLE // TODO: verify specification parameters
+	
+	public final String id;
+	public final String name;
+	public final String definingServiceParameter;
+	
+	private «SPECIFICATION_PARAMETERS_CLASS_NAME»(String id, String name, String definingServiceParameter) {
+		this.id = id;
+		this.name = name;
+		this.definingServiceParameter = definingServiceParameter;
+	}
+}'''
+	
+	private static final String SPECIFICATION_PARAMETERS_EXAMPLE = '''    EXAMPLE("1234", "EXAMPLE", "exampleParameter");'''
 
-	private static final String DATA_SET_MAP_ENTRIES_EXAMPLE = '''    EXAMPLE_A("DSM1_E1", DataSetMaps.EXAMPLE, "EXAMPLE[A]");'''
+	private static final String PARAMETERIZED_DATA_SET_MAP_ENTRIES_CLASS_NAME = "ParameterizedDataSetMapEntries"
+	
+	private static final String PARAMETERIZED_DATA_SET_MAP_ENTRIES = '''package «PACKAGE»;
+public enum «PARAMETERIZED_DATA_SET_MAP_ENTRIES_CLASS_NAME» {
+EXAMPLE // TODO: verify parameterized data set map entries
+	
+	public final String id;
+	public final DataSetMaps map;
+	public final SpecificationParameters parameter;
+	
+	private «PARAMETERIZED_DATA_SET_MAP_ENTRIES_CLASS_NAME»(String id, DataSetMaps map, SpecificationParameters parameter) {
+		this.id = id;
+		this.map = map;
+		this.parameter = parameter;
+	}
+}'''
+	
+	private static final String PARAMETERIZED_DATA_SET_MAP_ENTRIES_EXAMPLE = '''	EXAMPLE("1234", null /* DataSetMaps.EXAMPLE */, null /* SpecificationParameters.EXAMPLE */);'''
 
 	private static final String PARAMETERS_AND_DATA_PAIRS_CLASS_NAME = "ParametersAndDataPairs"
 
@@ -80,16 +120,18 @@ EXAMPLE // TODO: verify parameters and data pairs
 	public final String[] parameterSources;
 	public final DataSets[] dataSets;
 	public final DataSetMapEntries[] dataSetMapEntries;
+	public final ParameterizedDataSetMapEntries[] parameterizedDataSetMapEntries;
 	
-	ParametersAndDataPairs(String[] parameterSources, DataSets[] dataSets, DataSetMapEntries[] dataSetMapEntries) {
+	private «PARAMETERS_AND_DATA_PAIRS_CLASS_NAME»(String[] parameterSources, DataSets[] dataSets, DataSetMapEntries[] dataSetMapEntries, ParameterizedDataSetMapEntries[] parameterizedDataSetMapEntries) {
 		this.parameterSources = parameterSources;
 		this.dataSets = dataSets;
 		this.dataSetMapEntries = dataSetMapEntries;
+		this.parameterizedDataSetMapEntries = parameterizedDataSetMapEntries;
 	}	
 }
 '''
 	
-	private static final String PARAMETERS_AND_DATA_PAIRS_EXAMPLE = '''    EXAMPLE(new String[] {param1}, new DataSets[] {DataSets.EXAMPLE}, null);'''
+	private static final String PARAMETERS_AND_DATA_PAIRS_EXAMPLE = '''    EXAMPLE(new String[] {param1}, null /* new DataSets[] {DataSets.EXAMPLE} /*, null, null);'''
 
 	private static final String INFORMATION_FLOW_CLASS_NAME = "InformationFlow"
 
@@ -101,7 +143,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface «INFORMATION_FLOW_CLASS_NAME» {
-	ParametersAndDataPairs[] parametersAndDataPairs();
+	«PARAMETERS_AND_DATA_PAIRS_CLASS_NAME»[] «PARAMETERS_AND_DATA_PAIRS_CLASS_NAME.toFirstLower»();
 }
 '''
 	
@@ -110,17 +152,21 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 	private static final String FILE_EXT = ".java"
 
 	static def Triplet<String, String, String>[] generateConfidentialityCodeWithFolderAndFileNames(Iterable<StereotypeApplication> stereotypeApplications) {
-		val Triplet<String, String, String>[] result = newArrayOfSize(5)
+		val Triplet<String, String, String>[] result = newArrayOfSize(7)
 		val userParametersAndDataPairs = getUserParametersAndDataPairs(stereotypeApplications)
 		val userDataSets = getUserDataSets(userParametersAndDataPairs)
 		val userDataSetMapEntries = getUserDataSetMapEntries(userParametersAndDataPairs)
-		val userDataSetMaps = getUserDataSetMaps(userDataSetMapEntries)
+		val userParameterizedDataSetMapEntries = getUserParameterizedDataSetMapEntries(userParametersAndDataPairs)
+		val userDataSetMaps = getUserDataSetMaps(userDataSetMapEntries, userParameterizedDataSetMapEntries)
+		val userSpecificationParameters = getUserSpecificationParameters(userParameterizedDataSetMapEntries)
 		
 		result.set(0, new Triplet(addUserDataSets(DATA_SETS, userDataSets), FOLDER_NAME, DATA_SETS_CLASS_NAME + FILE_EXT))
 		result.set(1, new Triplet(addUserDataSetMaps(DATA_SET_MAPS, userDataSetMaps), FOLDER_NAME, DATA_SET_MAPS_CLASS_NAME + FILE_EXT))
-		result.set(2, new Triplet(addUserDataSetMapEntries(DATA_SET_MAP_ENTRIES, userDataSetMapEntries), FOLDER_NAME, DATA_SET_MAP_ENRTIES_CLASS_NAME + FILE_EXT))
+		result.set(2, new Triplet(addUserDataSetMapEntries(DATA_SET_MAP_ENTRIES, userDataSetMapEntries), FOLDER_NAME, DATA_SET_MAP_ENTRIES_CLASS_NAME + FILE_EXT))
 		result.set(3, new Triplet(addUserParametersAndDataPairs(PARAMETERS_AND_DATA_PAIRS, userParametersAndDataPairs), FOLDER_NAME,PARAMETERS_AND_DATA_PAIRS_CLASS_NAME + FILE_EXT))
 		result.set(4, new Triplet(INFORMATION_FLOW, FOLDER_NAME, INFORMATION_FLOW_CLASS_NAME + FILE_EXT))
+		result.set(5, new Triplet(addUserParameterizedDataSetMapEntries(PARAMETERIZED_DATA_SET_MAP_ENTRIES, userParameterizedDataSetMapEntries), FOLDER_NAME, PARAMETERIZED_DATA_SET_MAP_ENTRIES_CLASS_NAME + FILE_EXT))
+		result.set(6, new Triplet(addUserSpecificationParameters(SPECIFICATION_PARAMETERS, userSpecificationParameters), FOLDER_NAME, SPECIFICATION_PARAMETERS_CLASS_NAME + FILE_EXT))
 		return result
 	}
 	
@@ -137,11 +183,19 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 	}
 	
 	static def String getDataSetMapEntriesAsFullyQualifiedType() {
-		return PACKAGE +  "."  + DATA_SET_MAP_ENRTIES_CLASS_NAME
+		return PACKAGE +  "."  + DATA_SET_MAP_ENTRIES_CLASS_NAME
+	}
+		
+	static def String getParameterizedDataSetMapEntriesAsFullyQualifiedType() {
+		return PACKAGE + "." + PARAMETERIZED_DATA_SET_MAP_ENTRIES_CLASS_NAME
 	}
 	
 	static def String getParametersAndDataPairsAsFullyQualifiedType() {
 		return PACKAGE +  "." + PARAMETERS_AND_DATA_PAIRS_CLASS_NAME
+	}
+	
+	static def String getSpecificationParametersAsFullyQualifiedType() {
+		return PACKAGE + "." + SPECIFICATION_PARAMETERS_CLASS_NAME
 	}
 	
 	private static def String addUserDataSets(String dataSets, Iterable<DataSet> userDataSets) {
@@ -168,11 +222,27 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 		}
 	}
 	
+	private static def String addUserParameterizedDataSetMapEntries(String parameterizedDataSetMapEntries, Iterable<ParameterizedDataSetMapEntry> userParameterizedDataSetMapEntries) {
+		if (userParameterizedDataSetMapEntries.size > 0) {
+			parameterizedDataSetMapEntries.replaceFirst("EXAMPLE", userParameterizedDataSetMapEntries.generateUserParameterizedDataSetMapEntriesString)
+		} else {
+			return parameterizedDataSetMapEntries.replaceFirst("EXAMPLE", PARAMETERIZED_DATA_SET_MAP_ENTRIES_EXAMPLE)
+		}
+	}
+	
 	private static def String addUserParametersAndDataPairs(String parametersAndDataPairs, Iterable<ParametersAndDataPair> userParametersAndDataPairs) {
 		if (userParametersAndDataPairs.size > 0) {
 			parametersAndDataPairs.replaceFirst("EXAMPLE", userParametersAndDataPairs.generateUserParametersAndDataPairsString)
 		} else {
 			return parametersAndDataPairs.replaceFirst("EXAMPLE", PARAMETERS_AND_DATA_PAIRS_EXAMPLE)
+		}
+	}
+	
+	private static def String addUserSpecificationParameters(String specificationParameters, Iterable<SpecificationParameter> userSpecificationParameters) {
+		if (userSpecificationParameters.size > 0) {
+			specificationParameters.replaceFirst("EXAMPLE", userSpecificationParameters.generateUserSpecificationParametersString)
+		} else {
+			return specificationParameters.replaceFirst("EXAMPLE", SPECIFICATION_PARAMETERS_EXAMPLE)
 		}
 	}
 	
@@ -190,7 +260,7 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 		BEFORE "	"
 		SEPARATOR "," + newLine +  "	"    
 		AFTER ";"
-		»«dataSetMap.name.ConvertToEnumValueName»("«dataSetMap.id»", "«dataSetMap.name»")»«
+		»«dataSetMap.name.ConvertToEnumValueName»("«dataSetMap.id»", "«dataSetMap.name»")«
 		ENDFOR»
 	''' 
 	
@@ -199,7 +269,16 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 		BEFORE "	"
 		SEPARATOR "," + newLine +  "	"    
 		AFTER ";"
-		»«dataSetMapEntry.name.ConvertToEnumValueName»("«dataSetMapEntry.id»", DataSetMaps.«dataSetMapEntry.map.name.ConvertToEnumValueName», "«dataSetMapEntry.name»")»«
+		»«dataSetMapEntry.name.ConvertToEnumValueName»("«dataSetMapEntry.id»", "«dataSetMapEntry.name»", DataSetMaps.«dataSetMapEntry.map.name.ConvertToEnumValueName»)«
+		ENDFOR»
+	''' 
+	
+	private static def String generateUserParameterizedDataSetMapEntriesString(Iterable<ParameterizedDataSetMapEntry> userParameterizedDataSetMapEntries)'''«
+		FOR pdsme : userParameterizedDataSetMapEntries
+		BEFORE "	"
+		SEPARATOR "," + newLine +  "	"    
+		AFTER ";"
+		»«pdsme.map.name.ConvertToEnumValueName»_«pdsme.parameter.definingServiceParameter.ConvertToEnumValueName»("«pdsme.id»", DataSetMaps.«pdsme.map.name.ConvertToEnumValueName», SpecificationParameters.«pdsme.parameter.name.ConvertToEnumValueName»)«
 		ENDFOR»
 	''' 
 	
@@ -208,7 +287,16 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 		BEFORE "	"
 		SEPARATOR "," + newLine +  "	"    
 		AFTER ";"
-		»«parametersAndDataPair.name»(«parametersAndDataPair.parameterSources.generateStringArrayConstructor», «parametersAndDataPair.dataTargets.filter(DataSet).generateDataSetArrayConstructor», «parametersAndDataPair.dataTargets.filter(DataSetMapEntry).generateDataSetMapEntryArrayConstructor»)«
+		»«parametersAndDataPair.name»(«parametersAndDataPair.parameterSources.generateStringArrayConstructor», «parametersAndDataPair.dataTargets.filter(DataSet).generateDataSetArrayConstructor», «
+		  parametersAndDataPair.dataTargets.filter(DataSetMapEntry).generateDataSetMapEntryArrayConstructor», «parametersAndDataPair.dataTargets.filter(ParameterizedDataSetMapEntry).generateParameterizedDataSetMapEntryArrayConstructor»)«
+	ENDFOR»''' 
+	
+	private static def String generateUserSpecificationParametersString(Iterable<SpecificationParameter> userSpecificationParameters)'''«
+		FOR specificationParameter : userSpecificationParameters
+		BEFORE "	"
+		SEPARATOR "," + newLine +  "	"    
+		AFTER ";"
+		»«specificationParameter.name.ConvertToEnumValueName»("«specificationParameter.id»", "«specificationParameter.name»", "«specificationParameter.definingServiceParameter»")«
 	ENDFOR»''' 
 	
 	private static def String generateDataSetArrayConstructor(Iterable<DataSet> dataSets) {
@@ -239,6 +327,20 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 		return "null"
 	}
 	
+	private static def String generateParameterizedDataSetMapEntryArrayConstructor(Iterable<ParameterizedDataSetMapEntry> parameterizedDataSetMapEntries) {
+		if (parameterizedDataSetMapEntries.size > 0) {
+			return '''«
+				FOR pdsme : parameterizedDataSetMapEntries
+				BEFORE 'new ParameterizedDataSetMapEntries[] {'
+				SEPARATOR ', '
+				AFTER '}'
+					»ParameterizedDataSetMapEntries.«pdsme.map.name.ConvertToEnumValueName»_«pdsme.parameter.definingServiceParameter.ConvertToEnumValueName»«
+				ENDFOR
+			»'''
+		} 
+		return "null"
+	}
+	
 	private static def ParametersAndDataPair[] getUserParametersAndDataPairs(Iterable<StereotypeApplication> applications) {
 		applications.parametersAndDataPairs.toSet
 	}
@@ -247,12 +349,22 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 		parametersAndDataPairs.map[it.dataTargets].flatten.filter(DataSet).toSet
 	}
 	
+	private static def DataSetMap[] getUserDataSetMaps(Iterable<DataSetMapEntry> dataSetMapEntries, Iterable<ParameterizedDataSetMapEntry> parameterizedDataSetMapEntries) {
+		val dataSetMaps = dataSetMapEntries.map[it.getMap].toSet
+		dataSetMaps.addAll(parameterizedDataSetMapEntries.map[it.getMap].toSet)
+		return dataSetMaps
+	}
+	
 	private static def DataSetMapEntry[] getUserDataSetMapEntries(Iterable<ParametersAndDataPair> parametersAndDataPairs) {
 		parametersAndDataPairs.map[it.dataTargets].flatten.filter(DataSetMapEntry).toSet
 	} 
 	
-	private static def DataSetMap[] getUserDataSetMaps(Iterable<DataSetMapEntry> dataSetMapEntries) {
-		dataSetMapEntries.map[it.getMap].toSet
+	private static def ParameterizedDataSetMapEntry[] getUserParameterizedDataSetMapEntries(Iterable<ParametersAndDataPair> parametersAndDataPairs) {
+		parametersAndDataPairs.map[it.dataTargets].flatten.filter(ParameterizedDataSetMapEntry).toSet
+	}
+	
+	private static def SpecificationParameter[] getUserSpecificationParameters(Iterable<ParameterizedDataSetMapEntry> parameterizedDataSetMapEntries) {
+		parameterizedDataSetMapEntries.map[it.parameter].toSet
 	}
 	
 	private static def String ConvertToEnumValueName(String name){
