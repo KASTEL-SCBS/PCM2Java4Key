@@ -2,7 +2,6 @@ package edu.kit.kastel.scbs.javaAnnotations2JML.generation;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jdt.core.JavaModelException;
 
@@ -41,13 +40,8 @@ public class JMLCommentsGenerator {
      */
     public void transformAllAnnotationsToJml() throws IOException {
         for (TopLevelType topLevelType : topLevelTypes) {
-            try {
-                // generate comments for each type
-                transformAnnotationsToJml(topLevelType);
-            } catch (JavaModelException jme) {
-                Optional<String> message = Optional.ofNullable(jme.getMessage());
-                throw new IOException("Java Model Exception occurred: " + message.orElse("(no error message)"), jme);
-            }
+            // generate comments for each type
+            transformAnnotationsToJml(topLevelType);
         }
     }
 
@@ -60,10 +54,10 @@ public class JMLCommentsGenerator {
      * 
      * @param type
      *            The type to generate jml for.
-     * @throws JavaModelException
+     * @throws IOException
      *             if jml comment could not be written to type.
      */
-    public void transformAnnotationsToJml(TopLevelType type) throws JavaModelException {
+    public void transformAnnotationsToJml(TopLevelType type) throws IOException {
         // do not generate comments for classes without specification
         for (DataSet dataSet : type.getServiceTypeDataSets()) {
             // generate one comment for each data set
@@ -72,9 +66,8 @@ public class JMLCommentsGenerator {
             // if the type has any IF annotation, it will get a jml comment
             try {
                 JdtAstJmlUtil.addStringToAbstractType(type.getIType(), comment.toString());
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (JavaModelException jme) {
+                throw new IOException(jme);
             }
         }
     }

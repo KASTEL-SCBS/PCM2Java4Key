@@ -11,9 +11,9 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
  * Command for generating the jml comments and reacting to exceptions.
  * 
  * @author Nils Wilka
- * @version 1.1, 14.09.2017
+ * @version 1.2, 14.09.2017
  */
-public class GenerateJmlCommentsCommand implements Command {
+public class GenerateJmlCommentsCommand extends Command {
 
     private Supplier<List<TopLevelType>> supplier;
 
@@ -33,8 +33,8 @@ public class GenerateJmlCommentsCommand implements Command {
         try {
             generator.transformAllAnnotationsToJml();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            abort();
         }
     }
 }

@@ -12,7 +12,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.AbstractSe
  * @author Nils Wilka
  * @version 1.1, 14.09.2017
  */
-public class CreateServicesCommand implements Command {
+public class CreateServicesCommand extends Command {
 
     private Supplier<List<AbstractServiceType>> supplier;
 

@@ -1,5 +1,6 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.command;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,9 +19,9 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
  * All code is found in the {@code execute} method.
  * 
  * @author Nils Wilka
- * @version 1.2, 14.09.2017
+ * @version 1.3, 14.09.2017
  */
-public final class JavaAnnotations2JML implements Command {
+public final class JavaAnnotations2JML extends Command {
 
     private List<Command> commands;
 
@@ -62,7 +63,9 @@ public final class JavaAnnotations2JML implements Command {
     @Override
     public void execute() {
         setup();
-        for (Command command : commands) {
+        Command command = commands.get(0);
+        for (Iterator<Command> iterator = commands.iterator(); iterator.hasNext() && !command.aborted();) {
+            command = (Command) iterator.next();
             command.execute();
         }
     }
@@ -77,10 +80,13 @@ public final class JavaAnnotations2JML implements Command {
         }, x -> {
             javaProject = x;
         }));
-        commands.add(new ParseJavaProjectCommand(() -> {
+        commands.add(new ConfidentialityRepositoryCreatorCommand(() -> {
             return javaProject;
         }, x -> {
             specification = x;
+        }));
+        commands.add(new TopLevelTypeCreatorCommand(() -> {
+            return javaProject;
         }, x -> {
             projectTopLevelTypes = x;
         }));

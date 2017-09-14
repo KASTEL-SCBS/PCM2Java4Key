@@ -15,9 +15,9 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
  * Command for setting the methods of service types and reacting to exceptions.
  * 
  * @author Nils Wilka
- * @version 1.1, 14.09.2017
+ * @version 1.2, 14.09.2017
  */
-public class SetMethodsCommand implements Command {
+public class SetMethodsCommand extends Command {
 
     private Supplier<List<AbstractServiceType>> supplier;
 
@@ -51,8 +51,8 @@ public class SetMethodsCommand implements Command {
             try {
                 methodParser.parse();
             } catch (ParseException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
+                abort();
             }
         }
     }

@@ -16,9 +16,9 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.parser.ProjectParser;
  * converting it to a java project and reacting to exceptions.
  * 
  * @author Nils Wilka
- * @version 1.1, 14.09.2017
+ * @version 1.2, 14.09.2017
  */
-public class SetJavaProjectCommand implements Command {
+public class SetJavaProjectCommand extends Command {
 
     private Supplier<IProject> supplier;
 
@@ -26,12 +26,12 @@ public class SetJavaProjectCommand implements Command {
 
     /**
      * Creates a new java project setter command with the given project supplier and java project
-     * receiver.
+     * consumer.
      * 
      * @param supplier
-     *            The provider of an {@code IProject}.
+     *            The supplier of an {@code IProject}.
      * @param consumer
-     *            The receiver of an {@code IJavaProject}.
+     *            The consumer of an {@code IJavaProject}.
      */
     public SetJavaProjectCommand(Supplier<IProject> supplier, Consumer<IJavaProject> consumer) {
         this.supplier = supplier;
@@ -43,9 +43,8 @@ public class SetJavaProjectCommand implements Command {
         try {
             consumer.accept(new ProjectParser(supplier.get()).parse());
         } catch (ParseException e2) {
-            // TODO Auto-generated catch block
             e2.printStackTrace();
+            abort();
         }
     }
-
 }
