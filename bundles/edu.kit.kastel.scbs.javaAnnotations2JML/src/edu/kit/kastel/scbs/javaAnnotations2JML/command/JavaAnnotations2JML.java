@@ -15,13 +15,12 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
  * 
  * Gets a project and manages and initiates all necessary steps for the program functionality.
  * 
- * All code is in the {@code execute} method.
+ * All code is found in the {@code execute} method.
  * 
  * @author Nils Wilka
- * @version 1.1, 14.08.2017
+ * @version 1.2, 14.09.2017
  */
-public final class JavaAnnotations2JML implements Command, IProjectProvider, IJavaProjectProvider, TopLevelTypeProvider,
-        ConfidentialitySpecificationProvider, ServiceTypeProvider, ServiceTypeAcceptor {
+public final class JavaAnnotations2JML implements Command {
 
     private List<Command> commands;
 
@@ -73,57 +72,44 @@ public final class JavaAnnotations2JML implements Command, IProjectProvider, IJa
      */
     private void setup() {
         commands = new LinkedList<>();
-        commands.add(new SetJavaProject(this));
-        commands.add(new ParseJavaProject(this));
-        commands.add(new ParseTopLevelType(this));
-        commands.add(new SetServiceTypes(this, this));
-        commands.add(new SetMethods(this, this));
-        commands.add(new CreateServices(this));
-        commands.add(new GenerateJmlComments(this));
+        commands.add(new SetJavaProjectCommand(() -> {
+            return project;
+        }, x -> {
+            javaProject = x;
+        }));
+        commands.add(new ParseJavaProjectCommand(() -> {
+            return javaProject;
+        }, x -> {
+            specification = x;
+        }, x -> {
+            projectTopLevelTypes = x;
+        }));
+        commands.add(new ParseTopLevelTypeCommand(this::getTopLevelTypes));
+        commands.add(new SetServiceTypesCommand(this::getTopLevelTypes, x -> {
+            serviceTypes = x;
+        }));
+        commands.add(new SetMethodsCommand(this::getAbstractServiceTypes, () -> {
+            return specification;
+        }));
+        commands.add(new CreateServicesCommand(this::getAbstractServiceTypes));
+        commands.add(new GenerateJmlCommentsCommand(this::getTopLevelTypes));
     }
 
-    @Override
-    public IProject getIProject() {
-        return project;
-    }
-
-    @Override
-    public IJavaProject getIJavaProject() {
-        return javaProject;
-    }
-
-    @Override
-    public void setIJavaProject(IJavaProject javaProject) {
-        this.javaProject = javaProject;
-    }
-
-    @Override
-    public void setConfidentialitySpecification(ConfidentialitySpecification specification) {
-        this.specification = specification;
-    }
-
-    @Override
-    public void setTopLevelTypes(List<TopLevelType> topLevelTypes) {
-        this.projectTopLevelTypes = topLevelTypes;
-    }
-
-    @Override
+    /**
+     * Gets the top level types.
+     * 
+     * @return The top level types.
+     */
     public List<TopLevelType> getTopLevelTypes() {
         return this.projectTopLevelTypes;
     }
 
-    @Override
-    public ConfidentialitySpecification getConfidentialitySpecification() {
-        return this.specification;
-    }
-
-    @Override
-    public List<AbstractServiceType> getServiceTypes() {
+    /**
+     * Gets the abstract service types.
+     * 
+     * @return The abstract service types.
+     */
+    public List<AbstractServiceType> getAbstractServiceTypes() {
         return this.serviceTypes;
-    }
-
-    @Override
-    public void setServiceTypes(List<AbstractServiceType> serviceTypes) {
-        this.serviceTypes = serviceTypes;
     }
 }
