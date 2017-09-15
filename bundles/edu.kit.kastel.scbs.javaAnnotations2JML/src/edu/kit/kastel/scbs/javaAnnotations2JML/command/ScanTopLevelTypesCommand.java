@@ -32,7 +32,7 @@ public class ScanTopLevelTypesCommand extends Command {
     public void execute() {
         TopLevelTypesScanner topLevelTypesParser = new TopLevelTypesScanner(supplier.get());
         try {
-            topLevelTypesParser.parse();
+            topLevelTypesParser.scanTopLevelTypes();
         } catch (ParseException e) {
             e.printStackTrace();
             abort();

@@ -6,7 +6,6 @@ import java.util.List;
 import org.eclipse.jdt.core.JavaModelException;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.AbstractServiceType;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
 import edu.kit.kastel.scbs.javaAnnotations2JML.util.JdtAstJmlUtil;
 
@@ -62,33 +61,15 @@ public class JMLCommentsGenerator {
         for (DataSet dataSet : type.getServiceTypeDataSets()) {
             // generate one comment for each data set
             JmlComment comment = new JmlComment(dataSet);
-            addAllServicesForDataSetToJmlComment(type.getServiceTypes(), dataSet, comment);
+            // Add the services of each abstract service type to the given jml comment.
+            // Only adds the services for the given data set
+            type.getServiceTypes().forEach(e -> e.addServicesForDataSetToJmlComment(dataSet, comment));
             // if the type has any IF annotation, it will get a jml comment
             try {
                 JdtAstJmlUtil.addStringToAbstractType(type.getIType(), comment.toString());
             } catch (JavaModelException jme) {
                 throw new IOException(jme);
             }
-        }
-    }
-
-    /**
-     * Adds the services of each abstract service type to the given jml comment.
-     * 
-     * Only adds the services for the given data set.
-     * 
-     * @param types
-     *            The abstract service types to get the services from and adding them to the
-     *            comment.
-     * @param dataSet
-     *            The data set to get the services for.
-     * @param comment
-     *            The comment to add to.
-     */
-    private void addAllServicesForDataSetToJmlComment(List<AbstractServiceType> types, DataSet dataSet,
-            JmlComment comment) {
-        for (AbstractServiceType type : types) {
-            type.addServicesForDataSetToJmlComment(dataSet, comment);
         }
     }
 }

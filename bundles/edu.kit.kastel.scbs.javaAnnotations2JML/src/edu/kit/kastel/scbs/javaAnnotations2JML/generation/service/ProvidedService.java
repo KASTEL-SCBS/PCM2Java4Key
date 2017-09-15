@@ -12,7 +12,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.generation.JmlComment;
  * @author Nils Wilka
  * @version 1.0, 18.08.2017
  */
-public class ProvidedService extends AbstractService {
+public class ProvidedService extends RoleService {
 
     private static final String SELF_REFERENCE = "this";
 

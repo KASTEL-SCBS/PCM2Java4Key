@@ -1,6 +1,6 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.AbstractService;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.RoleService;
 import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.ProvidedService;
 import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.Service;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
@@ -30,7 +30,7 @@ public class ProvidedServiceType extends AbstractServiceType {
     }
 
     @Override
-    protected AbstractService createService(Service service) {
+    protected RoleService createService(Service service) {
         return new ProvidedService(service.getName(), service.getParameterSources());
     }
 }

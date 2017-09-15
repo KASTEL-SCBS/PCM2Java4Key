@@ -12,7 +12,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.generation.JmlComment;
  * @author Nils Wilka
  * @version 1.0, 18.08.2017
  */
-public abstract class AbstractService extends Service {
+public abstract class RoleService extends Service {
 
     private String role;
 
@@ -26,7 +26,7 @@ public abstract class AbstractService extends Service {
      * @param parameterSources
      *            The parameter sources of the service.
      */
-    public AbstractService(String role, String name, List<ParameterSource> parameterSources) {
+    public RoleService(String role, String name, List<ParameterSource> parameterSources) {
         super(name, parameterSources);
         this.role = role;
     }

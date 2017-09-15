@@ -69,9 +69,7 @@ public class ServicesGenerator {
     private ServiceAcceptor createServices(MethodProvider methodProvider) {
         ServiceAcceptor serviceAcceptor = new ServiceAcceptor();
         Map<IMethod, InformationFlowAnnotation> methods = methodProvider.getMethods();
-        for (IMethod method : methods.keySet()) {
-            serviceAcceptor.addService(method, methods.get(method));
-        }
+        methods.keySet().forEach(e -> serviceAcceptor.addService(e, methods.get(e)));
         return serviceAcceptor;
     }
 }

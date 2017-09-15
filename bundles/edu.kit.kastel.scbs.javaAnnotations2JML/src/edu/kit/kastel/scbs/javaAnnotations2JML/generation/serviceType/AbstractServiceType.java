@@ -13,7 +13,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.InformationFlowAnnotation;
 import edu.kit.kastel.scbs.javaAnnotations2JML.generation.JmlComment;
 import edu.kit.kastel.scbs.javaAnnotations2JML.generation.ServiceProvider;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.AbstractService;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.RoleService;
 import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.Service;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.MethodProvider;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
@@ -139,11 +139,21 @@ public abstract class AbstractServiceType implements MethodProvider, ServiceProv
      * @return The abstract services that are mapped to the given data set or an empty list if there
      *         are non.
      */
-    private List<AbstractService> getServicesForDataSet(DataSet dataSet) {
-        List<AbstractService> services = getServices(dataSet).stream().map(e -> (AbstractService) e)
-                .collect(Collectors.toList());
-        Optional<List<AbstractService>> optional = Optional.ofNullable(services);
+    private List<RoleService> getServicesForDataSet(DataSet dataSet) {
+        Optional<List<RoleService>> optional = Optional.ofNullable(getRoleServices(dataSet));
         return optional.orElse(new LinkedList<>());
+    }
+
+    /**
+     * Gets all role services linked to the given data set.
+     * 
+     * @param dataSet
+     *            The data set to get the role services for.
+     * @return The role services linked to the given data set.
+     */
+    private List<RoleService> getRoleServices(DataSet dataSet) {
+        List<Service> services = serviceProvider.getServices();
+        return services.stream().map(e -> createService(e)).collect(Collectors.toList());
     }
 
     @Override
@@ -186,7 +196,7 @@ public abstract class AbstractServiceType implements MethodProvider, ServiceProv
      *            The {@code Service} to create this {@code AbstractService} from.
      * @return An {@code AbstractService} from the given service and with the role of this type.
      */
-    protected abstract AbstractService createService(Service service);
+    protected abstract RoleService createService(Service service);
 
     @Override
     public Map<IMethod, InformationFlowAnnotation> getMethods() {

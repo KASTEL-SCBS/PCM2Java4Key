@@ -12,7 +12,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.generation.JmlComment;
  * @author Nils Wilka
  * @version 1.0, 18.08.2017
  */
-public class RequiredService extends AbstractService {
+public class RequiredService extends RoleService {
 
     /**
      * Creates a new required service with the given role, name and parameter sources.
