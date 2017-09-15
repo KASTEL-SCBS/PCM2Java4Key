@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,15 +27,15 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.type.EnumConstant;
 import edu.kit.kastel.scbs.javaAnnotations2JML.util.JdtAstJmlUtil;
 
 /**
- * Java model parser for the confidentiality repository package. Looks for the confidentiality
- * package. Parses included data sets and parameters and data pair java classes. Sets all present
- * data sets and parameters and data pairs.
+ * Generator for the confidentiality repository package. Looks for the confidentiality package.
+ * Scans included data sets and parameters and data pair java classes. Generates all present data
+ * sets and parameters and data pairs.
  * 
  * @author Nils Wilka
  * @version 1.0, 02.08.2017
  */
-public class ConfidentialityRepositoryParser
-        extends JavaAnnotations2JMLParser<IJavaProject, ConfidentialitySpecification> {
+public class ConfidentialityRepositoryGenerator
+        extends JavaAnnotations2JMLGenerator<IJavaProject, ConfidentialitySpecification> {
 
     private static final String CONFIDENTIALITY_REPOSITORY = "confidentialityRepository";
 
@@ -53,12 +53,12 @@ public class ConfidentialityRepositoryParser
     private Map<String, IType> requiredConfidentialityTypes;
 
     /**
-     * Creates a new java model parser for the confidentiality package.
+     * Creates a new generator for the confidentiality repository package.
      * 
      * @param source
-     *            The java project to parse.
+     *            The java project to scan and to generate the confidentiality types for.
      */
-    public ConfidentialityRepositoryParser(IJavaProject source) {
+    public ConfidentialityRepositoryGenerator(IJavaProject source) {
         super(source);
         this.requiredConfidentialityTypes = new HashMap<>(REQUIRED_CONFIDENTIALITY_TYPE_NAMES.length);
         this.specification = new ConfidentialitySpecification();
@@ -182,7 +182,7 @@ public class ConfidentialityRepositoryParser
     private List<DataSet> parseDataSets() throws JavaModelException, ParseException {
         List<EnumConstantDeclaration> enumConstantDeclarations = parseEnumDeclarations(
                 requiredConfidentialityTypes.get(DATASETS));
-        List<DataSetArguments> arguments = new DataSetArgumentsParser(enumConstantDeclarations).parse();
+        List<DataSetArguments> arguments = new DataSetArgumentsGenerator(enumConstantDeclarations).parse();
         return arguments.stream().map(e -> new DataSet(e.getId(), e.getName(), e.getEnumConstant()))
                 .collect(Collectors.toList());
     }
@@ -204,7 +204,7 @@ public class ConfidentialityRepositoryParser
         List<EnumConstantDeclaration> enumConstantDeclarations;
         enumConstantDeclarations = parseEnumDeclarations(requiredConfidentialityTypes.get(PARAMETERS_AND_DATA_PAIRS));
         List<ParametersAndDataPairArguments> argumentsList;
-        argumentsList = new ParametersAndDataPairArgumentsParser(enumConstantDeclarations).parse();
+        argumentsList = new ParametersAndDataPairArgumentsGenerator(enumConstantDeclarations).parse();
 
         List<ParametersAndDataPair> parametersAndDataPairs = new LinkedList<>();
         for (ParametersAndDataPairArguments argument : argumentsList) {

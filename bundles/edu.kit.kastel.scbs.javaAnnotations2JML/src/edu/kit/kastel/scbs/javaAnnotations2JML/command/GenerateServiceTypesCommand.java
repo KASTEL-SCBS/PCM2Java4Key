@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
 import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.AbstractServiceType;
-import edu.kit.kastel.scbs.javaAnnotations2JML.parser.ServiceTypeParser;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generator.ServiceTypeGenerator;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
 
 /**
@@ -15,14 +15,14 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
  * @author Nils Wilka
  * @version 1.2, 14.09.2017
  */
-public class SetServiceTypesCommand extends Command {
+public class GenerateServiceTypesCommand extends Command {
 
     private Supplier<List<TopLevelType>> supplier;
 
     private Consumer<List<AbstractServiceType>> consumer;
 
     /**
-     * Creates a new service type setter command with the given top level type supplier and service
+     * Creates a new service type scanner command with the given top level type supplier and service
      * type consumer to set the new service types.
      * 
      * @param supplier
@@ -30,14 +30,15 @@ public class SetServiceTypesCommand extends Command {
      * @param consumer
      *            The consumer of service types.
      */
-    public SetServiceTypesCommand(Supplier<List<TopLevelType>> supplier, Consumer<List<AbstractServiceType>> consumer) {
+    public GenerateServiceTypesCommand(Supplier<List<TopLevelType>> supplier,
+            Consumer<List<AbstractServiceType>> consumer) {
         this.supplier = supplier;
         this.consumer = consumer;
     }
 
     @Override
     public void execute() {
-        ServiceTypeParser serviceTypeParser = new ServiceTypeParser(supplier.get());
+        ServiceTypeGenerator serviceTypeParser = new ServiceTypeGenerator(supplier.get());
         List<AbstractServiceType> serviceTypes = null; // TODO
         try {
             serviceTypes = serviceTypeParser.parse();

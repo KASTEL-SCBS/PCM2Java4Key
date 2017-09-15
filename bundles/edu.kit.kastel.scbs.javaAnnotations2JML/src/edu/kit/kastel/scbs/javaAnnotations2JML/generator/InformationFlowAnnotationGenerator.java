@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,23 +13,23 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.type.EnumConstant;
 import edu.kit.kastel.scbs.javaAnnotations2JML.util.Anno2JmlUtil;
 
 /**
- * Used to parse the information flow annotation of a given method. Then returns the
+ * Used to generate the information flow annotation of a given method. Then returns the
  * {@code InformationFlowAnnotationArguments} to be used in the context of a
  * {@code ConfidentialitySpecification} to create {@code InformationFlowAnnotation}s.
  * 
  * @author Nils Wilka
  * @version 1.0, 08.08.2017
  */
-public class InformationFlowAnnotationParser
-        extends JavaAnnotations2JMLParser<IMethod, InformationFlowAnnotationArguments> {
+public class InformationFlowAnnotationGenerator
+        extends JavaAnnotations2JMLGenerator<IMethod, InformationFlowAnnotationArguments> {
 
     /**
-     * Creates a new parser with the given method as source.
+     * Creates a new generator with the given method as source.
      * 
      * @param source
      *            The {@code IMethod} to scan.
      */
-    public InformationFlowAnnotationParser(IMethod source) {
+    public InformationFlowAnnotationGenerator(IMethod source) {
         super(source);
     }
 

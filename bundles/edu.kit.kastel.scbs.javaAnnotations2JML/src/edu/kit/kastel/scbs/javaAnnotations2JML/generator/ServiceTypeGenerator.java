@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,15 +28,15 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.util.Anno2JmlUtil;
  * @author Nils Wilka
  * @version 1.0, 04.08.2017
  */
-public class ServiceTypeParser extends JavaAnnotations2JMLParser<List<TopLevelType>, List<AbstractServiceType>> {
+public class ServiceTypeGenerator extends JavaAnnotations2JMLGenerator<List<TopLevelType>, List<AbstractServiceType>> {
 
     /**
-     * Constructs a new parser with the given list of {@code TopLevelType}s.
+     * Constructs a new generator with the given list of {@code TopLevelType}s.
      * 
      * @param source
      *            The list of {@code TopLevelType}s to scan.
      */
-    public ServiceTypeParser(List<TopLevelType> source) {
+    public ServiceTypeGenerator(List<TopLevelType> source) {
         super(source);
         assert new HashSet<>(source).size() == source.size() : "Not a unique set of TopLevelTypes";
     }

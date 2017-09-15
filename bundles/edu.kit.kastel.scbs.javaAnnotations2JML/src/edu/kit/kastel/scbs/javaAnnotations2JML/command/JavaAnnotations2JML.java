@@ -75,29 +75,29 @@ public final class JavaAnnotations2JML extends Command {
      */
     private void setup() {
         commands = new LinkedList<>();
-        commands.add(new SetJavaProjectCommand(() -> {
+        commands.add(new TransformeProjectToJavaProjectCommand(() -> {
             return project;
         }, x -> {
             javaProject = x;
         }));
-        commands.add(new ConfidentialityRepositoryCreatorCommand(() -> {
+        commands.add(new GenerateConfidentialityRepositoryCommand(() -> {
             return javaProject;
         }, x -> {
             specification = x;
         }));
-        commands.add(new TopLevelTypeCreatorCommand(() -> {
+        commands.add(new GenerateTopLevelTypesCommand(() -> {
             return javaProject;
         }, x -> {
             projectTopLevelTypes = x;
         }));
-        commands.add(new ParseTopLevelTypeCommand(this::getTopLevelTypes));
-        commands.add(new SetServiceTypesCommand(this::getTopLevelTypes, x -> {
+        commands.add(new ScanTopLevelTypesCommand(this::getTopLevelTypes));
+        commands.add(new GenerateServiceTypesCommand(this::getTopLevelTypes, x -> {
             serviceTypes = x;
         }));
-        commands.add(new SetMethodsCommand(this::getAbstractServiceTypes, () -> {
+        commands.add(new GenerateMethodsAndInformationFlowPairsCommand(this::getAbstractServiceTypes, () -> {
             return specification;
         }));
-        commands.add(new CreateServicesCommand(this::getAbstractServiceTypes));
+        commands.add(new GenerateServicesCommand(this::getAbstractServiceTypes));
         commands.add(new GenerateJmlCommentsCommand(this::getTopLevelTypes));
     }
 

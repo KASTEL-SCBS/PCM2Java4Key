@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,24 +11,24 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.EnumConstant;
 
 /**
- * Java model parser for parameters and data pairs. The values are temporary stored in a
+ * Generator for parameters and data pairs. The values are temporary stored in a
  * {@code ParametersAndDataPairArguments} helper object to be used in the context of a
  * {@code ConfidentialitySpecification} to create a {@code ParametersAndDataPair}.
  * 
  * @author Nils Wilka
  * @version 1.0, 17.08.2017
  */
-public class ParametersAndDataPairArgumentsParser
-        extends EnumConstantDeclarationParser<List<ParametersAndDataPairArguments>> {
+public class ParametersAndDataPairArgumentsGenerator
+        extends EnumConstantDeclarationGenerator<List<ParametersAndDataPairArguments>> {
 
     /**
-     * Creates a new parser to get the parameters and data pair values from the given list of enum
-     * constant declarations in a helper class.
+     * Creates a new generator to get the parameters and data pair values from the given list of
+     * enum constant declarations in a helper class.
      * 
      * @param source
      *            The list {@code EnumConstantDeclaration}s to scan.
      */
-    public ParametersAndDataPairArgumentsParser(List<EnumConstantDeclaration> source) {
+    public ParametersAndDataPairArgumentsGenerator(List<EnumConstantDeclaration> source) {
         super(source);
     }
 

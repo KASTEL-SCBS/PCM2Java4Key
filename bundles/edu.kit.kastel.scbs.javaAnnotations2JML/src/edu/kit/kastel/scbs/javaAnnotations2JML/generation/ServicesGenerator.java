@@ -18,7 +18,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.type.MethodProvider;
  * @author Nils Wilka
  * @version 1.0, 18.08.2017
  */
-public class ServiceCreator {
+public class ServicesGenerator {
 
     private List<AbstractServiceType> serviceTypes;
 
@@ -30,7 +30,7 @@ public class ServiceCreator {
      * @param serviceTypes
      *            The service types to add services to.
      */
-    public ServiceCreator(List<AbstractServiceType> serviceTypes) {
+    public ServicesGenerator(List<AbstractServiceType> serviceTypes) {
         this.serviceTypes = serviceTypes;
         this.serviceProviderSet = new HashMap<>();
     }

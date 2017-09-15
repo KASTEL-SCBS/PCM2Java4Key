@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
+package edu.kit.kastel.scbs.javaAnnotations2JML.transformer;
 
 import java.util.Optional;
 
@@ -22,33 +22,43 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
  * will be thrown if it is not part of the workspace.
  * 
  * @author Nils Wilka
- * @version 1.0, 07.08.2017
+ * @version 1.1, 15.09.2017
  */
-public class ProjectParser extends JavaAnnotations2JMLParser<IProject, IJavaProject> {
+public class ProjectToJavaProjectTransformer {
 
     private static final String PROJECT_COPY_POSTFIX = "JML";
+
+    private final IProject project;
 
     /**
      * Clone of the given source project.
      * 
      * This project gets changed.
      */
-    private IProject project;
+    private IProject clone;
 
     /**
-     * Constructs a new parser with the given project as source.
+     * Constructs a new transformer with the given project as source.
      * 
      * @param source
      *            The {@code IProject} to scan.
      */
-    public ProjectParser(final IProject source) {
-        super(source);
+    public ProjectToJavaProjectTransformer(final IProject source) {
+        this.project = source;
     }
 
-    @Override
-    public IJavaProject parseSource() throws ParseException {
+    /**
+     * Copies the as source given {@code IProject} and converts it to a {@code IJavaProject}. If the
+     * target project already exists it will either be overwritten or a {@code ParseException} will
+     * be thrown if it is not part of the workspace.
+     * 
+     * @return A copy of the given project as a java project.
+     * @throws ParseException
+     *             if a {@code CoreException} occurs while deleting the old project or copying.
+     */
+    public IJavaProject transformProject() throws ParseException {
         copyProjectOverwrite();
-        assert project.exists() : "Project does not exist.";
+        assert clone.exists() : "Project does not exist.";
         return convertToJavaProject();
     }
 
@@ -68,9 +78,9 @@ public class ProjectParser extends JavaAnnotations2JMLParser<IProject, IJavaProj
      * Creates the path of the JML project and sets the project.
      */
     private void setProject() {
-        IPath newPath = new Path(getSource().getName() + PROJECT_COPY_POSTFIX);
-        IWorkspaceRoot workspaceRoot = getSource().getWorkspace().getRoot();
-        project = workspaceRoot.getProject(newPath.segment(0));
+        IPath newPath = new Path(project.getName() + PROJECT_COPY_POSTFIX);
+        IWorkspaceRoot workspaceRoot = project.getWorkspace().getRoot();
+        clone = workspaceRoot.getProject(newPath.segment(0));
     }
 
     /**
@@ -80,9 +90,9 @@ public class ProjectParser extends JavaAnnotations2JMLParser<IProject, IJavaProj
      *             if a {@code CoreException} occurs while deleting.
      */
     private void deleteProjectIfPresent() throws ParseException {
-        if (project.exists()) {
+        if (clone.exists()) {
             try {
-                project.delete(true, new NullProgressMonitor());
+                clone.delete(true, new NullProgressMonitor());
             } catch (CoreException ce) {
                 coreExceptionOccurred(ce);
             }
@@ -97,7 +107,7 @@ public class ProjectParser extends JavaAnnotations2JMLParser<IProject, IJavaProj
      */
     private void copySourceProject() throws ParseException {
         try {
-            getSource().copy(new Path(project.getName()), IResource.DERIVED, new NullProgressMonitor());
+            project.copy(new Path(clone.getName()), IResource.DERIVED, new NullProgressMonitor());
         } catch (CoreException ce) {
             coreExceptionOccurred(ce);
         }
@@ -127,7 +137,7 @@ public class ProjectParser extends JavaAnnotations2JMLParser<IProject, IJavaProj
      */
     private void cleanUp() {
         try {
-            project.delete(true, new NullProgressMonitor());
+            clone.delete(true, new NullProgressMonitor());
         } catch (CoreException e) {
             // ignore
         }
@@ -145,8 +155,8 @@ public class ProjectParser extends JavaAnnotations2JMLParser<IProject, IJavaProj
     private IJavaProject createJavaProject() throws ParseException {
         IJavaProject javaProject = null;
         try {
-            if (project.hasNature(JavaCore.NATURE_ID)) {
-                javaProject = JavaCore.create(project);
+            if (clone.hasNature(JavaCore.NATURE_ID)) {
+                javaProject = JavaCore.create(clone);
                 assert javaProject.exists() : "Java project does not exist.";
             } else {
                 throw new ParseException("Not a java project.");

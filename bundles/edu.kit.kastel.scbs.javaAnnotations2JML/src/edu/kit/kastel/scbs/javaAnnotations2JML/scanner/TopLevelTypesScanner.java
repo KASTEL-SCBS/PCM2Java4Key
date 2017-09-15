@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
+package edu.kit.kastel.scbs.javaAnnotations2JML.scanner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,34 +17,43 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
 import edu.kit.kastel.scbs.javaAnnotations2JML.util.JdtAstJmlUtil;
 
 /**
- * Java model parser for a list of unique {@code TopLevelType}s. Sets the super types, fields and
- * source methods if necessary.
+ * Scanner for a list of unique {@code TopLevelType}s. Sets the super types, fields and source
+ * methods if necessary.
  * 
  * Ensures that the {@code TopLevelType}s and all references to other {@code TopLevelType}s stay
  * unique.
  * 
  * @author Nils Wilka
- * @version 1.0, 17.08.2017
+ * @version 1.1, 15.09.2017
  */
-public class TopLevelTypesParser extends JavaAnnotations2JMLParser<List<TopLevelType>, List<TopLevelType>> {
+public class TopLevelTypesScanner {
+
+    private final List<TopLevelType> topLevelTypes;
 
     private List<TopLevelType> allTopLevelTypes;
 
     /**
-     * Constructs a new parser with the given list of unique {@code TopLevelType}s.
+     * Constructs a new scanner with the given list of unique {@code TopLevelType}s.
      * 
      * @param source
      *            The {@code IJavaProject} to scan.
      */
-    public TopLevelTypesParser(List<TopLevelType> source) {
-        super(source);
+    public TopLevelTypesScanner(List<TopLevelType> source) {
+        this.topLevelTypes = source;
     }
 
-    @Override
-    protected List<TopLevelType> parseSource() throws ParseException {
+    /**
+     * Scans the given {@code TopLevelType}s. Sets the super types, fields and source methods if
+     * necessary.
+     * 
+     * @return Returns all top level types in this project and referenced by these.
+     * @throws ParseException
+     *             if getting the methods from any top level type causes a JavaModelException.
+     */
+    public List<TopLevelType> scanTopLevelTypes() throws ParseException {
         // TODO overhaul
-        allTopLevelTypes = new ArrayList<>(getSource());
-        parseFieldsAndSuperTypes(getSource());
+        allTopLevelTypes = new ArrayList<>(topLevelTypes);
+        parseFieldsAndSuperTypes(topLevelTypes);
         List<TopLevelType> usedTypes = new LinkedList<>();
         for (TopLevelType type : allTopLevelTypes) {
             usedTypes.addAll(type.getSuperTypeInterfaces());
@@ -56,13 +65,13 @@ public class TopLevelTypesParser extends JavaAnnotations2JMLParser<List<TopLevel
     }
 
     /**
-     * Parses the methods of the given {@code TopLevelType}s, i.e. for each type it gets the methods
+     * Scans the methods of the given {@code TopLevelType}s, i.e. for each type it gets the methods
      * from the associated {@code IType} and adds them as source methods.
      * 
      * @param topLevelTypes
-     *            The {@code TopLevelType}s to parse the methods for.
+     *            The {@code TopLevelType}s to scan the methods for.
      * @throws ParseException
-     *             if getting the methods from the {@code IType} causes an
+     *             if getting the methods from the {@code IType} causes a
      *             {@code JavaModelException}.
      */
     private void parseMethods(List<TopLevelType> topLevelTypes) throws ParseException {
@@ -79,13 +88,13 @@ public class TopLevelTypesParser extends JavaAnnotations2JMLParser<List<TopLevel
     }
 
     /**
-     * Parses the fields and super types of the given {@code TopLevelType}s, i.e. for each type it
+     * Scans the fields and super types of the given {@code TopLevelType}s, i.e. for each type it
      * gets the methods from the associated {@code IType} and adds them as source methods.
      * 
      * @param topLevelTypes
-     *            The {@code TopLevelType}s to parse the methods for.
+     *            The {@code TopLevelType}s to scan the methods for.
      * @throws ParseException
-     *             if getting the methods from the {@code IType} causes an
+     *             if getting the methods from the {@code IType} causes a
      *             {@code JavaModelException}.
      */
     private void parseFieldsAndSuperTypes(List<TopLevelType> topLevelTypes) throws ParseException {
@@ -101,9 +110,9 @@ public class TopLevelTypesParser extends JavaAnnotations2JMLParser<List<TopLevel
     }
 
     /**
-     * Parses the super type interfaces for the given type, i.e. creates the super type hierarchy
-     * and creates the {@code TopLevelType}s from the {@code IType}s. Then resolves conflicts and
-     * adds the newly created types to the given type.
+     * Scans the super type interfaces for the given type, i.e. creates the super type hierarchy and
+     * creates the {@code TopLevelType}s from the {@code IType}s. Then resolves conflicts and adds
+     * the newly created types to the given type.
      * 
      * @param type
      *            The type to create and add the super types to.
@@ -120,7 +129,7 @@ public class TopLevelTypesParser extends JavaAnnotations2JMLParser<List<TopLevel
     }
 
     /**
-     * Parses all fields of the given type, i.e. gets all fields from the associated {@code IType}
+     * Scans all fields of the given type, i.e. gets all fields from the associated {@code IType}
      * and creates and adds the {@code TopLevelType.Field}s. Resolves all conflicts of duplicate
      * {@code TopLevelType}s.
      * 

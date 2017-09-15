@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -9,22 +9,22 @@ import org.eclipse.jdt.core.dom.Expression;
 import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
 
 /**
- * Java model parser for data sets. The values are temporary stored in a {@code DataSetArguments}
- * helper object.
+ * Generator for data sets. The values are temporary stored in a {@code DataSetArguments} helper
+ * object.
  * 
  * @author Nils Wilka
  * @version 1.0, 15.08.2017
  */
-public class DataSetArgumentsParser extends EnumConstantDeclarationParser<List<DataSetArguments>> {
+public class DataSetArgumentsGenerator extends EnumConstantDeclarationGenerator<List<DataSetArguments>> {
 
     /**
-     * Creates a new parser to get the data set values from the given list of enum constant
+     * Creates a new generator to get the data set values from the given list of enum constant
      * declarations in a helper class.
      * 
      * @param source
      *            A list of enum constant declarations to get the data set values from.
      */
-    public DataSetArgumentsParser(List<EnumConstantDeclaration> source) {
+    public DataSetArgumentsGenerator(List<EnumConstantDeclaration> source) {
         super(source);
     }
 

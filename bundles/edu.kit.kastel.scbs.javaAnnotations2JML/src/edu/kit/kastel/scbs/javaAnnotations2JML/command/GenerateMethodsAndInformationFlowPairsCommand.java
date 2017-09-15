@@ -8,16 +8,17 @@ import java.util.function.Supplier;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ConfidentialitySpecification;
 import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
 import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.AbstractServiceType;
-import edu.kit.kastel.scbs.javaAnnotations2JML.parser.MethodParser;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generator.MethodsAndInformationFlowPairsGenerator;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
 
 /**
- * Command for setting the methods of service types and reacting to exceptions.
+ * Command for setting the methods and their information flow annotations of service types and
+ * reacting to exceptions.
  * 
  * @author Nils Wilka
  * @version 1.2, 14.09.2017
  */
-public class SetMethodsCommand extends Command {
+public class GenerateMethodsAndInformationFlowPairsCommand extends Command {
 
     private Supplier<List<AbstractServiceType>> supplier;
 
@@ -32,7 +33,7 @@ public class SetMethodsCommand extends Command {
      * @param specificationSupplier
      *            The supplier of the confidentiality specification.
      */
-    public SetMethodsCommand(Supplier<List<AbstractServiceType>> serviceTypeSupplier,
+    public GenerateMethodsAndInformationFlowPairsCommand(Supplier<List<AbstractServiceType>> serviceTypeSupplier,
             Supplier<ConfidentialitySpecification> specificationSupplier) {
         this.supplier = serviceTypeSupplier;
         this.specificationSupplier = specificationSupplier;
@@ -47,7 +48,9 @@ public class SetMethodsCommand extends Command {
         }
 
         for (TopLevelType topLevelType : serviceTypeTopLevelTypes) {
-            MethodParser methodParser = new MethodParser(specificationSupplier.get(), topLevelType, topLevelType);
+            MethodsAndInformationFlowPairsGenerator methodParser;
+            methodParser = new MethodsAndInformationFlowPairsGenerator(specificationSupplier.get(), topLevelType,
+                    topLevelType);
             try {
                 methodParser.parse();
             } catch (ParseException e) {

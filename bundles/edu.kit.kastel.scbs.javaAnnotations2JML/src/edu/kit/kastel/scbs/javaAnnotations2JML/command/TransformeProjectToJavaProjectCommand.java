@@ -7,7 +7,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaProject;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
-import edu.kit.kastel.scbs.javaAnnotations2JML.parser.ProjectParser;
+import edu.kit.kastel.scbs.javaAnnotations2JML.transformer.ProjectToJavaProjectTransformer;
 
 /* copy and get java project */
 
@@ -18,7 +18,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.parser.ProjectParser;
  * @author Nils Wilka
  * @version 1.2, 14.09.2017
  */
-public class SetJavaProjectCommand extends Command {
+public class TransformeProjectToJavaProjectCommand extends Command {
 
     private Supplier<IProject> supplier;
 
@@ -33,7 +33,7 @@ public class SetJavaProjectCommand extends Command {
      * @param consumer
      *            The consumer of an {@code IJavaProject}.
      */
-    public SetJavaProjectCommand(Supplier<IProject> supplier, Consumer<IJavaProject> consumer) {
+    public TransformeProjectToJavaProjectCommand(Supplier<IProject> supplier, Consumer<IJavaProject> consumer) {
         this.supplier = supplier;
         this.consumer = consumer;
     }
@@ -41,7 +41,7 @@ public class SetJavaProjectCommand extends Command {
     @Override
     public void execute() {
         try {
-            consumer.accept(new ProjectParser(supplier.get()).parse());
+            consumer.accept(new ProjectToJavaProjectTransformer(supplier.get()).transformProject());
         } catch (ParseException e2) {
             e2.printStackTrace();
             abort();

@@ -1,9 +1,9 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
 
 /**
- * Abstract class for all parsers in this project.
+ * Abstract class for all generators in this project.
  * 
  * Extending sub classes specify with the first type parameter what kind of source they get, which
  * must be set by the constructor. It can be accessed via {@code getSource()}. The second type
@@ -20,7 +20,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
  * @param <R>
  *            The kind of result this parser delivers.
  */
-public abstract class JavaAnnotations2JMLParser<S, R> {
+public abstract class JavaAnnotations2JMLGenerator<S, R> {
 
     private S source;
 
@@ -32,7 +32,7 @@ public abstract class JavaAnnotations2JMLParser<S, R> {
      * @param source
      *            The source to be parsed or changed.
      */
-    public JavaAnnotations2JMLParser(S source) {
+    public JavaAnnotations2JMLGenerator(S source) {
         this.source = source;
     }
 

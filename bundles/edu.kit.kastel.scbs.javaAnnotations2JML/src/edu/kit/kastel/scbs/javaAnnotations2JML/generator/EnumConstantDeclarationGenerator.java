@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
 
 import java.text.Collator;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
 
 /**
- * Abstract java model parser for lists of {@code EnumConstantDeclaration}s.
+ * Abstract generator for lists of {@code EnumConstantDeclaration}s.
  * 
  * This includes string manipulation and checking of java identifiers.
  * 
@@ -21,8 +21,8 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
  * @param <R>
  *            The kind of result this parser delivers.
  */
-public abstract class EnumConstantDeclarationParser<R>
-        extends JavaAnnotations2JMLParser<List<EnumConstantDeclaration>, R> {
+public abstract class EnumConstantDeclarationGenerator<R>
+        extends JavaAnnotations2JMLGenerator<List<EnumConstantDeclaration>, R> {
 
     private static final Collator ENGLISH_COLLATOR = Collator.getInstance(Locale.ENGLISH);
 
@@ -39,7 +39,7 @@ public abstract class EnumConstantDeclarationParser<R>
      * @param source
      *            The list of enum constant declarations to parse.
      */
-    public EnumConstantDeclarationParser(List<EnumConstantDeclaration> source) {
+    public EnumConstantDeclarationGenerator(List<EnumConstantDeclaration> source) {
         super(source);
     }
 

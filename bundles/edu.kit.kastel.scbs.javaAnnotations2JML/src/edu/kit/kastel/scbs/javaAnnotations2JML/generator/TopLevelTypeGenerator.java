@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -14,22 +14,22 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
 
 /**
- * Parser for an {@code IJavaProject}. Scans all {@code ICompilationUnit}s,
- * {@code IPackageFragment}s and {@code IType}s of the given project and converts them to
- * {@code TopLevelType}s.
+ * Generator for the @ {@code TopLevelType}s from an {@code IJavaProject}. Scans all
+ * {@code ICompilationUnit}s, {@code IPackageFragment}s and {@code IType}s of the given project and
+ * converts them to {@code TopLevelType}s.
  * 
  * @author Nils Wilka
  * @version 1.0, 04.08.2017
  */
-public class JavaProjectParser extends JavaAnnotations2JMLParser<IJavaProject, List<TopLevelType>> {
+public class TopLevelTypeGenerator extends JavaAnnotations2JMLGenerator<IJavaProject, List<TopLevelType>> {
 
     /**
-     * Constructs a new parser with the given java project as source.
+     * Constructs a new generator with the given java project as source.
      * 
      * @param source
      *            The {@code IJavaProject} to scan.
      */
-    public JavaProjectParser(IJavaProject source) {
+    public TopLevelTypeGenerator(IJavaProject source) {
         super(source);
     }
 

@@ -7,16 +7,16 @@ import org.eclipse.jdt.core.IJavaProject;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ConfidentialitySpecification;
 import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
-import edu.kit.kastel.scbs.javaAnnotations2JML.parser.ConfidentialityRepositoryParser;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generator.ConfidentialityRepositoryGenerator;
 
 /**
- * Command for parsing a java project, setting the confidentiality package and reacting to
+ * Command for scanning a java project, setting the confidentiality package and reacting to
  * exceptions.
  * 
  * @author Nils Wilka
  * @version 1.0, 14.09.2017
  */
-public class ConfidentialityRepositoryCreatorCommand extends Command {
+public class GenerateConfidentialityRepositoryCommand extends Command {
 
     private Supplier<IJavaProject> supplier;
 
@@ -30,7 +30,7 @@ public class ConfidentialityRepositoryCreatorCommand extends Command {
      * @param csConsumer
      *            To set the confidentiality package.
      */
-    public ConfidentialityRepositoryCreatorCommand(Supplier<IJavaProject> supplier,
+    public GenerateConfidentialityRepositoryCommand(Supplier<IJavaProject> supplier,
             Consumer<ConfidentialitySpecification> csConsumer) {
         this.supplier = supplier;
         this.csConsumer = csConsumer;
@@ -38,7 +38,7 @@ public class ConfidentialityRepositoryCreatorCommand extends Command {
 
     @Override
     public void execute() {
-        ConfidentialityRepositoryParser confRepoParser = new ConfidentialityRepositoryParser(supplier.get());
+        ConfidentialityRepositoryGenerator confRepoParser = new ConfidentialityRepositoryGenerator(supplier.get());
         try {
             csConsumer.accept(confRepoParser.parse());
         } catch (ParseException e1) {

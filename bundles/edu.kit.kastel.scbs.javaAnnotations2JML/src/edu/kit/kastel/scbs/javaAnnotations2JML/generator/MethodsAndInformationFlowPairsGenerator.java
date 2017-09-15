@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.parser;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -27,7 +27,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.util.Anno2JmlUtil;
  * @author Nils Wilka
  * @version 1.0, 17.08.2017
  */
-public class MethodParser {
+public class MethodsAndInformationFlowPairsGenerator {
 
     private ConfidentialitySpecification specification;
 
@@ -45,8 +45,8 @@ public class MethodParser {
      * @param sourceMethodProvider
      *            The source of methods to parse.
      */
-    public MethodParser(ConfidentialitySpecification specification, MethodAcceptor methodAcceptor,
-            SourceMethodProvider sourceMethodProvider) {
+    public MethodsAndInformationFlowPairsGenerator(ConfidentialitySpecification specification,
+            MethodAcceptor methodAcceptor, SourceMethodProvider sourceMethodProvider) {
         this.specification = specification;
         this.methodAcceptor = methodAcceptor;
         this.sourceProvider = sourceMethodProvider;
@@ -176,7 +176,7 @@ public class MethodParser {
      */
     private Map<EnumConstant, Optional<ParametersAndDataPair>> parseAnnotationAndGetCorrespondingPairs(
             ConfidentialitySpecification specification, IMethod method) throws ParseException {
-        InformationFlowAnnotationArguments arguments = new InformationFlowAnnotationParser(method).parse();
+        InformationFlowAnnotationArguments arguments = new InformationFlowAnnotationGenerator(method).parse();
         Map<EnumConstant, Optional<ParametersAndDataPair>> pairMap = new HashMap<>();
         // Optional's are empty if there was no fitting ParameterAndDataPair
         arguments.getParametersAndDataPairEnumConstants().forEach(e -> pairMap.put(e,

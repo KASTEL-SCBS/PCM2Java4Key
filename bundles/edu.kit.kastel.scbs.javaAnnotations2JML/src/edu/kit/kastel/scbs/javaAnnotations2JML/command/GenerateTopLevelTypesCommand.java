@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import org.eclipse.jdt.core.IJavaProject;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
-import edu.kit.kastel.scbs.javaAnnotations2JML.parser.JavaProjectParser;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generator.TopLevelTypeGenerator;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
 
 /**
@@ -16,7 +16,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
  * @author Nils Wilka
  * @version 1.0, 14.09.2017
  */
-public class TopLevelTypeCreatorCommand extends Command {
+public class GenerateTopLevelTypesCommand extends Command {
 
     private Supplier<IJavaProject> supplier;
 
@@ -30,14 +30,14 @@ public class TopLevelTypeCreatorCommand extends Command {
      * @param tltConsumer
      *            To set the java top level types.
      */
-    public TopLevelTypeCreatorCommand(Supplier<IJavaProject> supplier, Consumer<List<TopLevelType>> tltConsumer) {
+    public GenerateTopLevelTypesCommand(Supplier<IJavaProject> supplier, Consumer<List<TopLevelType>> tltConsumer) {
         this.supplier = supplier;
         this.tltConsumer = tltConsumer;
     }
 
     @Override
     public void execute() {
-        JavaProjectParser sourceRepoParser = new JavaProjectParser(supplier.get());
+        TopLevelTypeGenerator sourceRepoParser = new TopLevelTypeGenerator(supplier.get());
         try {
             tltConsumer.accept(sourceRepoParser.parse());
         } catch (ParseException e1) {
