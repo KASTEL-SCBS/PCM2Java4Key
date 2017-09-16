@@ -26,6 +26,8 @@ public class RequiredServiceType extends AbstractServiceType {
      *            The type of this service type.
      * @param parent
      *            The parent it was created from/for.
+     * @param serviceProvider
+     *            The serviceProvider to get the services from.
      */
     public RequiredServiceType(String role, IType type, TopLevelType parent, ServiceProvider serviceProvider) {
         super(role, type, parent, serviceProvider);

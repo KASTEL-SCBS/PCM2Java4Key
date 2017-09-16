@@ -81,6 +81,14 @@ public class MethodAndServiceContainer implements MethodAndAnnotationPairProvide
         return javaType;
     }
 
+    /**
+     * Adds an {@code IMethod} and its {@code InformationFlowAnnotation}.
+     * 
+     * @param method
+     *            The method to add.
+     * @param annotation
+     *            The information flow annotation to add.
+     */
     public void addMethodAndAnnotationPair(IMethod method, InformationFlowAnnotation annotation) {
         methods.put(method, annotation);
     }
@@ -90,19 +98,30 @@ public class MethodAndServiceContainer implements MethodAndAnnotationPairProvide
         return methods;
     }
 
+    /**
+     * Adds a method without an information flow annotation.
+     * 
+     * @param method
+     *            The method without an information flow annotation.
+     */
     public void addMethod(IMethod method) {
         this.sourceMethods.add(method);
     }
 
+    /**
+     * Gets the list of {@code IMethod}s without information flow annotations.
+     * 
+     * @return The list of {@code IMethod}s without information flow annotations.
+     */
     public List<IMethod> getMethods() {
         return this.sourceMethods;
     }
 
     /**
-     * Creates a service with the given method and annotation and adds it to the service acceptor.
+     * Adds the given data set to services map to this container.
      * 
      * @param services
-     *            TODO
+     *            The data set to services map to add.
      */
     public void addService(Map<DataSet, List<Service>> services) {
         this.services = services;

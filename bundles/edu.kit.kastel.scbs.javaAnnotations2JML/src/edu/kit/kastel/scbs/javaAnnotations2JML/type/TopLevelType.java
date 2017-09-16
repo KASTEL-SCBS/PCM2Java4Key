@@ -1,5 +1,6 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.type;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -321,44 +322,35 @@ public class TopLevelType {
         }
 
         /**
-         * Creates a new field for a {@code TopLevelType} from the given {@code FieldDeclaration}.
+         * Creates a list of fields for a given {@code TopLevelType} from the given
+         * {@code FieldDeclaration}. Creates one field for each {@code VariableDeclarationFragment}
+         * contained in the {@code FieldDeclaration} with the type of the {@code FieldDeclaration}.
          * 
-         * The {@code TopLevelType} of this field will be created.
+         * The {@code TopLevelType} the fields will be created for.
          * 
          * @param parent
-         *            Where the field is declared.
+         *            Where the fields are declared.
          * @param fieldDeclaration
-         *            To get the field values from.
-         * @return A new field for the parent.
+         *            To get the fields from.
+         * @return A list of fields for the parent in the order they are declared. An empty list if
+         *         the type of the field declaration is not a top level type.
          */
-        public static Field create(final TopLevelType parent, final FieldDeclaration fieldDeclaration) {
+        // the java doc of FieldDeclaration#fragments() specifies the type
+        // 'VariableDeclarationFragment'
+        @SuppressWarnings("unchecked")
+        public static List<Field> create(final TopLevelType parent, final FieldDeclaration fieldDeclaration) {
             final ITypeBinding tb = fieldDeclaration.getType().resolveBinding();
             if (tb.isTopLevel()) {
-                final VariableDeclarationFragment vdf = (VariableDeclarationFragment) fieldDeclaration.fragments()
-                        .get(0);
+                final List<VariableDeclarationFragment> list = fieldDeclaration.fragments();
                 final IType type = (IType) tb.getJavaElement();
-                return new Field(parent, vdf.toString(), type);
+                final List<Field> fields = new ArrayList<>(list.size());
+                for (VariableDeclarationFragment vdf : list) {
+                    fields.add(new Field(parent, vdf.toString(), type));
+                }
+                return fields;
             } else {
-                // TODO throw exception ?
-                return null;
+                return new LinkedList<>();
             }
-        }
-
-        /**
-         * Creates a new list of fields for the parent from the given {@code FieldDeclaration}s.
-         * 
-         * The {@code TopLevelType} of these fields will be created individually.
-         * 
-         * @param parent
-         *            Where the field is declared.
-         * @param fdList
-         *            To get the field values from.
-         * @return A new list of fields for the parent.
-         */
-        public static List<Field> create(final TopLevelType parent, final List<FieldDeclaration> fdList) {
-            final List<Field> fields = new LinkedList<>();
-            fdList.forEach(e -> fields.add(create(parent, e)));
-            return fields;
         }
 
         @Override

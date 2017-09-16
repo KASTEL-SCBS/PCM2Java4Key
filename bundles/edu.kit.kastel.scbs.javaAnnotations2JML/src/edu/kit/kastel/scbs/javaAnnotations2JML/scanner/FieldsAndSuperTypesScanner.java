@@ -139,7 +139,7 @@ public class FieldsAndSuperTypesScanner {
             final TypeDeclaration td = (TypeDeclaration) atd;
             // filter non top level type fields
             Arrays.asList(td.getFields()).stream().filter(e -> TopLevelType.Field.isTopLevelTypeField(e))
-                    .forEach(e -> allFields.add(TopLevelType.Field.create(type, e)));
+                    .forEach(e -> allFields.addAll(TopLevelType.Field.create(type, e)));
         }
         return allFields;
     }

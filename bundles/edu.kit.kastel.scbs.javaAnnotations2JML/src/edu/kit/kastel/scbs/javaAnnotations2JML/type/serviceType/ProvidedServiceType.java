@@ -27,6 +27,8 @@ public class ProvidedServiceType extends AbstractServiceType {
      *            The type of this service type.
      * @param parent
      *            The parent it was created from/for.
+     * @param serviceProvider
+     *            The serviceProvider to get the services from.
      */
     public ProvidedServiceType(IType type, TopLevelType parent, ServiceProvider serviceProvider) {
         super(SELF_REFERENCE, type, parent, serviceProvider);
