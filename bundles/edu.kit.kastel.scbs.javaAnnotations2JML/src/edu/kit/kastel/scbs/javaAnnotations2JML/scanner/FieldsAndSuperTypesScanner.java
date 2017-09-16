@@ -53,7 +53,7 @@ public class FieldsAndSuperTypesScanner {
         topLevelTypes.forEach(e -> types.add(e.getIType()));
         try {
             for (TopLevelType type : topLevelTypes) {
-                scanSuperTypeInterfaces(type);
+                scanSuperTypes(type);
                 scanFields(type);
             }
         } catch (JavaModelException jme) {
@@ -72,12 +72,11 @@ public class FieldsAndSuperTypesScanner {
      * @throws JavaModelException
      *             if creating the super type hierarchy causes it.
      */
-    private void scanSuperTypeInterfaces(final TopLevelType type) throws JavaModelException {
+    private void scanSuperTypes(final TopLevelType type) throws JavaModelException {
         final IType iType = type.getIType();
-        // TODO not just interfaces
-        List<IType> iTypes = Arrays.asList(iType.newSupertypeHierarchy(null).getAllSuperInterfaces(iType));
+        List<IType> iTypes = Arrays.asList(iType.newSupertypeHierarchy(null).getSupertypes(iType));
         iTypes = replaceExistingTypes(iTypes);
-        iTypes.stream().forEach(e -> type.addSuperTypeInterface(new TopLevelType.SuperType(type, e)));
+        iTypes.stream().forEach(e -> type.addSuperType(new TopLevelType.SuperType(type, e)));
     }
 
     /**

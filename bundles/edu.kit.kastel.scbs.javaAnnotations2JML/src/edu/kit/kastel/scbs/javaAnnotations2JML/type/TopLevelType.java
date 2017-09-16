@@ -155,23 +155,23 @@ public class TopLevelType {
     }
 
     /**
-     * Gets the super type interfaces for this {@code TopLevelType}.
+     * Gets the super types for this {@code TopLevelType}.
      * 
-     * @return The super type interfaces for this {@code TopLevelType}.
+     * @return The super types for this {@code TopLevelType}.
      */
-    public List<SuperType> getSuperTypeInterfaces() {
+    public List<SuperType> getSuperTypes() {
         final Optional<List<SuperType>> optional = Optional.ofNullable(superInterfaces);
         return optional.orElse(new LinkedList<>());
     }
 
     /**
-     * Adds a super type interface to this {@code TopLevelType}.
+     * Adds a super type to this {@code TopLevelType}.
      * 
-     * @param superTypeInterface
+     * @param superType
      *            The super type interfaces to add.
      */
-    public void addSuperTypeInterface(final SuperType superTypeInterface) {
-        superInterfaces.add(superTypeInterface);
+    public void addSuperType(final SuperType superType) {
+        superInterfaces.add(superType);
     }
 
     /**

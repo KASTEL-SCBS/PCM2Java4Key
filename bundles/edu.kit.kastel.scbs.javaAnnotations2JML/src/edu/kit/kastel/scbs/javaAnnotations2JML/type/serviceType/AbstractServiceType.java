@@ -119,7 +119,7 @@ public abstract class AbstractServiceType implements ServiceProvider {
      * @return The abstract services that are mapped to the given data set or an empty list if there
      *         are non.
      */
-    private List<RoleService> getServicesForDataSet(DataSet dataSet) {
+    private List<RoleService> getRoleServicesForDataSet(DataSet dataSet) {
         Optional<List<RoleService>> optional = Optional.ofNullable(getRoleServices(dataSet));
         return optional.orElse(new LinkedList<>());
     }
@@ -163,7 +163,7 @@ public abstract class AbstractServiceType implements ServiceProvider {
      *            The jml comment to add the services to.
      */
     public void addServicesForDataSetToJmlComment(DataSet dataSet, JmlComment comment) {
-        getServicesForDataSet(dataSet).forEach(e -> e.addServiceToJmlComment(comment));
+        getRoleServicesForDataSet(dataSet).forEach(e -> e.addServiceToJmlComment(comment));
     }
 
     /**

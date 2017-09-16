@@ -124,7 +124,7 @@ public class ServiceTypeGenerator
     private Set<ProvidedServiceType> getProvidedTopLevelTypes(final TopLevelType topLevelType)
             throws JavaModelException {
         final Set<ProvidedServiceType> providedTypes = new HashSet<>();
-        for (TopLevelType.SuperType superType : topLevelType.getSuperTypeInterfaces()) {
+        for (TopLevelType.SuperType superType : topLevelType.getSuperTypes()) {
             final IType type = superType.getType();
             if (Anno2JmlUtil.hasInformationFlowAnnotation(type)) {
                 final ServiceProvider provider = iType2ServiceProvider.apply(type);
