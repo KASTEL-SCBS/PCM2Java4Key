@@ -1,10 +1,10 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.generation;
+package edu.kit.kastel.scbs.javaAnnotations2JML.type;
 
 import java.util.List;
 import java.util.Set;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.Service;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.service.Service;
 
 /**
  * Implementing classes provide services, data sets (as services are linked to data sets) and

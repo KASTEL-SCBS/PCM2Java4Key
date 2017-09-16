@@ -1,9 +1,12 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType;
+package edu.kit.kastel.scbs.javaAnnotations2JML.type.serviceType;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.RoleService;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.RequiredService;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.Service;
+import org.eclipse.jdt.core.IType;
+
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.ServiceProvider;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.service.RequiredService;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.service.RoleService;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.service.Service;
 
 /**
  * Concrete class for "service types", in this case a required type. They represent a field of its
@@ -24,8 +27,8 @@ public class RequiredServiceType extends AbstractServiceType {
      * @param parent
      *            The parent it was created from/for.
      */
-    public RequiredServiceType(String role, TopLevelType type, TopLevelType parent) {
-        super(role, type, parent);
+    public RequiredServiceType(String role, IType type, TopLevelType parent, ServiceProvider serviceProvider) {
+        super(role, type, parent, serviceProvider);
     }
 
     @Override

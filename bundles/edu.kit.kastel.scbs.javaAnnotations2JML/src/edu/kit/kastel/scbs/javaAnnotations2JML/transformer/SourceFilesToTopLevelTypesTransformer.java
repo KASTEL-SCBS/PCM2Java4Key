@@ -1,9 +1,10 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
+package edu.kit.kastel.scbs.javaAnnotations2JML.transformer;
 
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
@@ -14,33 +15,42 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
 
 /**
- * Generator for the @ {@code TopLevelType}s from an {@code IJavaProject}. Scans all
- * {@code ICompilationUnit}s, {@code IPackageFragment}s and {@code IType}s of the given project and
- * converts them to {@code TopLevelType}s.
+ * Scanner for the given {@code IJavaProject} and to extract the {@code TopLevelType}s from the
+ * contained source files. Scans all {@code ICompilationUnit}s, {@code IPackageFragment}s and
+ * {@code IType}s of the given project and converts them to {@code TopLevelType}s.
  * 
  * @author Nils Wilka
- * @version 1.0, 04.08.2017
+ * @version 1.1, 16.09.2017
  */
-public class TopLevelTypeGenerator extends JavaAnnotations2JMLGenerator<IJavaProject, List<TopLevelType>> {
+public class SourceFilesToTopLevelTypesTransformer {
+
+    private final IJavaProject project;
 
     /**
-     * Constructs a new generator with the given java project as source.
+     * Constructs a new scanner with the given java project as source.
      * 
      * @param source
      *            The {@code IJavaProject} to scan.
      */
-    public TopLevelTypeGenerator(IJavaProject source) {
-        super(source);
+    public SourceFilesToTopLevelTypesTransformer(final IJavaProject source) {
+        this.project = source;
     }
 
-    @Override
-    protected List<TopLevelType> parseSource() throws ParseException {
-        List<TopLevelType> topLevelTypes;
+    /**
+     * Scans all {@code ICompilationUnit}s, {@code IPackageFragment}s and {@code IType}s of the
+     * given project and converts them to {@code TopLevelType}s.
+     * 
+     * @return The top level types corresponding to the ITypes in the project;
+     * @throws ParseException
+     *             if the parsing of the java project triggers it.
+     */
+    public Iterable<TopLevelType> transform() throws ParseException {
+        final Iterable<TopLevelType> topLevelTypes;
         try {
-            List<ICompilationUnit> sourceFiles = getSourceFiles();
+            final Iterable<ICompilationUnit> sourceFiles = getSourceFiles();
             topLevelTypes = getTopLevelTypes(sourceFiles);
         } catch (JavaModelException jme) {
-            Optional<String> message = Optional.ofNullable(jme.getMessage());
+            final Optional<String> message = Optional.ofNullable(jme.getMessage());
             throw new ParseException("Java Model Exception occurred: " + message.orElse("(no error message)"), jme);
         }
         return topLevelTypes;
@@ -53,10 +63,9 @@ public class TopLevelTypeGenerator extends JavaAnnotations2JMLGenerator<IJavaPro
      * @throws JavaModelException
      *             if the parsing of the {@code IJavaProject} triggers them.
      */
-    private List<ICompilationUnit> getSourceFiles() throws JavaModelException {
-        List<ICompilationUnit> sourceFiles = new LinkedList<>();
-        IPackageFragment[] fragments = getSource().getPackageFragments();
-
+    private Iterable<ICompilationUnit> getSourceFiles() throws JavaModelException {
+        final Set<ICompilationUnit> sourceFiles = new HashSet<>();
+        final IPackageFragment[] fragments = project.getPackageFragments();
         for (IPackageFragment fragment : fragments) {
             sourceFiles.addAll(Arrays.asList(fragment.getCompilationUnits()));
         }
@@ -74,11 +83,11 @@ public class TopLevelTypeGenerator extends JavaAnnotations2JMLGenerator<IJavaPro
      * @throws JavaModelException
      *             if the parsing of the {@code IJavaProject} triggers them.
      */
-    private List<TopLevelType> getTopLevelTypes(List<ICompilationUnit> sourceFiles) throws JavaModelException {
-        List<TopLevelType> sourceRepositoryFiles = new LinkedList<>();
-
+    private Iterable<TopLevelType> getTopLevelTypes(final Iterable<ICompilationUnit> sourceFiles)
+            throws JavaModelException {
+        final Set<TopLevelType> sourceRepositoryFiles = new HashSet<>();
         for (ICompilationUnit unit : sourceFiles) {
-            List<TopLevelType> tltList = TopLevelType.create(Arrays.asList(unit.getTypes()));
+            final List<TopLevelType> tltList = TopLevelType.create(Arrays.asList(unit.getTypes()));
             sourceRepositoryFiles.addAll(tltList);
         }
         return sourceRepositoryFiles;

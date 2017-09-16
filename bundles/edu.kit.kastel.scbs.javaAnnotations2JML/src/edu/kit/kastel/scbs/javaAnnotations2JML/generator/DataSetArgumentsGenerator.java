@@ -24,14 +24,14 @@ public class DataSetArgumentsGenerator extends EnumConstantDeclarationGenerator<
      * @param source
      *            A list of enum constant declarations to get the data set values from.
      */
-    public DataSetArgumentsGenerator(List<EnumConstantDeclaration> source) {
+    public DataSetArgumentsGenerator(final List<EnumConstantDeclaration> source) {
         super(source);
     }
 
     @Override
-    protected List<DataSetArguments> parseSource() throws ParseException {
-        List<DataSetArguments> dataSets = new LinkedList<>();
-        for (EnumConstantDeclaration enumConstantDeclaration : getSource()) {
+    protected List<DataSetArguments> scanSource() throws ParseException {
+        final List<DataSetArguments> dataSets = new LinkedList<>();
+        for (final EnumConstantDeclaration enumConstantDeclaration : getSource()) {
             dataSets.add(readDataSetArguments(enumConstantDeclaration));
         }
         return dataSets;
@@ -46,13 +46,13 @@ public class DataSetArgumentsGenerator extends EnumConstantDeclarationGenerator<
      */
     // the java doc of EnumConstantDeclaration#arguments() specifies the type 'Expression'
     @SuppressWarnings("unchecked")
-    public DataSetArguments readDataSetArguments(EnumConstantDeclaration enumConstantDeclaration) {
-        List<Expression> arguments = enumConstantDeclaration.arguments();
+    public DataSetArguments readDataSetArguments(final EnumConstantDeclaration enumConstantDeclaration) {
+        final List<Expression> arguments = enumConstantDeclaration.arguments();
         // TODO empty arguments
         // assert second argument is name and a StringLiteral
-        String id = arguments.get(0).toString();
-        String name = arguments.get(1).toString();
-        String enumConstantName = enumConstantDeclaration.getName().toString();
+        final String id = arguments.get(0).toString();
+        final String name = arguments.get(1).toString();
+        final String enumConstantName = enumConstantDeclaration.getName().toString();
         return new DataSetArguments(removeQuotes(id), removeQuotes(name), enumConstantName);
     }
 }

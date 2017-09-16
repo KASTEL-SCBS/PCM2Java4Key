@@ -1,10 +1,10 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.generation.service;
+package edu.kit.kastel.scbs.javaAnnotations2JML.type.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParameterSource;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.JmlComment;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.JmlComment;
 
 /**
  * An abstract service extends a service with a role, i.e. the context the service is used in.

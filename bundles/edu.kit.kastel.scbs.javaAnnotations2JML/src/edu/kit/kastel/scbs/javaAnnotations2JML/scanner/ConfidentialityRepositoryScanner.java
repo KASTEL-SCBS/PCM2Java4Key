@@ -1,4 +1,4 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
+package edu.kit.kastel.scbs.javaAnnotations2JML.scanner;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,19 +23,22 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParameterSource;
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParametersAndDataPair;
 import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generator.DataSetArguments;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generator.DataSetArgumentsGenerator;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generator.ParametersAndDataPairArguments;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generator.ParametersAndDataPairArgumentsGenerator;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.EnumConstant;
 import edu.kit.kastel.scbs.javaAnnotations2JML.util.JdtAstJmlUtil;
 
 /**
- * Generator for the confidentiality repository package. Looks for the confidentiality package.
- * Scans included data sets and parameters and data pair java classes. Generates all present data
+ * Scanner for the confidentiality repository package. Looks for the confidentiality package and
+ * scans included data sets and parameters and data pair java classes. Generates all present data
  * sets and parameters and data pairs.
  * 
  * @author Nils Wilka
- * @version 1.0, 02.08.2017
+ * @version 1.1, 16.09.2017
  */
-public class ConfidentialityRepositoryGenerator
-        extends JavaAnnotations2JMLGenerator<IJavaProject, ConfidentialitySpecification> {
+public class ConfidentialityRepositoryScanner {
 
     private static final String CONFIDENTIALITY_REPOSITORY = "confidentialityRepository";
 
@@ -46,33 +49,44 @@ public class ConfidentialityRepositoryGenerator
     // 'InformationFlow' type is not required
     private static final String[] REQUIRED_CONFIDENTIALITY_TYPE_NAMES = { DATASETS, PARAMETERS_AND_DATA_PAIRS };
 
+    private final ConfidentialitySpecification specification;
+
+    private final Map<String, IType> requiredConfidentialityTypes;
+
+    private final IJavaProject project;
+
     private IPackageFragment confidentialityPackage;
 
-    private ConfidentialitySpecification specification;
-
-    private Map<String, IType> requiredConfidentialityTypes;
-
     /**
-     * Creates a new generator for the confidentiality repository package.
+     * Creates a new scanner for the confidentiality repository package.
      * 
      * @param source
-     *            The java project to scan and to generate the confidentiality types for.
+     *            The java project to scan and to create the confidentiality types for.
      */
-    public ConfidentialityRepositoryGenerator(IJavaProject source) {
-        super(source);
+    public ConfidentialityRepositoryScanner(IJavaProject source) {
+        this.project = source;
         this.requiredConfidentialityTypes = new HashMap<>(REQUIRED_CONFIDENTIALITY_TYPE_NAMES.length);
         this.specification = new ConfidentialitySpecification();
     }
 
-    @Override
-    protected ConfidentialitySpecification parseSource() throws ParseException {
+    /**
+     * Scans the confidentiality repository package, i.e. scans included data sets and parameters
+     * and data pair java classes. Generates all present data sets and parameters and data pairs.
+     * 
+     * @return The confidentiality specification created from the confidentiality repository
+     *         package.
+     * @throws ParseException
+     *             if scanning the package fragments or source files causes it or if the scanning of
+     *             the data sets or parameters and data pairs causes it.
+     */
+    public ConfidentialitySpecification scan() throws ParseException {
         try {
             setConfidentialityPackage();
             setJavaTypes();
-            specification.addAllDataSets(parseDataSets());
-            specification.addAllParameterAndDataPairs(parseParameterAndDataPairs());
+            specification.addAllDataSets(scanDataSets());
+            specification.addAllParameterAndDataPairs(scanParameterAndDataPairs());
         } catch (JavaModelException jme) {
-            Optional<String> message = Optional.ofNullable(jme.getMessage());
+            final Optional<String> message = Optional.ofNullable(jme.getMessage());
             throw new ParseException("Java Model Exception occurred: " + message.orElse("(no error message)"), jme);
         }
         return specification;
@@ -84,11 +98,11 @@ public class ConfidentialityRepositoryGenerator
      * @throws JavaModelException
      *             if scanning the package fragments causes it.
      * @throws ParseException
-     *             if the confidentiality package is missing.
+     *             if the confidentiality repository package is missing.
      */
     private void setConfidentialityPackage() throws JavaModelException, ParseException {
-        List<IPackageFragment> fragments = Arrays.asList(getSource().getPackageFragments());
-        Optional<IPackageFragment> optional = fragments.stream()
+        final List<IPackageFragment> fragments = Arrays.asList(project.getPackageFragments());
+        final Optional<IPackageFragment> optional = fragments.stream()
                 .filter(e -> e.getElementName().endsWith(CONFIDENTIALITY_REPOSITORY)).findFirst();
         this.confidentialityPackage = optional.orElseThrow(
                 () -> new ParseException("No package with the name \"" + CONFIDENTIALITY_REPOSITORY + "\" found."));
@@ -105,40 +119,24 @@ public class ConfidentialityRepositoryGenerator
      */
     private void setJavaTypes() throws ParseException, JavaModelException {
         for (String name : REQUIRED_CONFIDENTIALITY_TYPE_NAMES) {
-            setJavaType(name);
+            final IType javaType = getJavaTypeByName(name);
+            checkEnum(javaType);
+            requiredConfidentialityTypes.put(name, javaType);
         }
-    }
-
-    /**
-     * Searches for given required confidentiality enum name in the confidentiality package and
-     * makes it accessible by name. Throws an {@code ParseException} if the file is not an enum.
-     * 
-     * @param name
-     *            The name of the java enum to find.
-     * @throws ParseException
-     *             if the java file is not of type enum or if there is no java file with the given
-     *             name.
-     * @throws JavaModelException
-     *             if scanning the source files causes it.
-     */
-    private void setJavaType(String name) throws ParseException, JavaModelException {
-        IType javaType = getJavaTypeByName(name);
-        checkEnum(javaType);
-        requiredConfidentialityTypes.put(name, javaType);
     }
 
     /**
      * Checks if the given {@code IType} is an enum and throws an exception if not.
      * 
      * @param type
-     *            THe type to check.
+     *            The type to check.
      * @throws ParseException
      *             if the java file is not of type enum or if there is no java file with the given
      *             name.
      * @throws JavaModelException
      *             if checking for enum causes it.
      */
-    private void checkEnum(IType type) throws ParseException, JavaModelException {
+    private void checkEnum(final IType type) throws ParseException, JavaModelException {
         if (!type.isEnum()) {
             throw new ParseException("java type " + type.getElementName() + " is not an enum type.");
         }
@@ -156,12 +154,12 @@ public class ConfidentialityRepositoryGenerator
      * @throws JavaModelException
      *             if scanning the source files causes it.
      */
-    private IType getJavaTypeByName(String name) throws ParseException, JavaModelException {
+    private IType getJavaTypeByName(final String name) throws ParseException, JavaModelException {
         for (ICompilationUnit unit : confidentialityPackage.getCompilationUnits()) {
-            List<IType> types = Arrays.asList(unit.getTypes());
+            final List<IType> types = Arrays.asList(unit.getTypes());
             // more than one type permitted,
             // but the first one must be the expected one
-            Optional<IType> type = types.stream().findFirst();
+            final Optional<IType> type = types.stream().findFirst();
             if (type.isPresent() && type.get().getElementName().equals(name)) {
                 return type.get();
             }
@@ -170,48 +168,48 @@ public class ConfidentialityRepositoryGenerator
     }
 
     /**
-     * Parses all enum constant declarations in the data set enum file of the confidentiality
-     * package and calls the {@code DataSetArgumentsParser}.
+     * Scans all enum constant declarations in the data set enum file of the confidentiality
+     * repository package and calls the {@code DataSetArgumentsGenerator}.
      * 
      * @return The {@code DataSet}s in the confidentiality package.
      * @throws JavaModelException
-     *             if the parsing of the {@code EnumConstantDeclaration} triggers them.
+     *             if the scanning of the {@code EnumConstantDeclaration} triggers it.
      * @throws ParseException
-     *             if the {@code DataSetArgumentsParser} throws it.
+     *             if the {@code DataSetArgumentsGenerator} throws it.
      */
-    private List<DataSet> parseDataSets() throws JavaModelException, ParseException {
-        List<EnumConstantDeclaration> enumConstantDeclarations = parseEnumDeclarations(
+    private List<DataSet> scanDataSets() throws JavaModelException, ParseException {
+        final List<EnumConstantDeclaration> enumConstantDeclarations = scanEnumDeclarations(
                 requiredConfidentialityTypes.get(DATASETS));
-        List<DataSetArguments> arguments = new DataSetArgumentsGenerator(enumConstantDeclarations).parse();
+        final List<DataSetArguments> arguments = new DataSetArgumentsGenerator(enumConstantDeclarations).generate();
         return arguments.stream().map(e -> new DataSet(e.getId(), e.getName(), e.getEnumConstant()))
                 .collect(Collectors.toList());
     }
 
     /**
      * Parses all enum constant declarations in the parameters and data pairs enum file of the
-     * confidentiality package and calls the {@code ParametersAndDataPairArgumentsParser}.
+     * confidentiality repository package and calls the
+     * {@code ParametersAndDataPairArgumentsGenerator}.
      * 
      * This includes the parameter sources and the data sets. The latter are retrieved from the
      * confidentiality specification by their enum constant.
      * 
      * @return The {@code ParametersAndDataPair}s in the confidentiality package.
      * @throws JavaModelException
-     *             if the parsing of the {@code EnumConstantDeclaration} triggers them.
+     *             if the scanning of the {@code EnumConstantDeclaration} triggers it.
      * @throws ParseException
-     *             if the {@code ParametersAndDataPairArgumentsParser} throws it.
+     *             if the {@code ParametersAndDataPairArgumentsGenerator} throws it.
      */
-    private List<ParametersAndDataPair> parseParameterAndDataPairs() throws JavaModelException, ParseException {
-        List<EnumConstantDeclaration> enumConstantDeclarations;
-        enumConstantDeclarations = parseEnumDeclarations(requiredConfidentialityTypes.get(PARAMETERS_AND_DATA_PAIRS));
-        List<ParametersAndDataPairArguments> argumentsList;
-        argumentsList = new ParametersAndDataPairArgumentsGenerator(enumConstantDeclarations).parse();
+    private List<ParametersAndDataPair> scanParameterAndDataPairs() throws JavaModelException, ParseException {
+        final List<EnumConstantDeclaration> enumConstantDeclarations;
+        enumConstantDeclarations = scanEnumDeclarations(requiredConfidentialityTypes.get(PARAMETERS_AND_DATA_PAIRS));
+        final List<ParametersAndDataPairArguments> argumentsList;
+        argumentsList = new ParametersAndDataPairArgumentsGenerator(enumConstantDeclarations).generate();
 
-        List<ParametersAndDataPair> parametersAndDataPairs = new LinkedList<>();
+        final List<ParametersAndDataPair> parametersAndDataPairs = new LinkedList<>();
         for (ParametersAndDataPairArguments argument : argumentsList) {
-            EnumConstant enumConstant = argument.getEnumConstant();
-            List<ParameterSource> paramterSources = parseParameterSources(argument.getParameterSourceStrings());
-            // throws ParseException:
-            List<DataSet> dataSets = getDataSetsByName(argument.getDataSetEnumConstants());
+            final EnumConstant enumConstant = argument.getEnumConstant();
+            final List<ParameterSource> paramterSources = scanParameterSources(argument.getParameterSourceStrings());
+            final List<DataSet> dataSets = getDataSetsByName(argument.getDataSetEnumConstants());
             parametersAndDataPairs.add(new ParametersAndDataPair(enumConstant, paramterSources, dataSets));
         }
         return parametersAndDataPairs;
@@ -224,7 +222,7 @@ public class ConfidentialityRepositoryGenerator
      *            The parameter sources as strings.
      * @return The parameter sources of type {@code ParameterSource}.
      */
-    private List<ParameterSource> parseParameterSources(List<String> arguments) {
+    private List<ParameterSource> scanParameterSources(final List<String> arguments) {
         return arguments.stream().map(ParameterSource::new).collect(Collectors.toList());
     }
 
@@ -239,13 +237,13 @@ public class ConfidentialityRepositoryGenerator
      * @throws ParseException
      *             if one enum constant cannot be resolved to a data set.
      */
-    private List<DataSet> getDataSetsByName(List<EnumConstant> dataSetEnumConstants) throws ParseException {
-        List<DataSet> dataSets = new LinkedList<>();
+    private List<DataSet> getDataSetsByName(final List<EnumConstant> dataSetEnumConstants) throws ParseException {
+        final List<DataSet> dataSets = new LinkedList<>();
         for (EnumConstant argument : dataSetEnumConstants) {
-            Optional<DataSet> optional = specification
+            final Optional<DataSet> optional = specification
                     .getDataSetFromEnumConstantName(argument.getEnumConstantFullName());
 
-            DataSet dataSet = optional
+            final DataSet dataSet = optional
                     .orElseThrow(() -> new ParseException("Unexpected data set with the name " + argument));
             dataSets.add(dataSet);
         }
@@ -262,17 +260,17 @@ public class ConfidentialityRepositoryGenerator
      *            The type to retrieve the {@code EnumConstantDeclaration}s from.
      * @return A list of the enum fields.
      * @throws JavaModelException
-     *             if the parsing of the {@code EnumConstantDeclaration} triggers them.
+     *             if the scanning of the {@code EnumConstantDeclaration} triggers them.
      */
     // the java doc of CompilationUnit#types() specifies the type 'AbstractTypeDeclaration'
     @SuppressWarnings("unchecked")
-    private List<EnumConstantDeclaration> parseEnumDeclarations(IType type) throws JavaModelException {
-        List<EnumConstantDeclaration> enumConstants = new LinkedList<>();
+    private List<EnumConstantDeclaration> scanEnumDeclarations(final IType type) throws JavaModelException {
+        final List<EnumConstantDeclaration> enumConstants = new LinkedList<>();
 
-        CompilationUnit cu = JdtAstJmlUtil.setupParserAndGetCompilationUnit(type.getCompilationUnit());
-        AbstractTypeDeclaration atd = JdtAstJmlUtil.findAbstractTypeDeclarationFromIType(cu.types(), type);
+        final CompilationUnit cu = JdtAstJmlUtil.setupParserAndGetCompilationUnit(type.getCompilationUnit());
+        final AbstractTypeDeclaration atd = JdtAstJmlUtil.findAbstractTypeDeclarationFromIType(cu.types(), type);
         if (atd instanceof EnumDeclaration) {
-            EnumDeclaration ed = (EnumDeclaration) atd;
+            final EnumDeclaration ed = (EnumDeclaration) atd;
             ed.enumConstants().forEach(o -> enumConstants.add((EnumConstantDeclaration) o));
         }
         return enumConstants;

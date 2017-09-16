@@ -1,9 +1,12 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType;
+package edu.kit.kastel.scbs.javaAnnotations2JML.type.serviceType;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.RoleService;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.ProvidedService;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.Service;
+import org.eclipse.jdt.core.IType;
+
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.ServiceProvider;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.service.ProvidedService;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.service.RoleService;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.service.Service;
 
 /**
  * Concrete class for "service types", in this case a provided type. They represent a super type of
@@ -25,8 +28,8 @@ public class ProvidedServiceType extends AbstractServiceType {
      * @param parent
      *            The parent it was created from/for.
      */
-    public ProvidedServiceType(TopLevelType type, TopLevelType parent) {
-        super(SELF_REFERENCE, type, parent);
+    public ProvidedServiceType(IType type, TopLevelType parent, ServiceProvider serviceProvider) {
+        super(SELF_REFERENCE, type, parent, serviceProvider);
     }
 
     @Override

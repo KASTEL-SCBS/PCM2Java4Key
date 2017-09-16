@@ -1,54 +1,63 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.AbstractServiceType;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.ProvidedServiceType;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.RequiredServiceType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.ServiceProvider;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.serviceType.AbstractServiceType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.serviceType.ProvidedServiceType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.serviceType.RequiredServiceType;
 import edu.kit.kastel.scbs.javaAnnotations2JML.util.Anno2JmlUtil;
 
 /**
- * Used for scanning a given list of {@code TopLevelType}s and extracting their provided and
+ * Used for scanning a given iterable of {@code TopLevelType}s and extracting its provided and
  * required types. Each type with at least one information flow annotation is seen as a relevant and
  * in the result. Other types are ignored.
  * 
- * Provided types are the implemented interfaces and required types are the types of fields.
+ * Gets the service provider corresponding to each {@code IType} via the given function.
  * 
- * The given list of {@code TopLevelType}s should be a unique set and their types and fields should
+ * Provided types are the implemented interfaces and required types are created from fields.
+ * 
+ * The given iterable of {@code TopLevelType}s should be unique and their types and fields should
  * preserve that condition.
  * 
  * @author Nils Wilka
- * @version 1.0, 04.08.2017
+ * @version 1.1, 16.09.2017
  */
-public class ServiceTypeGenerator extends JavaAnnotations2JMLGenerator<List<TopLevelType>, List<AbstractServiceType>> {
+public class ServiceTypeGenerator
+        extends JavaAnnotations2JMLGenerator<Iterable<TopLevelType>, Set<AbstractServiceType>> {
+
+    private final Function<IType, ServiceProvider> iType2ServiceProvider;
 
     /**
-     * Constructs a new generator with the given list of {@code TopLevelType}s.
+     * Constructs a new generator with the given iterable of {@code TopLevelType}s.
      * 
      * @param source
-     *            The list of {@code TopLevelType}s to scan.
+     *            The iterable of {@code TopLevelType}s to scan.
+     * @param iType2ServiceProvider
+     *            Gets the service provider corresponding to an {@code IType}.
      */
-    public ServiceTypeGenerator(List<TopLevelType> source) {
+    public ServiceTypeGenerator(final Iterable<TopLevelType> source,
+            final Function<IType, ServiceProvider> iType2ServiceProvider) {
         super(source);
-        assert new HashSet<>(source).size() == source.size() : "Not a unique set of TopLevelTypes";
+        this.iType2ServiceProvider = iType2ServiceProvider;
     }
 
     @Override
-    protected List<AbstractServiceType> parseSource() throws ParseException {
-        List<AbstractServiceType> allAbstractServicesTypes = new ArrayList<>();
+    protected Set<AbstractServiceType> scanSource() throws ParseException {
+        final Set<AbstractServiceType> allAbstractServicesTypes = new HashSet<>();
         for (TopLevelType type : getSource()) {
             // get all provided and required (service) types of this top level type
-            List<AbstractServiceType> serviceTypeList = parseServiceTypes(type);
+            final Set<AbstractServiceType> serviceTypeList = parseServiceTypes(type);
             allAbstractServicesTypes.addAll(serviceTypeList);
-            // map each type to its service types
+            // map each top level type to its service types
             type.addServiceTypes(serviceTypeList);
         }
         return allAbstractServicesTypes;
@@ -59,22 +68,22 @@ public class ServiceTypeGenerator extends JavaAnnotations2JMLGenerator<List<TopL
      * information flow annotation are seen as relevant and all remaining types are ignored.
      * 
      * {@code RequiredServiceType}s are created from fields and {@code ProvidedServiceType}s from
-     * the super types. Both are part of the resulting list of {@code AbstractServiceType}s.
+     * the super types. Both are part of the resulting set of {@code AbstractServiceType}s.
      * 
      * @param type
      *            The {@code TopLevelType} to get the fields and super types from.
-     * @return A list of{@code AbstractServiceType}s created from the given {@code TopLevelType}.
+     * @return A set of {@code AbstractServiceType}s created from the given {@code TopLevelType}.
      * @throws ParseException
-     *             if the parsing of the {@code IJavaProject} triggered and
+     *             if the scanning of the {@code IJavaProject} triggered and
      *             {@code JavaModelException}.
      */
-    private List<AbstractServiceType> parseServiceTypes(final TopLevelType type) throws ParseException {
-        List<AbstractServiceType> serviceTypes = new LinkedList<>();
+    private Set<AbstractServiceType> parseServiceTypes(final TopLevelType type) throws ParseException {
+        final Set<AbstractServiceType> serviceTypes = new HashSet<>();
         try {
             serviceTypes.addAll(getRequiredTopLevelTypeFields(type));
             serviceTypes.addAll(getProvidedTopLevelTypes(type));
         } catch (JavaModelException jme) {
-            Optional<String> message = Optional.ofNullable(jme.getMessage());
+            final Optional<String> message = Optional.ofNullable(jme.getMessage());
             throw new ParseException("Java Model Exception occurred: " + message.orElse("(no error message)"), jme);
         }
         return serviceTypes;
@@ -84,17 +93,20 @@ public class ServiceTypeGenerator extends JavaAnnotations2JMLGenerator<List<TopL
      * Scans all fields and their types. If a type has at least one information flow annotation, it
      * is seen as relevant and part of the result.
      * 
-     * @param type
+     * @param topLevelType
      *            The {@code TopLevelType} to be looked at.
-     * @return A list of fields which represent all relevant required top level types.
+     * @return A set of fields which represent all relevant required top level types.
      * @throws JavaModelException
-     *             if the parsing of the {@code IJavaProject} triggers them.
+     *             if the scanning of the {@code IJavaProject} triggers them.
      */
-    private List<RequiredServiceType> getRequiredTopLevelTypeFields(final TopLevelType type) throws JavaModelException {
-        List<RequiredServiceType> requiredTypes = new LinkedList<>();
-        for (TopLevelType.Field field : type.getFields()) {
-            if (Anno2JmlUtil.hasInformationFlowAnnotation(field.getTopLevelType().getIType())) {
-                requiredTypes.add(new RequiredServiceType(field.getName(), field.getTopLevelType(), type));
+    private Set<RequiredServiceType> getRequiredTopLevelTypeFields(final TopLevelType topLevelType)
+            throws JavaModelException {
+        final Set<RequiredServiceType> requiredTypes = new HashSet<>();
+        for (TopLevelType.Field field : topLevelType.getFields()) {
+            final IType type = field.getType();
+            if (Anno2JmlUtil.hasInformationFlowAnnotation(type)) {
+                final ServiceProvider provider = iType2ServiceProvider.apply(type);
+                requiredTypes.add(new RequiredServiceType(field.getName(), type, topLevelType, provider));
             }
         }
         return requiredTypes;
@@ -103,19 +115,20 @@ public class ServiceTypeGenerator extends JavaAnnotations2JMLGenerator<List<TopL
     /**
      * Gets the super types with an information flow annotation of the given {@code TopLevelType}.
      * 
-     * @param type
+     * @param topLevelType
      *            The {@code TopLevelType} to be looked at.
-     * @return A list of types which represent all relevant provided top level types.
+     * @return A set of types which represent all relevant provided top level types.
      * @throws JavaModelException
-     *             if the parsing of the {@code IJavaProject} triggers them.
+     *             if the scanning of the {@code IJavaProject} triggers them.
      */
-    private List<ProvidedServiceType> getProvidedTopLevelTypes(final TopLevelType type) throws JavaModelException {
-        List<TopLevelType> implementedInterfaces = type.getSuperTypeInterfaces();
-
-        List<ProvidedServiceType> providedTypes = new LinkedList<>();
-        for (TopLevelType serviceType : implementedInterfaces) {
-            if (Anno2JmlUtil.hasInformationFlowAnnotation(serviceType.getIType())) {
-                providedTypes.add(new ProvidedServiceType(serviceType, type));
+    private Set<ProvidedServiceType> getProvidedTopLevelTypes(final TopLevelType topLevelType)
+            throws JavaModelException {
+        final Set<ProvidedServiceType> providedTypes = new HashSet<>();
+        for (TopLevelType.SuperType superType : topLevelType.getSuperTypeInterfaces()) {
+            final IType type = superType.getType();
+            if (Anno2JmlUtil.hasInformationFlowAnnotation(type)) {
+                final ServiceProvider provider = iType2ServiceProvider.apply(type);
+                providedTypes.add(new ProvidedServiceType(type, topLevelType, provider));
             }
         }
         return providedTypes;

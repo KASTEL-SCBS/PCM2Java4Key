@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
@@ -14,99 +16,97 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.InformationFlowAn
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParametersAndDataPair;
 import edu.kit.kastel.scbs.javaAnnotations2JML.exception.ParseException;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.EnumConstant;
-import edu.kit.kastel.scbs.javaAnnotations2JML.type.MethodAcceptor;
-import edu.kit.kastel.scbs.javaAnnotations2JML.type.SourceMethodProvider;
 import edu.kit.kastel.scbs.javaAnnotations2JML.util.Anno2JmlUtil;
 
 /**
- * Used to parse {@code IMethod}s and their {@code InformationFlowAnnotation}s with the help of a
- * {@code InformationFlowAnnotationParser} and in the context of the given
- * {@code ConfidentialitySpecification}. Gets the methods from the {@code MethodProvider} and saves
- * the result in the {@code MethodAcceptor}.
+ * Used to scan {@code IMethod}s and their {@code InformationFlowAnnotation}s with the help of a
+ * {@code InformationFlowAnnotationGenerator} and in the context of the given
+ * {@code ConfidentialitySpecification}. Gets the methods from the given supplier of iterables and
+ * saves the result in the given BiConsumer.
  * 
  * @author Nils Wilka
- * @version 1.0, 17.08.2017
+ * @version 1.1, 16.09.2017
  */
-public class MethodsAndInformationFlowPairsGenerator {
+public class MethodAndAnnotationPairsGenerator {
 
-    private ConfidentialitySpecification specification;
+    private final ConfidentialitySpecification specification;
 
-    private MethodAcceptor methodAcceptor;
+    private final BiConsumer<IMethod, InformationFlowAnnotation> methodAndAnnotationConsumer;
 
-    private SourceMethodProvider sourceProvider;
+    private final Supplier<Iterable<IMethod>> methodSupplier;
 
     /**
      * Creates a new java model parser for methods and their information flow annotations.
      * 
      * @param specification
      *            The context of the information flow annotations and their content.
-     * @param methodAcceptor
+     * @param methodAndAnnotationConsumer
      *            Where to put the resulting methods and their information flow annotations.
-     * @param sourceMethodProvider
-     *            The source of methods to parse.
+     * @param methodSupplier
+     *            The source of methods to scan.
      */
-    public MethodsAndInformationFlowPairsGenerator(ConfidentialitySpecification specification,
-            MethodAcceptor methodAcceptor, SourceMethodProvider sourceMethodProvider) {
+    public MethodAndAnnotationPairsGenerator(final ConfidentialitySpecification specification,
+            final BiConsumer<IMethod, InformationFlowAnnotation> methodAndAnnotationConsumer,
+            final Supplier<Iterable<IMethod>> methodSupplier) {
         this.specification = specification;
-        this.methodAcceptor = methodAcceptor;
-        this.sourceProvider = sourceMethodProvider;
+        this.methodAndAnnotationConsumer = methodAndAnnotationConsumer;
+        this.methodSupplier = methodSupplier;
     }
 
     /**
-     * Parses all provided methods and sets the results in the given acceptor.
+     * Scans all provided methods and sets the results in the given consumer.
      * 
      * @throws ParseException
-     *             if the {@code InformationFlowAnnotationParser} for any method from the
-     *             {@code SourceMethodProvider} throws it or if any reference to elements of the
-     *             confidentiality specification are faulty, i.e. do reference an non-existing
-     *             element.
+     *             if the {@code InformationFlowAnnotationGenerator} or any method from the method
+     *             supplier throws it or if any reference to elements of the confidentiality
+     *             specification are faulty, i.e. do reference an non-existing element.
      */
-    public void parse() throws ParseException {
+    public void generate() throws ParseException {
         try {
-            parseMethodsAndAnnotations(sourceProvider, methodAcceptor);
+            generateMethodsAndAnnotations(methodSupplier, methodAndAnnotationConsumer);
         } catch (JavaModelException jme) {
-            Optional<String> message = Optional.ofNullable(jme.getMessage());
+            final Optional<String> message = Optional.ofNullable(jme.getMessage());
             throw new ParseException("Java Model Exception occurred: " + message.orElse("(no error message)"), jme);
         }
     }
 
     /**
-     * Gets all methods from the {@code SourceMethodProvider}, parses them (i.e. getting the
-     * information flow annotation and resolving all reference to the confidentiality specification)
-     * and adds the result to the {@code MethodAcceptor}.
+     * Gets all methods from the method supplier, scans them (i.e. getting the information flow
+     * annotation and resolving all reference to the confidentiality specification) and adds the
+     * result to the BiConsumer.
      * 
      * In other words: Maps the given method to its information flow annotation.
      * 
-     * Result does not contain method without an information flow annotation.
+     * Result does not contain methods without an information flow annotation.
      * 
-     * @param source
+     * @param methodSupplier
      *            The source to get the methods from.
-     * @param acceptor
+     * @param consumer
      *            To add the result to.
      * @throws JavaModelException
      *             if checking whether a method has an information flow annotation causes it.
      * @throws ParseException
-     *             if the {@code InformationFlowAnnotationParser} throws it or the enum constants
+     *             if the {@code InformationFlowAnnotationGenerator} throws it or the enum constants
      *             referencing parameters and data pairs from the confidentiality specification are
      *             faulty, i.e. do reference a missing parameters and data pair.
      */
-    private void parseMethodsAndAnnotations(SourceMethodProvider source, MethodAcceptor acceptor)
-            throws JavaModelException, ParseException {
-        List<IMethod> methods = source.getSourceMethods();
-        for (IMethod method : methods) {
+    private void generateMethodsAndAnnotations(final Supplier<Iterable<IMethod>> methodSupplier,
+            final BiConsumer<IMethod, InformationFlowAnnotation> consumer) throws JavaModelException, ParseException {
+        final Iterable<IMethod> methods = methodSupplier.get();
+        for (final IMethod method : methods) {
             // only look at methods with information flow annotation
             if (Anno2JmlUtil.hasInformationFlowAnnotation(method)) {
-                InformationFlowAnnotation annotation = parseInformationFlowAnnotation(specification, method);
-                // service created from method and annotation
-                acceptor.addMethod(method, annotation);
+                final InformationFlowAnnotation annotation = generateInformationFlowAnnotation(specification, method);
+                // service will later be created from method and annotation
+                consumer.accept(method, annotation);
             }
         }
     }
 
     /**
-     * Parses the {@code InformationFlowAnnotation} of the given {@code IMethod} in the context of
+     * Scans the {@code InformationFlowAnnotation} of the given {@code IMethod} in the context of
      * the given {@code ConfidentialitySpecification} with the help of an
-     * {@code InformationFlowAnnotationParser}.
+     * {@code InformationFlowAnnotationGenerator}.
      * 
      * Multiple information flow annotations are seen as one annotation.
      * 
@@ -116,15 +116,15 @@ public class MethodsAndInformationFlowPairsGenerator {
      *            The method to get the information flow annotation for.
      * @return The information flow annotation for the given method.
      * @throws ParseException
-     *             if the {@code InformationFlowAnnotationParser} throws it or the enum constants
+     *             if the {@code InformationFlowAnnotationGenerator} throws it or the enum constants
      *             referencing parameters and data pairs from the confidentiality specification are
      *             faulty, i.e. do reference a missing parameters and data pair.
      */
-    private InformationFlowAnnotation parseInformationFlowAnnotation(ConfidentialitySpecification specification,
-            IMethod method) throws ParseException {
-        Map<EnumConstant, Optional<ParametersAndDataPair>> enumConstantPairCorrespondences;
-        enumConstantPairCorrespondences = parseAnnotationAndGetCorrespondingPairs(specification, method);
-        List<ParametersAndDataPair> parametersAndDataPairs = retrieveCorrespondencesOrThrowException(method,
+    private InformationFlowAnnotation generateInformationFlowAnnotation(
+            final ConfidentialitySpecification specification, final IMethod method) throws ParseException {
+        final Map<EnumConstant, Optional<ParametersAndDataPair>> enumConstantPairCorrespondences;
+        enumConstantPairCorrespondences = scanAnnotationAndGetCorrespondingPairs(specification, method);
+        final List<ParametersAndDataPair> parametersAndDataPairs = retrieveCorrespondencesOrThrowException(method,
                 enumConstantPairCorrespondences);
         return new InformationFlowAnnotation(parametersAndDataPairs);
     }
@@ -142,13 +142,14 @@ public class MethodsAndInformationFlowPairsGenerator {
      * @throws ParseException
      *             if there exists an enum constant that maps to an empty value.
      */
-    private List<ParametersAndDataPair> retrieveCorrespondencesOrThrowException(IMethod method,
-            Map<EnumConstant, Optional<ParametersAndDataPair>> enumConstantPairCorrespondences) throws ParseException {
-        List<ParametersAndDataPair> parametersAndDataPairs = new LinkedList<>();
+    private List<ParametersAndDataPair> retrieveCorrespondencesOrThrowException(final IMethod method,
+            final Map<EnumConstant, Optional<ParametersAndDataPair>> enumConstantPairCorrespondences)
+            throws ParseException {
+        final List<ParametersAndDataPair> parametersAndDataPairs = new LinkedList<>();
         for (EnumConstant pairEnumConstant : enumConstantPairCorrespondences.keySet()) {
             // throw exception if no fitting ParameterAndDataPair was found before
             // (i.e. optional is empty)
-            ParametersAndDataPair pair = enumConstantPairCorrespondences.get(pairEnumConstant)
+            final ParametersAndDataPair pair = enumConstantPairCorrespondences.get(pairEnumConstant)
                     .orElseThrow(() -> new ParseException("Unexpected parameters and data pair " + pairEnumConstant
                             + " in the annotation of the method " + method.getElementName()));
             parametersAndDataPairs.add(pair);
@@ -157,9 +158,10 @@ public class MethodsAndInformationFlowPairsGenerator {
     }
 
     /**
-     * Uses an {@code InformationFlowAnnotationParser} to get the {@code InformationFlowAnnotation}
-     * from the given {@code IMethod}. Then gets the {@code ParametersAndDataPair}s referenced by
-     * the annotation from the {@code ConfidentialitySpecification}.
+     * Uses an {@code InformationFlowAnnotationGenerator} to get the
+     * {@code InformationFlowAnnotation} from the given {@code IMethod}. Then gets the
+     * {@code ParametersAndDataPair}s referenced by the annotation from the
+     * {@code ConfidentialitySpecification}.
      * 
      * As the references might be faulty, the specification may return empty values.
      * 
@@ -172,12 +174,12 @@ public class MethodsAndInformationFlowPairsGenerator {
      *         contained in the information flow annotation from the given method and ideally all
      *         present. Faulty reference result in empty values.
      * @throws ParseException
-     *             if thrown by the {@code InformationFlowAnnotationParser}.
+     *             if thrown by the {@code InformationFlowAnnotationGenerator}.
      */
-    private Map<EnumConstant, Optional<ParametersAndDataPair>> parseAnnotationAndGetCorrespondingPairs(
-            ConfidentialitySpecification specification, IMethod method) throws ParseException {
-        InformationFlowAnnotationArguments arguments = new InformationFlowAnnotationGenerator(method).parse();
-        Map<EnumConstant, Optional<ParametersAndDataPair>> pairMap = new HashMap<>();
+    private Map<EnumConstant, Optional<ParametersAndDataPair>> scanAnnotationAndGetCorrespondingPairs(
+            final ConfidentialitySpecification specification, final IMethod method) throws ParseException {
+        final InformationFlowAnnotationArguments arguments = new InformationFlowAnnotationGenerator(method).generate();
+        final Map<EnumConstant, Optional<ParametersAndDataPair>> pairMap = new HashMap<>();
         // Optional's are empty if there was no fitting ParameterAndDataPair
         arguments.getParametersAndDataPairEnumConstants().forEach(e -> pairMap.put(e,
                 specification.getParametersAndDataPairFromEnumConstantName(e.getEnumConstantFullName())));

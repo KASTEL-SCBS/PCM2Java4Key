@@ -1,10 +1,9 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.command;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.function.Supplier;
 
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.JMLCommentsGenerator;
+import edu.kit.kastel.scbs.javaAnnotations2JML.generator.JMLCommentsGenerator;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
 
 /**
@@ -15,7 +14,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
  */
 public class GenerateJmlCommentsCommand extends Command {
 
-    private Supplier<List<TopLevelType>> supplier;
+    private Supplier<Iterable<TopLevelType>> supplier;
 
     /**
      * Creates a new jml generation command with the given top level type supplier.
@@ -23,7 +22,7 @@ public class GenerateJmlCommentsCommand extends Command {
      * @param supplier
      *            The supplier of top level types to generate comments for.
      */
-    public GenerateJmlCommentsCommand(Supplier<List<TopLevelType>> supplier) {
+    public GenerateJmlCommentsCommand(Supplier<Iterable<TopLevelType>> supplier) {
         this.supplier = supplier;
     }
 

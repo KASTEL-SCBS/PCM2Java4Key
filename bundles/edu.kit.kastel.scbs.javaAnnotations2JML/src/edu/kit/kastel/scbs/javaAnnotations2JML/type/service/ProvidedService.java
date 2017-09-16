@@ -1,9 +1,9 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.generation.service;
+package edu.kit.kastel.scbs.javaAnnotations2JML.type.service;
 
 import java.util.List;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ParameterSource;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.JmlComment;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.JmlComment;
 
 /**
  * A provided service. Represents a service of an provided service type and therefore has a self

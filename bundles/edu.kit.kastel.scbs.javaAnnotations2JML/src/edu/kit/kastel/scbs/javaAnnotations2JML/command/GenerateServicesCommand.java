@@ -1,33 +1,36 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.command;
 
-import java.util.List;
-import java.util.function.Supplier;
-
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.ServicesGenerator;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.AbstractServiceType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.transformer.MethodAndAnnotationPairsToServicesTransformer;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.MethodAndServiceContainer;
 
 /**
- * Command for creating the services for service types and reacting to exceptions.
+ * Command for creating the services from the method and information flow annotation pairs for the
+ * service types and reacting to exceptions.
  * 
  * @author Nils Wilka
- * @version 1.1, 14.09.2017
+ * @version 2.0, 16.09.2017
  */
 public class GenerateServicesCommand extends Command {
 
-    private Supplier<List<AbstractServiceType>> supplier;
+    private final Iterable<MethodAndServiceContainer> providers;
 
     /**
-     * Creates a new service creation command with the given service type supplier.
+     * Creates a method to services transformer command with the given method supplier and consumer
+     * of services.
      * 
-     * @param supplier
-     *            The provider of service types.
+     * @param providers
+     *            The supplier of methods and consumer of services.
      */
-    public GenerateServicesCommand(Supplier<List<AbstractServiceType>> supplier) {
-        this.supplier = supplier;
+    public GenerateServicesCommand(final Iterable<MethodAndServiceContainer> providers) {
+        this.providers = providers;
     }
 
     @Override
     public void execute() {
-        new ServicesGenerator(supplier.get()).parse();
+        for (MethodAndServiceContainer provider : providers) {
+            final MethodAndAnnotationPairsToServicesTransformer transformer;
+            transformer = new MethodAndAnnotationPairsToServicesTransformer(provider);
+            provider.addService(transformer.transform());
+        }
     }
 }

@@ -1,15 +1,18 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.command;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaProject;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.ConfidentialitySpecification;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.AbstractServiceType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.MethodAndServiceContainer;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.serviceType.AbstractServiceType;
 
 /**
  * Main command of this program.
@@ -31,9 +34,11 @@ public final class JavaAnnotations2JML extends Command {
 
     private ConfidentialitySpecification specification;
 
-    private List<TopLevelType> projectTopLevelTypes;
+    private Iterable<TopLevelType> projectTopLevelTypes;
 
-    private List<AbstractServiceType> serviceTypes;
+    private Set<MethodAndServiceContainer> methodAndServiceProviders;
+
+    private Iterable<AbstractServiceType> serviceTypes;
 
     /**
      * Creates a command for the execution of this program with a given {@code IProject}.
@@ -43,6 +48,7 @@ public final class JavaAnnotations2JML extends Command {
      */
     public JavaAnnotations2JML(IProject project) {
         this.project = project;
+        this.methodAndServiceProviders = new HashSet<>();
     }
 
     /**
@@ -75,29 +81,33 @@ public final class JavaAnnotations2JML extends Command {
      */
     private void setup() {
         commands = new LinkedList<>();
-        commands.add(new TransformeProjectToJavaProjectCommand(() -> {
+        commands.add(new TransformProjectToJavaProjectCommand(() -> {
             return project;
         }, x -> {
             javaProject = x;
         }));
-        commands.add(new GenerateConfidentialityRepositoryCommand(() -> {
+        commands.add(new ScanConfidentialityRepositoryCommand(() -> {
             return javaProject;
         }, x -> {
             specification = x;
         }));
-        commands.add(new GenerateTopLevelTypesCommand(() -> {
+        commands.add(new TransformSourceFilesToTopLevelTypesCommand(() -> {
             return javaProject;
         }, x -> {
             projectTopLevelTypes = x;
         }));
-        commands.add(new ScanTopLevelTypesCommand(this::getTopLevelTypes));
+        commands.add(new ScanFieldsAndSuperTypesCommand(this::getTopLevelTypes));
         commands.add(new GenerateServiceTypesCommand(this::getTopLevelTypes, x -> {
             serviceTypes = x;
+        }, x -> {
+            methodAndServiceProviders.add(x);
         }));
-        commands.add(new GenerateMethodsAndInformationFlowPairsCommand(this::getAbstractServiceTypes, () -> {
+        commands.add(new GenerateMethodAndInformationFlowPairsCommand(() -> {
+            return methodAndServiceProviders;
+        }, () -> {
             return specification;
         }));
-        commands.add(new GenerateServicesCommand(this::getAbstractServiceTypes));
+        commands.add(new GenerateServicesCommand(methodAndServiceProviders));
         commands.add(new GenerateJmlCommentsCommand(this::getTopLevelTypes));
     }
 
@@ -106,7 +116,7 @@ public final class JavaAnnotations2JML extends Command {
      * 
      * @return The top level types.
      */
-    public List<TopLevelType> getTopLevelTypes() {
+    public Iterable<TopLevelType> getTopLevelTypes() {
         return this.projectTopLevelTypes;
     }
 
@@ -115,7 +125,7 @@ public final class JavaAnnotations2JML extends Command {
      * 
      * @return The abstract service types.
      */
-    public List<AbstractServiceType> getAbstractServiceTypes() {
+    public Iterable<AbstractServiceType> getAbstractServiceTypes() {
         return this.serviceTypes;
     }
 }

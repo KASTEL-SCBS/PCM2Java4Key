@@ -1,11 +1,11 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.generation;
+package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.eclipse.jdt.core.JavaModelException;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.JmlComment;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
 import edu.kit.kastel.scbs.javaAnnotations2JML.util.JdtAstJmlUtil;
 
@@ -19,7 +19,7 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.util.JdtAstJmlUtil;
  */
 public class JMLCommentsGenerator {
 
-    private List<TopLevelType> topLevelTypes;
+    private Iterable<TopLevelType> topLevelTypes;
 
     /**
      * Creates a new jml comments generator with the given top level types.
@@ -27,7 +27,7 @@ public class JMLCommentsGenerator {
      * @param topLevelTypes
      *            The top level types to generate jml comments for.
      */
-    public JMLCommentsGenerator(List<TopLevelType> topLevelTypes) {
+    public JMLCommentsGenerator(Iterable<TopLevelType> topLevelTypes) {
         this.topLevelTypes = topLevelTypes;
     }
 

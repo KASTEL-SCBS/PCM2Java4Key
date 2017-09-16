@@ -1,22 +1,19 @@
-package edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType;
+package edu.kit.kastel.scbs.javaAnnotations2JML.type.serviceType;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
-import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.InformationFlowAnnotation;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.JmlComment;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.ServiceProvider;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.RoleService;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.service.Service;
-import edu.kit.kastel.scbs.javaAnnotations2JML.type.MethodProvider;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.JmlComment;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.ServiceProvider;
 import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.service.RoleService;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.service.Service;
 
 /**
  * Abstract class for "service types", which are either 'Required Types' or 'Provided Types'. Each
@@ -27,14 +24,14 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.type.TopLevelType;
  * @author Nils Wilka
  * @version 1.0, 14.08.2017
  */
-public abstract class AbstractServiceType implements MethodProvider, ServiceProvider {
+public abstract class AbstractServiceType implements ServiceProvider {
 
     private String role;
 
     /**
      * The type of this service type.
      */
-    private TopLevelType type;
+    private IType type;
 
     /**
      * The type this service type belongs to, i.e. which it was created for.
@@ -56,11 +53,14 @@ public abstract class AbstractServiceType implements MethodProvider, ServiceProv
      *            The type of this service type.
      * @param parent
      *            The parent it was created from/for.
+     * @param serviceProvider
+     *            The service provider this class delegates to with respect to services.
      */
-    public AbstractServiceType(String role, TopLevelType type, TopLevelType parent) {
+    public AbstractServiceType(String role, IType type, TopLevelType parent, ServiceProvider serviceProvider) {
         this.role = role;
         this.type = type;
         this.parent = parent;
+        this.serviceProvider = serviceProvider;
     }
 
     /**
@@ -77,17 +77,7 @@ public abstract class AbstractServiceType implements MethodProvider, ServiceProv
      * 
      * @return The type of this service type.
      */
-    public TopLevelType getType() {
-        return type;
-    }
-
-    /**
-     * Gets the method provider of this service type. The type which holds the methods this type
-     * provides the services for.
-     * 
-     * @return The method provider of this service type.
-     */
-    public MethodProvider getMethodProvider() {
+    public IType getType() {
         return type;
     }
 
@@ -117,16 +107,6 @@ public abstract class AbstractServiceType implements MethodProvider, ServiceProv
      */
     public boolean hasServiceProvider() {
         return Optional.ofNullable(serviceProvider).isPresent();
-    }
-
-    /**
-     * Sets the source service provider, this type delegates to.
-     * 
-     * @param serviceProvider
-     *            The service provider this type gets the services from.
-     */
-    public void setServiceProvider(ServiceProvider serviceProvider) {
-        this.serviceProvider = serviceProvider;
     }
 
     /**
@@ -197,11 +177,6 @@ public abstract class AbstractServiceType implements MethodProvider, ServiceProv
      * @return An {@code AbstractService} from the given service and with the role of this type.
      */
     protected abstract RoleService createService(Service service);
-
-    @Override
-    public Map<IMethod, InformationFlowAnnotation> getMethods() {
-        return getMethodProvider().getMethods();
-    }
 
     @Override
     public boolean equals(Object obj) {

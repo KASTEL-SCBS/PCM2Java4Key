@@ -1,16 +1,13 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.type;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -18,50 +15,42 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet;
-import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.InformationFlowAnnotation;
-import edu.kit.kastel.scbs.javaAnnotations2JML.generation.serviceType.AbstractServiceType;
+import edu.kit.kastel.scbs.javaAnnotations2JML.type.serviceType.AbstractServiceType;
 import edu.kit.kastel.scbs.javaAnnotations2JML.util.JdtAstJmlUtil;
 
 /**
  * Wrapper for an {@code IType} from an either an {@code ICompilationUnit} or a binary class. Does
- * not parse its given {@code IType} and therefore does not provide direct access to the values of
+ * not scan its given {@code IType} and therefore does not provide direct access to the values of
  * its {@code IType}. Its {@code IType} can nevertheless be accessed by
  * {@code TopLevelType#getIType}.
  * 
- * The values of the {@code IType} must be parsed and added to this type, before they can be used.
- * This includes the source {@code IMethod}s, {@code TopLevelType.Field}s, super
- * {@code TopLevelType}s, parsed {@code IMethod}s with their {@code InformationFlowAnnotation}s and
- * lastly the {@code AbstractServiceType}s.
+ * The values of the {@code IType} must be scanned and added to this type, before they can be used.
+ * This includes {@code TopLevelType.Field}s, {@code TopLevelType.SuperType}s and lastly the
+ * {@code AbstractServiceType}s.
  * 
  * A {@code TopLevelType} should only consist of values from its corresponding {@code IType}.
  * 
  * @see IType
  * @see ICompilationUnit
- * @see IMethod
  * @see CompilationUnit
  * @see AbstractServiceType
- * @see InformationFlowAnnotation
  * 
  * @author Nils Wilka
- * @version 1.0, 14.08.2017
+ * @version 1.1, 16.09.2017
  */
-public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMethodAcceptor, SourceMethodProvider {
+public class TopLevelType {
 
     private Optional<CompilationUnit> astCompilationUnit;
 
-    private ICompilationUnit javaCompilationUnit;
+    private final ICompilationUnit javaCompilationUnit;
 
-    private IType javaType;
+    private final IType javaType;
 
-    private List<TopLevelType> superInterfaces;
+    private final List<TopLevelType.SuperType> superInterfaces;
 
-    private List<TopLevelType.Field> fields;
+    private final List<TopLevelType.Field> fields;
 
-    private List<AbstractServiceType> serviceTypes;
-
-    private List<IMethod> sourceMethods;
-
-    private Map<IMethod, InformationFlowAnnotation> methods;
+    private final Set<AbstractServiceType> serviceTypes;
 
     /**
      * Creates a Wrapper for an {@code IType} from an either an {@code ICompilationUnit} or a binary
@@ -72,15 +61,13 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
      *            The wrapped {@code IType} from an either an {@code ICompilationUnit} or a binary
      *            class.
      */
-    public TopLevelType(IType type) {
+    public TopLevelType(final IType type) {
         javaType = type;
         javaCompilationUnit = type.getCompilationUnit();
         astCompilationUnit = Optional.empty();
         superInterfaces = new LinkedList<>();
         fields = new LinkedList<>();
-        serviceTypes = new LinkedList<>();
-        methods = new HashMap<>();
-        sourceMethods = new LinkedList<>();
+        serviceTypes = new HashSet<>();
     }
 
     /**
@@ -92,9 +79,9 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
      * 
      * @see AbstractServiceType
      */
-    public List<AbstractServiceType> getServiceTypes() {
-        Optional<List<AbstractServiceType>> optional = Optional.ofNullable(serviceTypes);
-        return optional.orElse(new LinkedList<>());
+    public Set<AbstractServiceType> getServiceTypes() {
+        final Optional<Set<AbstractServiceType>> optional = Optional.ofNullable(serviceTypes);
+        return optional.orElse(new HashSet<>());
     }
 
     /**
@@ -106,7 +93,7 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
      * 
      * @see AbstractServiceType
      */
-    public void addServiceTypes(List<AbstractServiceType> serviceTypes) {
+    public void addServiceTypes(final Iterable<AbstractServiceType> serviceTypes) {
         serviceTypes.forEach(e -> addServiceType(e));
     }
 
@@ -119,7 +106,7 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
      * 
      * @see AbstractServiceType
      */
-    public void addServiceType(AbstractServiceType serviceType) {
+    public void addServiceType(final AbstractServiceType serviceType) {
         this.serviceTypes.add(serviceType);
     }
 
@@ -162,7 +149,7 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
      * @return The Java {@code CompilationUnit} corresponding to this {@code TopLevelType}.
      */
     private CompilationUnit setupParserAndCompilationUnit() {
-        CompilationUnit cu = JdtAstJmlUtil.setupParserAndGetCompilationUnit(javaCompilationUnit);
+        final CompilationUnit cu = JdtAstJmlUtil.setupParserAndGetCompilationUnit(javaCompilationUnit);
         astCompilationUnit = Optional.of(cu);
         return cu;
     }
@@ -172,8 +159,8 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
      * 
      * @return The super type interfaces for this {@code TopLevelType}.
      */
-    public List<TopLevelType> getSuperTypeInterfaces() {
-        Optional<List<TopLevelType>> optional = Optional.ofNullable(superInterfaces);
+    public List<SuperType> getSuperTypeInterfaces() {
+        final Optional<List<SuperType>> optional = Optional.ofNullable(superInterfaces);
         return optional.orElse(new LinkedList<>());
     }
 
@@ -183,7 +170,7 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
      * @param superTypeInterface
      *            The super type interfaces to add.
      */
-    public void addSuperTypeInterface(TopLevelType superTypeInterface) {
+    public void addSuperTypeInterface(final SuperType superTypeInterface) {
         superInterfaces.add(superTypeInterface);
     }
 
@@ -193,7 +180,7 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
      * @return The fields for this {@code TopLevelType}.
      */
     public List<TopLevelType.Field> getFields() {
-        Optional<List<TopLevelType.Field>> optional = Optional.ofNullable(fields);
+        final Optional<List<TopLevelType.Field>> optional = Optional.ofNullable(fields);
         return optional.orElse(new LinkedList<>());
     }
 
@@ -214,29 +201,9 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
      * @return The related {@code DataSet}s for this {@code TopLevelType}.
      */
     public Set<DataSet> getServiceTypeDataSets() {
-        Set<DataSet> dataSets = new HashSet<>();
+        final Set<DataSet> dataSets = new HashSet<>();
         serviceTypes.forEach(e -> dataSets.addAll(e.getDataSets()));
         return dataSets;
-    }
-
-    @Override
-    public void addMethod(IMethod method, InformationFlowAnnotation annotation) {
-        methods.put(method, annotation);
-    }
-
-    @Override
-    public Map<IMethod, InformationFlowAnnotation> getMethods() {
-        return methods;
-    }
-
-    @Override
-    public void addSourceMethod(IMethod method) {
-        this.sourceMethods.add(method);
-    }
-
-    @Override
-    public List<IMethod> getSourceMethods() {
-        return this.sourceMethods;
     }
 
     @Override
@@ -244,7 +211,7 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
         if (this == obj) {
             return true;
         } else if (obj instanceof TopLevelType) {
-            TopLevelType other = (TopLevelType) obj;
+            final TopLevelType other = (TopLevelType) obj;
             // equal by name
             return this.javaType.getElementName().equals(other.javaType.getElementName());
         } else {
@@ -288,15 +255,15 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
      * Field of a {@code TopLevelType} corresponding to a field of an {@code IType}.
      * 
      * @author Nils Wilka
-     * @version 1.0, 14.08.2017
+     * @version 1.1, 15.09.2017
      */
     public static class Field {
 
-        private TopLevelType parent;
+        private final TopLevelType parent;
 
-        private TopLevelType type;
+        private final IType type;
 
-        private String name;
+        private final String name;
 
         /**
          * Creates a new top level type field for the {@code parent} with its {@code type} and
@@ -309,7 +276,7 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
          * @param type
          *            The type of the field.
          */
-        public Field(final TopLevelType parent, final String name, final TopLevelType type) {
+        public Field(final TopLevelType parent, final String name, final IType type) {
             this.parent = parent;
             this.name = name;
             this.type = type;
@@ -338,7 +305,7 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
          * 
          * @return The type of this field.
          */
-        public TopLevelType getTopLevelType() {
+        public IType getType() {
             return type;
         }
 
@@ -364,12 +331,13 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
          *            To get the field values from.
          * @return A new field for the parent.
          */
-        public static Field create(final TopLevelType parent, FieldDeclaration fieldDeclaration) {
-            ITypeBinding tb = fieldDeclaration.getType().resolveBinding();
+        public static Field create(final TopLevelType parent, final FieldDeclaration fieldDeclaration) {
+            final ITypeBinding tb = fieldDeclaration.getType().resolveBinding();
             if (tb.isTopLevel()) {
-                VariableDeclarationFragment vdf = (VariableDeclarationFragment) fieldDeclaration.fragments().get(0);
-                IType type = (IType) tb.getJavaElement();
-                return new Field(parent, vdf.toString(), new TopLevelType(type));
+                final VariableDeclarationFragment vdf = (VariableDeclarationFragment) fieldDeclaration.fragments()
+                        .get(0);
+                final IType type = (IType) tb.getJavaElement();
+                return new Field(parent, vdf.toString(), type);
             } else {
                 // TODO throw exception ?
                 return null;
@@ -387,8 +355,8 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
          *            To get the field values from.
          * @return A new list of fields for the parent.
          */
-        public static List<Field> create(final TopLevelType parent, List<FieldDeclaration> fdList) {
-            List<Field> fields = new LinkedList<>();
+        public static List<Field> create(final TopLevelType parent, final List<FieldDeclaration> fdList) {
+            final List<Field> fields = new LinkedList<>();
             fdList.forEach(e -> fields.add(create(parent, e)));
             return fields;
         }
@@ -396,6 +364,55 @@ public class TopLevelType implements MethodAcceptor, MethodProvider, SourceMetho
         @Override
         public String toString() {
             return this.name;
+        }
+    }
+
+    /**
+     * Represents a super type of a {@code TopLevelType}.
+     * 
+     * @author Nils Wilka
+     * @version 1.0, 15.09.2017
+     */
+    public static class SuperType {
+
+        private final TopLevelType parent;
+
+        private final IType type;
+
+        /**
+         * Creates a new top level type super type for the {@code parent} with its {@code type}.
+         * 
+         * @param parent
+         *            The sub type.
+         * @param type
+         *            The type.
+         */
+        public SuperType(final TopLevelType parent, final IType type) {
+            this.parent = parent;
+            this.type = type;
+        }
+
+        /**
+         * Gets the parent - the sub type of this super type.
+         * 
+         * @return The parent.
+         */
+        public TopLevelType getParentTopLevelType() {
+            return parent;
+        }
+
+        /**
+         * Gets the type.
+         * 
+         * @return The type.
+         */
+        public IType getType() {
+            return type;
+        }
+
+        @Override
+        public String toString() {
+            return this.getParentTopLevelType().getName() + "." + this.type.getElementName().toString();
         }
     }
 }

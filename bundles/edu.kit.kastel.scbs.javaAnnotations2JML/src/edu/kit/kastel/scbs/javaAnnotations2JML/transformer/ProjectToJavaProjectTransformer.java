@@ -78,8 +78,8 @@ public class ProjectToJavaProjectTransformer {
      * Creates the path of the JML project and sets the project.
      */
     private void setProject() {
-        IPath newPath = new Path(project.getName() + PROJECT_COPY_POSTFIX);
-        IWorkspaceRoot workspaceRoot = project.getWorkspace().getRoot();
+        final IPath newPath = new Path(project.getName() + PROJECT_COPY_POSTFIX);
+        final IWorkspaceRoot workspaceRoot = project.getWorkspace().getRoot();
         clone = workspaceRoot.getProject(newPath.segment(0));
     }
 

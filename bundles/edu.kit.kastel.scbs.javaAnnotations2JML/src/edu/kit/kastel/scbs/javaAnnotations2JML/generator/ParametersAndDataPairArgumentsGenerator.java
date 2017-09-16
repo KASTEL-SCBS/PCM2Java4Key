@@ -28,14 +28,14 @@ public class ParametersAndDataPairArgumentsGenerator
      * @param source
      *            The list {@code EnumConstantDeclaration}s to scan.
      */
-    public ParametersAndDataPairArgumentsGenerator(List<EnumConstantDeclaration> source) {
+    public ParametersAndDataPairArgumentsGenerator(final List<EnumConstantDeclaration> source) {
         super(source);
     }
 
     @Override
-    protected List<ParametersAndDataPairArguments> parseSource() throws ParseException {
-        List<ParametersAndDataPairArguments> parameterAndDataPairs = new LinkedList<>();
-        for (EnumConstantDeclaration enumConstantDeclaration : getSource()) {
+    protected List<ParametersAndDataPairArguments> scanSource() throws ParseException {
+        final List<ParametersAndDataPairArguments> parameterAndDataPairs = new LinkedList<>();
+        for (final EnumConstantDeclaration enumConstantDeclaration : getSource()) {
             parameterAndDataPairs.add(readParametersAndDataPairArguments(enumConstantDeclaration));
         }
         return parameterAndDataPairs;
@@ -55,13 +55,13 @@ public class ParametersAndDataPairArgumentsGenerator
     // the java doc of EnumConstantDeclaration#arguments() specifies the type 'Expression'
     @SuppressWarnings("unchecked")
     public ParametersAndDataPairArguments readParametersAndDataPairArguments(
-            EnumConstantDeclaration enumConstantDeclaration) throws ParseException {
-        List<Expression> arguments = enumConstantDeclaration.arguments();
+            final EnumConstantDeclaration enumConstantDeclaration) throws ParseException {
+        final List<Expression> arguments = enumConstantDeclaration.arguments();
         // TODO empty arguments
         // TODO check if name is valid identifier
         String enumConstantName = enumConstantDeclaration.getName().toString();
-        List<String> parameterSources = parseParameterSources(arguments.get(0).toString());
-        List<EnumConstant> dataSetEnumConstants = parseDataSetEnumConstants(arguments.get(1).toString());
+        final List<String> parameterSources = scanParameterSources(arguments.get(0).toString());
+        final List<EnumConstant> dataSetEnumConstants = scanDataSetEnumConstants(arguments.get(1).toString());
         return new ParametersAndDataPairArguments(enumConstantName, dataSetEnumConstants, parameterSources);
     }
 
@@ -79,8 +79,8 @@ public class ParametersAndDataPairArgumentsGenerator
      *             if the given string does not match an array string representation with the type
      *             {@code String} or if the array is empty.
      */
-    private List<String> parseParameterSources(String argument) throws ParseException {
-        List<String> parameterSourceStrings = parseArrayArgument("String", argument);
+    private List<String> scanParameterSources(final String argument) throws ParseException {
+        final List<String> parameterSourceStrings = parseArrayArgument("String", argument);
         return parameterSourceStrings.stream().map(e -> removeQuotes(e)).collect(Collectors.toList());
     }
 
@@ -95,8 +95,8 @@ public class ParametersAndDataPairArgumentsGenerator
      *             if the given string does not match an array string representation with the type
      *             {@code DataSets} or if the array is empty.
      */
-    private List<EnumConstant> parseDataSetEnumConstants(String argument) throws ParseException {
-        List<String> dataSetStrings = parseArrayArgument("DataSets", argument);
+    private List<EnumConstant> scanDataSetEnumConstants(final String argument) throws ParseException {
+        final List<String> dataSetStrings = parseArrayArgument("DataSets", argument);
         return dataSetStrings.stream().map(EnumConstant::new).collect(Collectors.toList());
     }
 }

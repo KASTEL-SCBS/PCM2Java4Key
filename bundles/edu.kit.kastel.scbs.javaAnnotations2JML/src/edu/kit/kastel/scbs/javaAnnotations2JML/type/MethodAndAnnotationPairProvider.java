@@ -13,12 +13,12 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.InformationFlowAn
  * @author Nils Wilka
  * @version 1.0, 14.08.2017
  */
-public interface MethodProvider {
+public interface MethodAndAnnotationPairProvider {
 
     /**
      * Gets a map of {@code IMethod}s and its {@code InformationFlowAnnotation}.
      * 
      * @return Maps an {@code IMethod} to its corresponding {@code InformationFlowAnnotation}.
      */
-    public Map<IMethod, InformationFlowAnnotation> getMethods();
+    public Map<IMethod, InformationFlowAnnotation> getMethodAndAnnotationsPairs();
 }

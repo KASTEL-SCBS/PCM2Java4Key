@@ -44,7 +44,7 @@ public abstract class EnumConstantDeclarationGenerator<R>
     }
 
     @Override
-    protected abstract R parseSource() throws ParseException;
+    protected abstract R scanSource() throws ParseException;
 
     /**
      * Removes all quotes from a given string.
