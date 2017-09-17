@@ -32,14 +32,19 @@ public class ProvidedService extends RoleService {
     @Override
     public void addNonResultLine(JmlComment comment, List<ParameterSource> nonResultParameterSources) {
         if (!nonResultParameterSources.isEmpty()) {
-            comment.addByLine(getName(), ParameterSource.toString(nonResultParameterSources));
+            comment.addLowIn(getName(), ParameterSource.toString(nonResultParameterSources));
         }
     }
 
     @Override
     public void addResultLine(JmlComment comment, List<ParameterSource> resultParameterSources) {
         if (!resultParameterSources.isEmpty()) {
-            comment.addDeterminesLine(getName(), ParameterSource.toString(resultParameterSources));
+            comment.addLowOut(getName(), ParameterSource.toString(resultParameterSources));
         }
+    }
+
+    @Override
+    protected void addVisibleLine(JmlComment comment) {
+        comment.addVisible(getName());
     }
 }

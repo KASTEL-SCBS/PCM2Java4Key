@@ -31,14 +31,19 @@ public class RequiredService extends RoleService {
     @Override
     public void addNonResultLine(JmlComment comment, List<ParameterSource> nonResultParameterSources) {
         if (!nonResultParameterSources.isEmpty()) {
-            comment.addDeterminesLine(getRole(), getName(), ParameterSource.toString(nonResultParameterSources));
+            comment.addLowOut(getRole(), getName(), ParameterSource.toString(nonResultParameterSources));
         }
     }
 
     @Override
     public void addResultLine(JmlComment comment, List<ParameterSource> resultParameterSources) {
         if (!resultParameterSources.isEmpty()) {
-            comment.addByLine(getRole(), getName(), ParameterSource.toString(resultParameterSources));
+            comment.addLowIn(getRole(), getName(), ParameterSource.toString(resultParameterSources));
         }
+    }
+
+    @Override
+    protected void addVisibleLine(JmlComment comment) {
+        comment.addVisible(getRole(), getName());
     }
 }

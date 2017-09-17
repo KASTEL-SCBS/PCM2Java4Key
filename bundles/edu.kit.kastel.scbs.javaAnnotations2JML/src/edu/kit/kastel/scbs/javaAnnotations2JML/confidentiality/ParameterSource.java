@@ -3,16 +3,22 @@ package edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality;
 import java.util.List;
 
 /**
- * Represents a parameter source which is used in {@code ParametersAndDataPair}s.
+ * Represents a parameter source. A parameter source is declared in a {@code ParametersAndDataPair}.
+ * It belongs to a service and will be added to a jml comment for a data set.
+ * 
+ * A parameter source can either contain information about the result of a service or it can be a
+ * call parameter source or neither of both.
  * 
  * @author Nils Wilka
- * @version 1.0, 06.08.2017
+ * @version 1.1, 17.09.2017
  */
 public class ParameterSource {
 
-    private static final String RESULT_PREFIX = "result";
+    private static final String CALL = "call";
 
-    private String name;
+    private static final String RESULT = "result";
+
+    private final String name;
 
     /**
      * Creates a new parameter source with the given name.
@@ -30,7 +36,16 @@ public class ParameterSource {
      * @return Whether this parameter source contains information about the result.
      */
     public boolean isResult() {
-        return name.startsWith(RESULT_PREFIX);
+        return name.contains(RESULT);
+    }
+
+    /**
+     * Checks whether this parameter source is a "call" parameter source.
+     * 
+     * @return Whether this parameter source is a "call" parameter source.
+     */
+    public boolean isCall() {
+        return name.equals(CALL);
     }
 
     @Override

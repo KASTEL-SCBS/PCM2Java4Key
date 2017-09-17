@@ -42,15 +42,21 @@ public abstract class RoleService extends Service {
 
     /**
      * Add the service to the given jml comment, i.e. the parameter sources. Differentiates between
-     * "result" and "non-result" parameter sources. Sub types decide how to react accordingly.
+     * "result" and "non-result" parameter sources. Non-result parameter sources may contain "call"
+     * parameter source, which will be reacted to accordingly. Sub types decide how to add what
+     * parameter sources.
      * 
      * @param comment
-     *            The jml comment to add the services to.
+     *            The jml comment to add the service, i.e. its parameter sources to.
      */
     public void addServiceToJmlComment(JmlComment comment) {
         List<ParameterSource> params = getParameterSources();
         addResultLine(comment, params.stream().filter(e -> e.isResult()).collect(Collectors.toList()));
         addNonResultLine(comment, params.stream().filter(e -> !e.isResult()).collect(Collectors.toList()));
+        List<ParameterSource> calls = params.stream().filter(e -> e.isCall()).collect(Collectors.toList());
+        if (!calls.isEmpty()) {
+            addVisibleLine(comment);
+        }
     }
 
     /**
@@ -72,6 +78,14 @@ public abstract class RoleService extends Service {
      *            The parameter sources to add as "result".
      */
     protected abstract void addResultLine(JmlComment comment, List<ParameterSource> resultParameterSources);
+
+    /**
+     * Adds the call parameter source as visible to the given jml comment.
+     * 
+     * @param comment
+     *            The jml comment to add the call parameter source as visible.
+     */
+    protected abstract void addVisibleLine(JmlComment comment);
 
     @Override
     public String toString() {

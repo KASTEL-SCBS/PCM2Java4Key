@@ -10,15 +10,21 @@ import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet
  * The string representation is available via the {@code toString} method.
  * 
  * @author Nils Wilka
- * @version 1.0, 18.08.2017
+ * @version 2.0, 17.09.2017
  */
 class JmlComment {
+	
+	private final static String CALL = "\\call";
+	
+	private final static String TERM = "\\term";
 
-	private String dataSet;
+	private final String dataSet;
+	
+	private final List<String> visibleList;
 
-	private List<String> determinesList;
+	private final List<String> lowOutList;
 
-	private List<String> byList;
+	private final List<String> lowInList;
 
 	/**
 	 * Creates a new jml comment with the given data set name.
@@ -27,60 +33,125 @@ class JmlComment {
 	 */
 	public new(DataSet dataSet) {
 		this.dataSet = dataSet.getName();
-		this.determinesList = new LinkedList();
-		this.byList = new LinkedList();
+		this.lowOutList = new LinkedList();
+		this.lowInList = new LinkedList();
+		this.visibleList = new LinkedList();
 	}
 	
 	/**
-	 * Adds the given service name and parameter sources string to the "determines" keyword with the self reference as role.
+	 * Adds the given service name string to the "visible" keyword with the self reference as role.
+	 * 
+	 * @param service The service name.
+	 */
+	def public void addVisible(String service) {
+		addVisible("this", service);
+	}
+	
+	/**
+	 * Adds the given service name string to the "visible" keyword.
+	 * 
+	 * @param role The role name.
+	 * 
+	 * @param service The service name.
+	 */
+	def public void addVisible(String role, String service) {
+		visibleList.add(buildServiceString(role, service, CALL, "true"));
+		visibleList.add(buildServiceString(role, service, TERM, "true"));
+	}
+	
+	/**
+	 * Adds the given service name and parameter sources string to the "lowout" keyword with the self reference as role.
 	 * 
 	 * @param service The service name.
 	 * 
-	 * @param service The parameter sources string.
+	 * @param parameterSources The parameter sources string.
 	 */
-	def public void addDeterminesLine(String service, String parameterSources) {
-		var result = "this" + "." + service + "(" + parameterSources + ")";
-		determinesList.add(result);
+	def public void addLowOut(String service, String parameterSources) {
+		addLowOut("this", service, TERM, parameterSources);
 	}
-
+	
 	/**
-	 * Adds the given role name, service name and parameter sources string to the "determines".
+	 * Adds the given role name, service name and parameter sources string to the "lowout".
 	 * 
 	 * @param role The role name.
 	 * 
 	 * @param service The service name.
 	 * 
-	 * @param service The parameter sources string.
+	 * @param parameterSources The parameter sources string.
 	 */
-	def public void addDeterminesLine(String role, String service, String parameterSources) {
-		var result = role + "." + service + "(" + parameterSources + ")";
-		determinesList.add(result);
-	}
-	
-	/**
-	 * Adds the given service name and parameter sources string to the "by" keyword with the self reference as role.
-	 * 
-	 * @param service The service name.
-	 * 
-	 * @param service The parameter sources string.
-	 */
-	def public void addByLine(String service, String parameterSources) {
-		var result = "this" + "." + service + "(" + parameterSources + ")";
-		byList.add(result);
+	def public void addLowOut(String role, String service, String parameterSources) {
+		lowOutList.add(buildServiceString(role, service, CALL, parameterSources));
 	}
 
 	/**
-	 * Adds the given role name, service name and parameter sources string to the "by" keyword.
+	 * Adds the given role name, service name and parameter sources string to the "lowout".
 	 * 
 	 * @param role The role name.
 	 * 
 	 * @param service The service name.
 	 * 
-	 * @param service The parameter sources string.
+	 * @param type Either {@code CALL} or {@code TERM}.
+	 * 
+	 * @param parameterSources The parameter sources string.
 	 */
-	def public void addByLine(String role, String service, String parameterSources) {
-		var result = role + "." + service + "(" + parameterSources + ")";
-		byList.add(result);
+	def private void addLowOut(String role, String service, String type, String parameterSources) {
+		lowOutList.add(buildServiceString(role, service, type, parameterSources));
+	}
+	
+	/**
+	 * Adds the given service name and parameter sources string to the "lowin" keyword with the self reference as role.
+	 * 
+	 * @param service The service name.
+	 * 
+	 * @param parameterSources The parameter sources string.
+	 */
+	def public void addLowIn(String service, String parameterSources) {
+		addLowIn("this", service, CALL, parameterSources);
+	}
+	
+	/**
+	 * Adds the given role name, service name and parameter sources string to the "lowin" keyword.
+	 * 
+	 * @param role The role name.
+	 * 
+	 * @param service The service name.
+	 * 
+	 * @param parameterSources The parameter sources string.
+	 */
+	def public void addLowIn(String role, String service, String parameterSources) {
+		lowInList.add(buildServiceString(role, service, TERM, parameterSources));
+	}
+
+	/**
+	 * Adds the given role name, service name and parameter sources string to the "lowin" keyword.
+	 * 
+	 * @param role The role name.
+	 * 
+	 * @param service The service name.
+	 * 
+	 * @param type Either {@code CALL} or {@code TERM}.
+	 * 
+	 * @param parameterSources The parameter sources string.
+	 */ 
+	def private void addLowIn(String role, String service, String type, String parameterSources) {
+		lowInList.add(buildServiceString(role, service, type, parameterSources));
+	}
+	
+	/**
+	 * Creates a service string from the given role name, service name, type and parameter sources string.
+	 * 
+	 * @param role The role name.
+	 * 
+	 * @param service The service name.
+	 * 
+	 * @param type Either {@code CALL} or {@code TERM}.
+	 * 
+	 * @param parameterSources The parameter sources string.
+	 * 
+	 * @return The service string with the given information.
+	 */ 
+	def private String buildServiceString(String role, String service, String type, String parameterSources) {
+		'''«role».«service».«type»(«parameterSources»)'''
 	}
 
 	/**
@@ -112,9 +183,9 @@ class JmlComment {
 	/**
 	 * Creates a new line for an jml comment with the given content.
 	 * 
-	 * @return A new jml line with the given content.
-	 * 
 	 * @param list The content of the line to be created.
+	 * 
+	 * @return A new jml line with the given content.
 	 */
 	def private newLine(String content) {
 		'''//@     «content»'''
@@ -123,10 +194,14 @@ class JmlComment {
 	override public toString() {
 		'''
 		//automatically generated:
-		//@ model \seq «dataSet»;
-		//
-		//@ \determines «getString(determinesList)»
-		//@ \by «getString(byList)»
-		//@ \preserving «dataSet»;'''
+		//@ cluster «dataSet»Cluster;
+		//@ \lowin «getString(lowInList)»
+		//@ \lowout «getString(lowOutList)»
+		//@ \visible «getString(visibleList)»
+		//@ \state «dataSet»;
+		//@ 
+		//@ \seq «dataSet»
+		    
+		'''
 	}
 }
