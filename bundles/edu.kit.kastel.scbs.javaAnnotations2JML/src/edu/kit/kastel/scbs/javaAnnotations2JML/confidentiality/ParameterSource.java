@@ -10,13 +10,13 @@ import java.util.List;
  * call parameter source or neither of both.
  * 
  * @author Nils Wilka
- * @version 1.1, 17.09.2017
+ * @version 1.2, 29.09.2017
  */
 public class ParameterSource {
 
-    private static final String CALL = "call";
+    private static final String CALL = "\\call";
 
-    private static final String RESULT = "result";
+    private static final String RESULT = "\\result";
 
     private final String name;
 
@@ -46,6 +46,15 @@ public class ParameterSource {
      */
     public boolean isCall() {
         return name.equals(CALL);
+    }
+
+    /**
+     * Checks whether this parameter source is "special", i.e. it starts with an escape character.
+     * 
+     * @return True if this parameter source is "special", else false.
+     */
+    public boolean isSpecial() {
+        return name.charAt(0) == '\\';
     }
 
     @Override

@@ -5,7 +5,7 @@ import java.util.LinkedList
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet
 
 /**
- * Represents a jml comment for information flow properties in a java type.
+ * Represents a java comment block in the java modeling language for information flow properties in a java type.
  * 
  * The string representation is available via the {@code toString} method.
  * 
@@ -200,7 +200,7 @@ class JmlComment {
 		//@ \visible «getString(visibleList)»
 		//@ \state «dataSet»;
 		//@ 
-		//@ \seq «dataSet»
+		//@ model \seq «dataSet»
 		    
 		'''
 	}

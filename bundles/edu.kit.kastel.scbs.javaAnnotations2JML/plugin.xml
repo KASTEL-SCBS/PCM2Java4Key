@@ -6,7 +6,7 @@
       <command
             defaultHandler="edu.kit.kastel.scbs.javaAnnotations2JML.handler.JavaAnnotations2JmlHandler"
             id="edu.kit.kastel.scbs.javaAnnotations2JML.createJML"
-            name="Create JML-Comments for Confidentiality Verification">
+            name="Create JML-Specification for Confidentiality Verification">
       </command>
    </extension>
    <extension
@@ -16,7 +16,7 @@
             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
          <command
                commandId="edu.kit.kastel.scbs.javaAnnotations2JML.createJML"
-               label="Create JML-Comments for Confidentiality Verification"
+               label="Create JML-Specification for Confidentiality Verification"
                style="push">
             <visibleWhen
                   checkEnabled="false">
@@ -37,7 +37,7 @@
             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
          <command
                commandId="edu.kit.kastel.scbs.javaAnnotations2JML.createJML"
-               label="Create JML-Comments for Confidentiality Verification"
+               label="Create JML-Specification for Confidentiality Verification"
                style="push">
             <visibleWhen
                   checkEnabled="false">

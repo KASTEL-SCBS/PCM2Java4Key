@@ -1,5 +1,6 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -81,7 +82,23 @@ public class ParametersAndDataPairArgumentsGenerator
      */
     private List<String> scanParameterSources(final String argument) throws ParseException {
         final List<String> parameterSourceStrings = parseArrayArgument("String", argument);
-        return parameterSourceStrings.stream().map(e -> removeQuotes(e)).collect(Collectors.toList());
+        final List<String> result = new ArrayList<String>(parameterSourceStrings.size());
+        for (final String string : parameterSourceStrings) {
+            String toAdd = removeQuotes(string);
+            if (isSpecial(toAdd)) {
+                toAdd = toAdd.substring(1);
+            }
+            result.add(toAdd);
+        }
+        return result;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    private boolean isSpecial(String parameterSource) {
+        return parameterSource.charAt(0) == '\\';
     }
 
     /**
