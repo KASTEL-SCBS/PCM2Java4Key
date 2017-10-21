@@ -195,10 +195,10 @@ class JmlComment {
 		'''
 		//automatically generated:
 		//@ cluster «dataSet»Cluster;
-		//@ \lowin «getString(lowInList)»
-		//@ \lowout «getString(lowOutList)»
+		//@ \lowIn «getString(lowInList)»
+		//@ \lowOut «getString(lowOutList)»
 		//@ \visible «getString(visibleList)»
-		//@ \state «dataSet»;
+		//@ \lowState «dataSet»;
 		//@ 
 		//@ model \seq «dataSet»
 		    

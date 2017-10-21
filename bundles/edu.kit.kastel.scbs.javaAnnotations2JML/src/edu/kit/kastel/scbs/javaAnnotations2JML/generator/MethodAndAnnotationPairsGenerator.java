@@ -36,7 +36,7 @@ public class MethodAndAnnotationPairsGenerator {
     private final Supplier<Iterable<IMethod>> methodSupplier;
 
     /**
-     * Creates a new java model parser for methods and their information flow annotations.
+     * Creates a generator for methods and their information flow annotations.
      * 
      * @param specification
      *            The context of the information flow annotations and their content.

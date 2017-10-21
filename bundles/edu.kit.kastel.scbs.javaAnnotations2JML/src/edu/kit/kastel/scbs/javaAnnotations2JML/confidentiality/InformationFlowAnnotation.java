@@ -4,9 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Simplified representation of an java annotation with the name 'InformationFlow'. Java annotations
- * contain a list of member and value pairs: 'member = value'. In our case the only member allowed
- * is 'parametersAndDataPairs' with an array of enum constants of the enum
+ * Simplified representation of an java annotation instance with the name 'InformationFlow'. Java
+ * annotation instances contain a list of member and value pairs: 'member = value'. In our case the
+ * only member allowed is 'parametersAndDataPairs' with an array of enum constants of the enum
  * {@code ParameterAndDataPair} as value.
  * 
  * This class can easily be transferred to allow more members and values if required.

@@ -132,7 +132,7 @@ public abstract class AbstractServiceType implements ServiceProvider {
      * @return The role services linked to the given data set.
      */
     private List<RoleService> getRoleServices(DataSet dataSet) {
-        List<Service> services = serviceProvider.getServices();
+        List<Service> services = serviceProvider.getServices(dataSet);
         return services.stream().map(e -> createService(e)).collect(Collectors.toList());
     }
 

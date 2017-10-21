@@ -94,8 +94,11 @@ public class ParametersAndDataPairArgumentsGenerator
     }
 
     /**
+     * Checks if the given string starts with a backslash.
      * 
-     * @return
+     * @param parameterSource
+     *            The string to check.
+     * @return True if the given string starts with a backslash, else false.
      */
     private boolean isSpecial(String parameterSource) {
         return parameterSource.charAt(0) == '\\';

@@ -21,8 +21,8 @@ public class GenerateMethodAndInformationFlowPairsCommand extends Command {
     private final Supplier<ConfidentialitySpecification> specificationSupplier;
 
     /**
-     * Creates a new method and information flow annotation pairs command with the given container
-     * supplier and confidentiality specification supplier.
+     * Creates a new method and information flow annotation pairs generation command with the given
+     * container supplier and confidentiality specification supplier.
      * 
      * @param supplier
      *            The supplier of method and service containers which they themselves are suppliers
