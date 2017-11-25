@@ -69,8 +69,8 @@ public class MethodAndAnnotationPairsToServicesTransformer {
      */
     private void addService(IMethod method, InformationFlowAnnotation annotation) {
         // remove redundant data sets by using a set
-        new HashSet<>(annotation.getDataSets())
-                .forEach(e -> addDataSetToServiceMapAndGetImage(e).add(Service.create(method, annotation)));
+        new HashSet<>(annotation.getDataSets()).forEach(e -> addDataSetToServiceMapAndGetImage(e)
+                .add(new Service(method.getElementName(), annotation.getParameterSources(e))));
     }
 
     /**

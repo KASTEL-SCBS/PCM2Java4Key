@@ -1,5 +1,6 @@
 package edu.kit.kastel.scbs.javaAnnotations2JML.generator;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -79,7 +80,8 @@ public class InformationFlowAnnotationGenerator
      * @return All values from the member 'parametersAndDataPairs' in a list of type Object.
      */
     private List<Object> getParametersAndDataPairsValues(List<IMemberValuePair> iMemberValuePairs) {
-        return iMemberValuePairs.stream().filter(e -> e.getMemberName().equals("parametersAndDataPairs"))
-                .map(e -> ((Object[]) e.getValue())[0]).collect(Collectors.toList());
+        Optional<IMemberValuePair> filtered = iMemberValuePairs.stream()
+                .filter(e -> e.getMemberName().equals("parametersAndDataPairs")).findFirst();
+        return Arrays.asList((Object[]) filtered.get().getValue());
     }
 }

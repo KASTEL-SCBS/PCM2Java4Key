@@ -64,6 +64,25 @@ public class InformationFlowAnnotation {
     }
 
     /**
+     * Gets all parameter sources from all parameters and data pairs of this annotation for the
+     * specified data set.
+     * 
+     * @param dataSet
+     *            The data set to get the parameter sources for.
+     * @return all parameter sources from all parameters and data pairs of this annotation for the
+     *         specified data set.
+     */
+    public List<ParameterSource> getParameterSources(DataSet dataSet) {
+        List<ParameterSource> params = new LinkedList<>();
+        for (ParametersAndDataPair pair : parametersAndDataPairs) {
+            if (pair.getDataSets().contains(dataSet)) {
+                params.addAll(pair.getParameterSources());
+            }
+        }
+        return params;
+    }
+
+    /**
      * Gets all data sets from all parameters and data pairs of this annotation.
      * 
      * Might have the same data set multiple times.
