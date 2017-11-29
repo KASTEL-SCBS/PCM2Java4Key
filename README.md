@@ -32,12 +32,12 @@ See also [PCM2Prolog](https://github.com/KASTEL-SCBS/PCM2Prolog) for analysing t
   
 ### Generate Java Code to be completed and verified
 * First step: create code with Java annotations 
- * Select a repository model
- * Right-click "KASTEL Code Analysis - Create Java Code for KeY"
+  * Select a repository model
+  * Right-click "KASTEL Code Analysis - Create Java Code for KeY"
 * Second step: translate Java annotations into JML specifications
- * Select a project 
- * Right-click "Create JML-Comments for Confidentiality Verification" 
- * A new project with the same name + the ending "JML" is created
+  * Select a project 
+  * Right-click "Create JML-Comments for Confidentiality Verification" 
+  * A new project with the same name + the ending "JML" is created
 
 ## Development
 If you want to extend or modify the code of PCM2Java4KeY, follow the instructions on the [Developing PCM2Java4KeY wiki page](https://github.com/KASTEL-SCBS/PCM2Java4Key/wiki/Developing-PCM2Java4KeY).
