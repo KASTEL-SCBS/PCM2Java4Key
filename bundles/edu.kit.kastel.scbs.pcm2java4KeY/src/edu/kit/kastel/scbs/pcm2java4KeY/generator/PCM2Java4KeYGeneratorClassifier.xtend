@@ -14,7 +14,7 @@ final class PCM2Java4KeYGeneratorClassifier extends PCM2JavaGeneratorClassifier 
 		generatorHeadAndImports = new PCM2Java4KeYGeneratorHeadAndImports
 	}			
 					
-	override String generateImportsAndHead() '''«
+	def String generateImportsAndHead() '''«
 		generatorHeadAndImports.generateImportsAndInterfaceHead(iface).replaceFirst("public interface", generateInterfaceAnnotations + "public interface")
 	»'''
 	

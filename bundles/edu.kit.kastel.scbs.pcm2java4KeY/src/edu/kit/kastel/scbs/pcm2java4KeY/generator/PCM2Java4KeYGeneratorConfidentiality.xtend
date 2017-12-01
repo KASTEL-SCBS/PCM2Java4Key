@@ -131,7 +131,7 @@ EXAMPLE // TODO: verify parameters and data pairs
 }
 '''
 	
-	private static final String PARAMETERS_AND_DATA_PAIRS_EXAMPLE = '''    EXAMPLE(new String[] {param1}, null /* new DataSets[] {DataSets.EXAMPLE} /*, null, null);'''
+	private static final String PARAMETERS_AND_DATA_PAIRS_EXAMPLE = '''    EXAMPLE(new String[] {"param1"}, null /* new DataSets[] {DataSets.EXAMPLE} /*, null, null);'''
 
 	private static final String INFORMATION_FLOW_CLASS_NAME = "InformationFlow"
 
