@@ -117,7 +117,7 @@ public abstract class AbstractServiceType implements ServiceProvider {
      * @param dataSet
      *            The data set to get the services for.
      * @return The abstract services that are mapped to the given data set or an empty list if there
-     *         are non.
+     *         are none.
      */
     private List<RoleService> getRoleServicesForDataSet(DataSet dataSet) {
         Optional<List<RoleService>> optional = Optional.ofNullable(getRoleServices(dataSet));
@@ -154,16 +154,16 @@ public abstract class AbstractServiceType implements ServiceProvider {
     }
 
     /**
-     * Adds services this service type provides to the given jml comment. Adds only those services,
+     * Adds services this service type provides to the given jml contract. Adds only those services,
      * which hold information about the given data set.
      * 
      * @param dataSet
      *            The data set to get the services for.
-     * @param comment
-     *            The jml comment to add the services to.
+     * @param contract
+     *            The jml contract to add the services to.
      */
-    public void addServicesForDataSetToJmlComment(DataSet dataSet, JmlComment comment) {
-        getRoleServicesForDataSet(dataSet).forEach(e -> e.addServiceToJmlComment(comment));
+    public void addServicesForDataSetToJmlComment(DataSet dataSet, JmlComment contract) {
+        getRoleServicesForDataSet(dataSet).forEach(e -> e.addServiceToJmlContract(contract));
     }
 
     /**

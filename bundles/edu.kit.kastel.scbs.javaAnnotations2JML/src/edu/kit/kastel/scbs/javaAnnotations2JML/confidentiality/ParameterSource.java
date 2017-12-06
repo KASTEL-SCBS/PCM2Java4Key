@@ -10,7 +10,7 @@ import java.util.List;
  * call parameter source or neither of both.
  * 
  * @author Nils Wilka
- * @version 1.2, 29.09.2017
+ * @version 1.3, 06.12.2017
  */
 public class ParameterSource {
 
@@ -18,7 +18,9 @@ public class ParameterSource {
 
     private static final String RESULT = "\\result";
 
-    private final String name;
+    private static final String ARRAY = "[*]";
+
+    private String name;
 
     /**
      * Creates a new parameter source with the given name.
@@ -28,6 +30,36 @@ public class ParameterSource {
      */
     public ParameterSource(String name) {
         this.name = name;
+    }
+
+    /**
+     * Gets the name of the parameter source.
+     * 
+     * @return The name of the parameter source.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name of the parameter source.
+     * 
+     * @param name
+     *            The name of the parameter source.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Checks whether this parameter source is an array parameter source, i.e. it contains the
+     * character sequences "[*]".
+     * 
+     * @return Whether this parameter source is an array parameter source, i.e. it contains the
+     *         character sequences "[*]".
+     */
+    public boolean isArray() {
+        return name.contains(ARRAY);
     }
 
     /**
