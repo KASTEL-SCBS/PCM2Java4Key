@@ -20,7 +20,9 @@ public class ParameterSource {
 
     private static final String ARRAY = "[*]";
 
-    private String name;
+    private final String name;
+
+    private String result;
 
     /**
      * Creates a new parameter source with the given name.
@@ -30,6 +32,7 @@ public class ParameterSource {
      */
     public ParameterSource(String name) {
         this.name = name;
+        this.result = name;
     }
 
     /**
@@ -47,8 +50,8 @@ public class ParameterSource {
      * @param name
      *            The name of the parameter source.
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setResult(String name) {
+        this.result = name;
     }
 
     /**
@@ -108,7 +111,7 @@ public class ParameterSource {
 
     @Override
     public String toString() {
-        return this.name;
+        return this.result;
     }
 
     /**

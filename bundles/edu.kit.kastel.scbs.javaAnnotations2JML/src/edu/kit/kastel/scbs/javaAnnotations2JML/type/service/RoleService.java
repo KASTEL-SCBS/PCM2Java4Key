@@ -64,12 +64,31 @@ public abstract class RoleService extends Service {
         partition(e -> e.isResult(), getParameterSources(), resultParams, nonResultParams);
         partition(e -> e.isCall(), nonResultParams, callParams, remainingParams);
 
-        resolveParamterSources();
+        resolveParameterSources();
 
-        addResultLine(contract, resultParams);
-        addNonResultLine(contract, remainingParams);
         if (!callParams.isEmpty()) {
             addVisibleLine(contract);
+            // insertion needs to be done before the other parameter sources
+            // are added to the contract.
+            fillInParameterSource(resultParams);
+            fillInParameterSource(remainingParams);
+        }
+        addResultLine(contract, resultParams);
+        addNonResultLine(contract, remainingParams);
+    }
+
+    /**
+     * Inserts a parameter source with the constant name "0" into the list.
+     * 
+     * This only happens if the service call is visible, but there isn't a single parameter source
+     * in the given list.
+     * 
+     * @param list
+     *            The list to add a parameter source to, if it is empty.
+     */
+    private void fillInParameterSource(List<ParameterSource> list) {
+        if (list.isEmpty()) {
+            list.add(new ParameterSource("0"));
         }
     }
 
@@ -77,10 +96,10 @@ public abstract class RoleService extends Service {
      * Resolves parameter sources by using the class {@code ParameterSourceModification}, which
      * converts array parameter sources to a sequence definition.
      */
-    private void resolveParamterSources() {
+    private void resolveParameterSources() {
         for (ParameterSource params : getParameterSources()) {
             if (params.isArray()) {
-                params.setName(ParameterSourceModification.getSequenceDefinition(params.getName()));
+                params.setResult(ParameterSourceModification.getSequenceDefinition(params.getName()));
             }
         }
     }
