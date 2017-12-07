@@ -12,6 +12,7 @@ import static edu.kit.ipd.sdq.mdsd.pcm2java.generator.PCM2JavaGeneratorConstants
 import static extension edu.kit.kastel.scbs.pcm2java4KeY.util.StereotypeUtil.*
 import edu.kit.kastel.scbs.confidentiality.data.ParameterizedDataSetMapEntry
 import edu.kit.kastel.scbs.confidentiality.data.SpecificationParameter
+import java.util.regex.Pattern
 
 final class PCM2Java4KeYGeneratorConfidentiality {
 	
@@ -201,7 +202,7 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 	private static def String addUserDataSets(String dataSets, Iterable<DataSet> userDataSets) {
 		if (userDataSets.size > 0) {
 			dataSets.replaceFirst("EXAMPLE", userDataSets.generateUserDataSetsString)
-		} else {
+		} else { 
 			return dataSets.replaceFirst("EXAMPLE", DATA_SETS_EXAMPLE)
 		}
 	}
@@ -231,8 +232,10 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 	}
 	
 	private static def String addUserParametersAndDataPairs(String parametersAndDataPairs, Iterable<ParametersAndDataPair> userParametersAndDataPairs) {
-		if (userParametersAndDataPairs.size > 0) {
-			parametersAndDataPairs.replaceFirst("EXAMPLE", userParametersAndDataPairs.generateUserParametersAndDataPairsString)
+		if (userParametersAndDataPairs.size > 0) {			
+		//	val splitString = parametersAndDataPairs.split("EXAMPLE")
+		//	return splitString.get(0) + userParametersAndDataPairs.generateUserParametersAndDataPairsString.replace("\\", "\\\\") + splitString.get(1)
+			parametersAndDataPairs.replace("EXAMPLE", userParametersAndDataPairs.generateUserParametersAndDataPairsString.replace("\\", "\\\\"))
 		} else {
 			return parametersAndDataPairs.replaceFirst("EXAMPLE", PARAMETERS_AND_DATA_PAIRS_EXAMPLE)
 		}
@@ -281,15 +284,15 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 		»«pdsme.map.name.ConvertToEnumValueName»_«pdsme.parameter.definingServiceParameter.ConvertToEnumValueName»("«pdsme.id»", DataSetMaps.«pdsme.map.name.ConvertToEnumValueName», SpecificationParameters.«pdsme.parameter.name.ConvertToEnumValueName»)«
 		ENDFOR»
 	''' 
-	
-	private static def String generateUserParametersAndDataPairsString(Iterable<ParametersAndDataPair> userParametersAndDataPairs)'''«
+
+ 	private static def String generateUserParametersAndDataPairsString(Iterable<ParametersAndDataPair> userParametersAndDataPairs)'''«
 		FOR parametersAndDataPair : userParametersAndDataPairs
-		BEFORE "	"
+		BEFORE "    "
 		SEPARATOR "," + newLine +  "	"    
 		AFTER ";"
 		»«parametersAndDataPair.name»(«parametersAndDataPair.parameterSources.generateStringArrayConstructor», «parametersAndDataPair.dataTargets.filter(DataSet).generateDataSetArrayConstructor», «
 		  parametersAndDataPair.dataTargets.filter(DataSetMapEntry).generateDataSetMapEntryArrayConstructor», «parametersAndDataPair.dataTargets.filter(ParameterizedDataSetMapEntry).generateParameterizedDataSetMapEntryArrayConstructor»)«
-	ENDFOR»''' 
+	ENDFOR»'''  
 	
 	private static def String generateUserSpecificationParametersString(Iterable<SpecificationParameter> userSpecificationParameters)'''«
 		FOR specificationParameter : userSpecificationParameters
