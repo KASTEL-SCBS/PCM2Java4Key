@@ -194,13 +194,13 @@ class JmlComment {
 	override public toString() {
 		'''
 		//automatically generated:
-		//@ cluster «dataSet»Cluster;
+		//@ cluster «dataSet»Cluster
 		//@ \lowIn «getString(lowInList)»
 		//@ \lowOut «getString(lowOutList)»
 		//@ \visible «getString(visibleList)»
 		//@ \lowState «dataSet»;
 		//@ 
-		//@ model \seq «dataSet»
+		//@ model \seq «dataSet»;
 		    
 		'''
 	}

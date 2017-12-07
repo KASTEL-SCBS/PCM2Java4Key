@@ -36,7 +36,7 @@ See also [PCM2Prolog](https://github.com/KASTEL-SCBS/PCM2Prolog) for analysing t
   * Right-click "KASTEL Code Analysis - Create Java Code for KeY"
 * Second step: translate Java annotations into JML specifications
   * Select a project 
-  * Right-click "Create JML-Comments for Confidentiality Verification" 
+  * Right-click "Create JML-Specification for Confidentiality Verification" 
   * A new project with the same name + the ending "JML" is created
 
 ## Development
