@@ -5,7 +5,7 @@ import java.util.LinkedList
 import edu.kit.kastel.scbs.javaAnnotations2JML.confidentiality.DataSet
 
 /**
- * Represents a java comment block in the java modeling language for information flow properties in a java type.
+ * Represents a java contract in the java modeling language for information flow properties in a java type.
  * 
  * The string representation is available via the {@code toString} method.
  * 
@@ -27,7 +27,7 @@ class JmlComment {
 	private final List<String> lowInList;
 
 	/**
-	 * Creates a new jml comment with the given data set name.
+	 * Creates a new jml contract with the given data set name.
 	 * 
 	 * @param dataSet The data set name.
 	 */
@@ -181,27 +181,27 @@ class JmlComment {
 	}
 
 	/**
-	 * Creates a new line for an jml comment with the given content.
+	 * Creates a new line for an jml contract with the given content.
 	 * 
 	 * @param list The content of the line to be created.
 	 * 
 	 * @return A new jml line with the given content.
 	 */
 	def private newLine(String content) {
-		'''//@     «content»'''
+		'''@     «content»'''
 	}
 
 	override public toString() {
 		'''
 		//automatically generated:
-		//@ cluster «dataSet»Cluster
-		//@ \lowIn «getString(lowInList)»
-		//@ \lowOut «getString(lowOutList)»
-		//@ \visible «getString(visibleList)»
-		//@ \lowState «dataSet»;
-		//@ 
+		/*@ componentCluster «dataSet»Cluster
+		 @ \lowIn «getString(lowInList)»
+		 @ \lowOut «getString(lowOutList)»
+		 @ \lowState «dataSet»
+		 @ \visible «getString(visibleList)»;
+		 @*/
+		 
 		//@ model \seq «dataSet»;
-		    
 		'''
 	}
 }
