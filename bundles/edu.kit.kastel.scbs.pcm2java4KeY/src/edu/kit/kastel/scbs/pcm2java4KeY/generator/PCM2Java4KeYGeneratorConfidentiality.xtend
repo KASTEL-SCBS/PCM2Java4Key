@@ -3,22 +3,29 @@ package edu.kit.kastel.scbs.pcm2java4KeY.generator
 import edu.kit.kastel.scbs.confidentiality.data.DataSet
 import edu.kit.kastel.scbs.confidentiality.data.DataSetMap
 import edu.kit.kastel.scbs.confidentiality.data.DataSetMapEntry
+import edu.kit.kastel.scbs.confidentiality.data.ParameterizedDataSetMapEntry
+import edu.kit.kastel.scbs.confidentiality.data.SpecificationParameter
 import edu.kit.kastel.scbs.confidentiality.repository.ParametersAndDataPair
 import java.io.File
 import org.eclipse.internal.xtend.util.Triplet
 import org.modelversioning.emfprofileapplication.StereotypeApplication
 
 import static edu.kit.ipd.sdq.mdsd.pcm2java.generator.PCM2JavaGeneratorConstants.*
-import static extension edu.kit.kastel.scbs.pcm2java4KeY.util.StereotypeUtil.*
-import edu.kit.kastel.scbs.confidentiality.data.ParameterizedDataSetMapEntry
-import edu.kit.kastel.scbs.confidentiality.data.SpecificationParameter
-import java.util.regex.Pattern
 
+import static extension edu.kit.kastel.scbs.pcm2java4KeY.util.StereotypeUtil.*
+
+/**
+ * This class is used to generate the Java code that is needed to use the confidentiality annotations representing applied stereotypes in a PCM model.
+ * The generated code encompasses six enumerations and an annotation type. The enumerations are adjusted to fit the stereotypes present in the PCM model.
+ * 
+ * @author Moritz Behr
+ * @version 0.1
+ */
 final class PCM2Java4KeYGeneratorConfidentiality {
 	
-	private static final String PACKAGE = "confidentialityRepository"
+	private static final String PACKAGE = "confidentialityRepository" // name of the package containing the generated code
 	
-	private static final String DATA_SETS_CLASS_NAME = "DataSets"
+	private static final String DATA_SETS_CLASS_NAME = "DataSets" 
 	
 	private static final String DATA_SETS = '''package «PACKAGE»;
 public enum «DATA_SETS_CLASS_NAME» {
@@ -132,7 +139,7 @@ EXAMPLE // TODO: verify parameters and data pairs
 }
 '''
 	
-	private static final String PARAMETERS_AND_DATA_PAIRS_EXAMPLE = '''    EXAMPLE(new String[] {"param1"}, null /* new DataSets[] {DataSets.EXAMPLE} /*, null, null);'''
+	private static final String PARAMETERS_AND_DATA_PAIRS_EXAMPLE = '''    EXAMPLE(new String[] {"param1"}, null /* new DataSets[] {DataSets.EXAMPLE} */, null, null);'''
 
 	private static final String INFORMATION_FLOW_CLASS_NAME = "InformationFlow"
 
@@ -152,6 +159,12 @@ public @interface «INFORMATION_FLOW_CLASS_NAME» {
 	
 	private static final String FILE_EXT = ".java"
 
+    /**
+     * Generates code necessary to use confidentiality annotations for the given stereotype application.
+     *
+     * @param stereotypeApplication stereotype applications of the PCM model for which confidentiality code should be generated
+     * @return array of triplets, one triplet for each generated file. Each triplet contains, in order: file content, folder name, file name
+     */
 	static def Triplet<String, String, String>[] generateConfidentialityCodeWithFolderAndFileNames(Iterable<StereotypeApplication> stereotypeApplications) {
 		val Triplet<String, String, String>[] result = newArrayOfSize(7)
 		val userParametersAndDataPairs = getUserParametersAndDataPairs(stereotypeApplications)

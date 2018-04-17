@@ -9,9 +9,20 @@ import org.eclipse.core.commands.ExecutionEvent
 import org.eclipse.core.commands.ExecutionException
 import org.eclipse.core.resources.IFile
 
+/**
+ * Abstract handler class for the PCM2JAva4KeY plug-in.
+ * 
+ * @author Moritz Behr
+ * @version 0.1
+ */
 abstract class AbstractPCM2Java4KeYHandler extends AbstractEcoreIFile2TxtHandler {
 	
-	override getPlugInID() '''edu.kit.ipd.sdq.mdsd.pcm2java'''
+	/**
+     * Returns the ID of this plug-in.
+     * 
+     * @return ID of this plug-in
+     */
+	override getPlugInID() '''edu.kit.ipd.sdq.mdsd.pcm2java''' //TODO: 4KeY ?!2
 	
 	override executeEcore2TxtGenerator(List<IFile> filteredSelection, ExecutionEvent event, String plugInID) throws ExecutionException {
 		val publicFields = Boolean.parseBoolean(event.getParameter(plugInID + ".publicFieldsParameter"))

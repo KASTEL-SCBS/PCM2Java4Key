@@ -8,11 +8,20 @@ import org.palladiosimulator.pcm.repository.OperationSignature
 
 import static extension edu.kit.ipd.sdq.commons.util.org.palladiosimulator.mdsdprofiles.api.StereotypeAPIUtil.*
 
+/**
+ * A utility class providing utility methods for stereotypes.
+ */
 class StereotypeUtil {
 	
 	/** Utility classes should not have a public or default constructor. */
 	private new() {}
 	
+	/**
+	 * Returns all parameters and data pairs of stereotypes that are applied to either the given interface or one of it's operation signatures.
+	 * 
+	 * @param iface a PCM operation interface
+	 * @return an iterable object containing the parameters and data pairs
+	 */
 	static def Iterable<ParametersAndDataPair> getAllParamatersAndDataPairs(OperationInterface iface) {		
 		val result = new ArrayList<ParametersAndDataPair>
 		result.addAll(iface.parametersAndDataPairs)
@@ -20,10 +29,22 @@ class StereotypeUtil {
 		return result
 	}
 	
+	/**
+	 * Returns all parameters and data pairs of stereotypes that are applied to the given interface.
+	 * 
+	 * @param iface a PCM operation interface
+	 * @return an iterable object containing the parameters and data pairs
+	 */
 	static def Iterable<ParametersAndDataPair> getParametersAndDataPairs(OperationInterface iface) {
 		iface.getTaggedValues("InformationFlow", "parametersAndDataPairs", ParametersAndDataPair)
 	}
 	
+	/**
+     * Returns all parameters and data pairs of stereotypes that are applied to the given operation signature or .
+     * 
+     * @param iface a PCM operation signature
+     * @return an iterable object containing the parameters and data pairs
+     */
 	static def Iterable<ParametersAndDataPair> getAllParametersAndDataPairsAppliedToSignature(OperationInterface iface, OperationSignature operationSignature) {
 		val result = new ArrayList<ParametersAndDataPair>
 		result.addAll(iface.parametersAndDataPairs)
@@ -31,10 +52,22 @@ class StereotypeUtil {
 		return result
 	}
 	
+	/**
+     * Returns all parameters and data pairs of stereotypes that are applied to a operation signature of the given operation interface.
+     * 
+     * @param iface a PCM operation interface
+     * @return an iterable object containing the parameters and data pairs
+     */
 	static def Iterable<ParametersAndDataPair> getAllSignatureParametersAndDataPairs(OperationInterface iface) {
 		iface.signatures__OperationInterface.map[it.parametersAndDataPairs].flatten
 	}
 	
+	/**
+     * Returns all parameters and data pairs of stereotypes that are applied to a operation signature of the given operation interface.
+     * 
+     * @param iface a PCM operation interface
+     * @return an iterable object containing the parameters and data pairs
+     */
 	static def Iterable<ParametersAndDataPair> getParametersAndDataPairs(OperationSignature operationSignature) {
 		operationSignature.getTaggedValues("InformationFlow", "parametersAndDataPairs", ParametersAndDataPair)
 	}
