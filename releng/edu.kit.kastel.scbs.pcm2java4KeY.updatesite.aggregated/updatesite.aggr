@@ -22,9 +22,9 @@
 	<features name="edu.kit.kastel.scbs.confidentiality.feature.source.feature.group" versionRange="[1.0.0,2.0.0)"/>
       </repositories>
       <repositories location="https://sdqweb.ipd.kit.edu/eclipse/palladiosimulator/releases/latest/" mirrorArtifacts="false">
-	<features name="de.uka.ipd.sdq.identifier.source.feature.feature.group" versionRange="2.1.0"/>
-	<features name="org.palladiosimulator.pcm.source.feature.feature.group" versionRange="4.0.1"/>
-	<features name="org.palladiosimulator.editors.tree.source.feature.feature.group" versionRange="4.0.1"/>
+	<features name="de.uka.ipd.sdq.identifier.feature.source.feature.group" versionRange="2.1.0"/>
+	<features name="org.palladiosimulator.pcm.feature.source.feature.group" versionRange="4.0.1"/>
+	<features name="org.palladiosimulator.editors.tree.feature.source.feature.group" versionRange="4.0.1"/>
       </repositories>
     </contributions>
   </validationSets>
